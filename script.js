@@ -84,6 +84,30 @@ const page = document.body.dataset.page || "home";
 const pageDefaultRole = { creator: "creator", investment: "investor" }[page];
 let currentRole = pageDefaultRole || localStorage.getItem("youchi-role") || "advertiser";
 let loggedIn = localStorage.getItem("youchi-logged-in") === "true";
+let currentAppTab = 0;
+
+const appTabs = {
+  advertiser: [
+    ["홈", "home"],
+    ["채널 탐색", "analysis"],
+    ["캠페인", "campaign"],
+    ["구좌 선점", "trade"],
+  ],
+  creator: [
+    ["홈", "home"],
+    ["CIV 관리", "analysis"],
+    ["제안 관리", "campaign"],
+    ["수익 정산", "trade"],
+    ["조달 관리", "invest"],
+  ],
+  investor: [
+    ["홈", "home"],
+    ["투자 분석", "analysis"],
+    ["매출 추적", "campaign"],
+    ["지분 거래", "trade"],
+    ["조각 투자", "invest"],
+  ],
+};
 
 function money(value) {
   return `₩ ${Math.round(value).toLocaleString("ko-KR")}`;
@@ -93,17 +117,215 @@ function setRole(role) {
   currentRole = role;
   localStorage.setItem("youchi-role", role);
   document.querySelector(".app-shell")?.setAttribute("data-role", role);
+  if (currentAppTab >= appTabs[role]?.length) currentAppTab = 0;
   document.querySelectorAll("[data-role-button]").forEach((button) => {
     button.classList.toggle("active", button.dataset.roleButton === role);
   });
   const roleButton = document.querySelector("#roleCycleButton");
   if (roleButton) roleButton.textContent = roles[role].label;
+  if (document.querySelector("#appContent")) {
+    renderAppPreview();
+    return;
+  }
   renderNavigation();
   renderHome();
   renderAnalysis();
   renderCampaign();
   renderTrade();
   renderInvest();
+}
+
+function appCard(title, value, subtext) {
+  return `<article class="app-kpi"><span>${title}</span><strong>${value}</strong><em>${subtext}</em></article>`;
+}
+
+function renderAppPreview() {
+  const content = document.querySelector("#appContent");
+  const bottomNav = document.querySelector("#bottomNav");
+  const drawerLinks = document.querySelector("#drawerLinks");
+  if (!content || !bottomNav) return;
+
+  const tabs = appTabs[currentRole];
+  const currentTabKey = tabs[currentAppTab]?.[1] || "home";
+  bottomNav.innerHTML = tabs
+    .map(([label], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}">${label}</button>`)
+    .join("");
+  if (drawerLinks) {
+    drawerLinks.innerHTML = tabs
+      .map(([label], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}">${label} 이동</button>`)
+      .join("");
+  }
+
+  if (currentTabKey === "home") content.innerHTML = renderAppHome();
+  if (currentTabKey === "analysis") content.innerHTML = renderAppAnalysis();
+  if (currentTabKey === "campaign") content.innerHTML = renderAppCampaign();
+  if (currentTabKey === "trade") content.innerHTML = renderAppTrade();
+  if (currentTabKey === "invest") content.innerHTML = renderAppInvest();
+
+  document.querySelectorAll("[data-app-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      currentAppTab = Number(button.dataset.appTab);
+      document.querySelector("#drawer")?.classList.remove("open");
+      renderAppPreview();
+    });
+  });
+  document.querySelectorAll("[data-role-button]").forEach((button) => {
+    button.addEventListener("click", () => setRole(button.dataset.roleButton));
+  });
+  bindSimulator();
+}
+
+function renderAppHome() {
+  const data = roles[currentRole];
+  const kpis = data.kpis.map(([label, value, sub]) => appCard(label, value, sub)).join("");
+  const roleCopy = {
+    advertiser: "채널 가치 분석부터 광고 매칭까지",
+    creator: "내 채널 가치 관리와 수익 정산",
+    investor: "보유 지분과 배당 흐름 관리",
+  }[currentRole];
+  return `
+    <div class="app-scroll">
+      <section class="app-hero-card">
+        <span>${data.label} 모드</span>
+        <h2>${roleCopy}</h2>
+        <p>CIV 데이터가 증명하는 콘텐츠 가치와 수익 가능성을 확인하세요.</p>
+        <div class="app-search">
+          <select><option>전체 채널 사이즈</option><option>마이크로</option><option>메가</option></select>
+          <select><option>전체 카테고리</option><option>뷰티/패션</option><option>IT 리뷰</option></select>
+          <input placeholder="키워드 입력" />
+          <button data-app-tab="1">분석 보기</button>
+        </div>
+      </section>
+      <h3 class="app-section-title">맞춤형 서비스 모드</h3>
+      <div class="role-switcher app-role-switcher">
+        <button class="${currentRole === "advertiser" ? "active" : ""}" data-role-button="advertiser">광고주</button>
+        <button class="${currentRole === "creator" ? "active" : ""}" data-role-button="creator">크리에이터</button>
+        <button class="${currentRole === "investor" ? "active" : ""}" data-role-button="investor">투자자</button>
+      </div>
+      <h3 class="app-section-title">플랫폼 주요 지표</h3>
+      <div class="app-kpi-grid">${kpis}</div>
+      <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
+      <div class="app-rank-list">
+        ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
+      </div>
+    </div>`;
+}
+
+function renderAppAnalysis() {
+  const title = currentRole === "creator" ? "내 채널 스튜디오" : currentRole === "investor" ? "투자 가치 분석" : "채널 가치 평가 지표";
+  return `
+    <div class="app-scroll">
+      <section class="app-profile">
+        <div class="avatar">뷰</div>
+        <div><strong>${currentRole === "creator" ? "내 채널 스튜디오" : "뷰티풀 마인드"}</strong><span>YouTube · 뷰티/패션 · 구독자 24만</span></div>
+        <i>✓</i>
+      </section>
+      <section class="app-score-card">
+        <span>${title}</span>
+        <strong>87.4</strong>
+        <em>상위 8% · 추정 가치 ₩1.8억 ~ ₩2.4억</em>
+      </section>
+      <div class="metric-grid app-metrics">
+        <div><span>영향력</span><strong>92.1</strong><em>우수</em></div>
+        <div><span>참여율</span><strong>85.3</strong><em>양호</em></div>
+        <div><span>수익성</span><strong>88.7</strong><em>우수</em></div>
+        <div><span>안정성</span><strong>76.2</strong><em>보통</em></div>
+      </div>
+      <section class="app-panel">
+        <h3>${currentRole === "creator" ? "AI 개선 제안" : "AI 분석 요약"}</h3>
+        ${roles[currentRole].insights.map(([title, body]) => `<div class="app-insight"><strong>${title}</strong><p>${body}</p></div>`).join("")}
+      </section>
+    </div>`;
+}
+
+function renderAppCampaign() {
+  if (currentRole === "creator") {
+    return `
+      <div class="app-scroll">
+        <h2 class="app-page-title">광고 제안 관리 센터</h2>
+        <p class="app-page-sub">광고주가 CIV 가치를 기반으로 보낸 제안을 관리합니다.</p>
+        ${["아모레퍼시픽 헤라 뷰티 캠페인|₩8,000,000|대기중", "삼성전자 갤럭시 S26 브랜디드|₩15,000,000|수락됨", "올리브영 스킨케어 기획전|₩4,500,000|거절됨"].map((item) => {
+          const [name, price, status] = item.split("|");
+          return `<section class="app-panel"><div class="app-row"><strong>${name}</strong><span>${status}</span></div><p>제안 금액 ${price}</p><div class="button-row"><button class="danger-button">거절</button><button class="primary-button">수락</button></div></section>`;
+        }).join("")}
+      </div>`;
+  }
+  if (currentRole === "investor") {
+    return `
+      <div class="app-scroll">
+        <h2 class="app-page-title">채널 광고 매출 분석</h2>
+        <div class="app-kpi-grid">
+          ${appCard("누적 집행액", "₩148.5억", "전체 투자 채널")}
+          ${appCard("활성 캠페인", "342건", "진행 중")}
+          ${appCard("평균 ROI", "154.2%", "매칭 성공")}
+          ${appCard("월 배당 영향", "+8.4%", "예상")}
+        </div>
+        <section class="app-panel"><h3>카테고리별 광고 단가</h3><div class="app-row"><strong>뷰티/패션</strong><span>850만 원</span></div><div class="app-row"><strong>IT 리뷰</strong><span>1,200만 원</span></div><div class="app-row"><strong>일상/Vlog</strong><span>400만 원</span></div></section>
+      </div>`;
+  }
+  return `
+    <div class="app-scroll">
+      <h2 class="app-page-title">AI 캠페인 ROI 시뮬레이터</h2>
+      <section class="app-panel">
+        <label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label>
+        <input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" />
+        <label>캠페인 기간 <output id="durationOutput">4주</output></label>
+        <input id="durationRange" type="range" min="1" max="12" value="4" />
+        <div class="result-grid" id="simResults"></div>
+      </section>
+      <section class="app-panel">
+        <div class="app-row"><strong>뷰티풀 마인드</strong><span>98% 매칭</span></div>
+        <p>뷰티/패션 · 88.4 CIV · 시뮬레이션 예산 대비 최적 매칭</p>
+        <button class="primary-button">제안하기</button>
+      </section>
+    </div>`;
+}
+
+function renderAppTrade() {
+  if (currentRole === "creator") {
+    return `
+      <div class="app-scroll">
+        <h2 class="app-page-title">정산 및 채널 자본 조달</h2>
+        <section class="app-panel"><h3>내 수익 및 정산금 현황</h3><div class="app-row"><span>누적 광고 정산액</span><strong>₩28,450,000</strong></div><div class="app-row"><span>출금 가능 잔액</span><strong>₩4,850,000</strong></div><button class="primary-button">출금 신청</button></section>
+        <section class="app-panel"><h3>채널 지분 매도 신청</h3><label>매도 지분율 <output>5%</output></label><input type="range" min="1" max="20" value="5" /><button class="primary-button">스마트 계약 등록 신청</button></section>
+      </div>`;
+  }
+  if (currentRole === "advertiser") {
+    return `
+      <div class="app-scroll">
+        <h2 class="app-page-title">채널 광고 구좌 선매수 마켓</h2>
+        <section class="app-panel"><div class="app-row"><strong>뷰티풀 마인드 3분기 광고 구좌 3회 패키지</strong><span>독점</span></div><p>₩22,000,000 · 정가 대비 15% 할인</p></section>
+        <section class="app-panel"><div class="app-row"><strong>테크 인사이드 브랜디드 1회 독점권</strong><span>얼리버드</span></div><p>₩11,000,000 · 카테고리 독점 보장</p></section>
+      </div>`;
+  }
+  return `
+    <div class="app-scroll">
+      <h2 class="app-page-title">채널 거래소 / IP 마켓플레이스</h2>
+      <section class="app-panel">
+        <div class="app-row"><strong>뷰티풀 마인드 지분 10%</strong><span>Escrow</span></div>
+        <p>추정 평가 가치 ₩2.1억</p>
+        <svg class="trade-chart" viewBox="0 0 320 92"><polyline points="0,70 45,52 90,58 135,40 180,30 225,34 270,18 320,12" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+        <div class="button-row"><button class="secondary-button">매수 Buy</button><button class="danger-button">매도 Sell</button></div>
+      </section>
+      <section class="app-panel"><h3>실시간 체결 내역</h3><div class="app-row"><span>12초 전 · 지분 1%</span><strong>₩2,050,000</strong></div><div class="app-row"><span>1분 전 · 지분 2%</span><strong>₩4,100,000</strong></div></section>
+    </div>`;
+}
+
+function renderAppInvest() {
+  return `
+    <div class="app-scroll">
+      <h2 class="app-page-title">${currentRole === "creator" ? "내 프로젝트 펀딩 관리" : currentRole === "advertiser" ? "광고주 펀딩 연계 & 집행 실적" : "조각 투자 & 포트폴리오"}</h2>
+      <section class="app-panel">
+        <div class="app-row"><strong>뷰티풀 마인드 시즌3 제작 프로젝트</strong><span>D-3</span></div>
+        <p>목표 ₩50,000,000 · 현재 ₩41,000,000 · 달성률 82%</p>
+        <input type="range" min="0" max="100" value="82" disabled />
+        <button class="primary-button">${currentRole === "creator" ? "참여자 보기" : "펀딩 참가하기"}</button>
+      </section>
+      <section class="app-panel">
+        <h3>보유 조각 지분 현황</h3>
+        ${holdings.slice(0, 5).map((x) => `<div class="app-row"><span>${x.name} 지분 ${x.own}<br><em>${money(x.amount)} · ${x.date}</em></span><strong>${x.rate}</strong></div>`).join("")}
+      </section>
+    </div>`;
 }
 
 function renderNavigation() {

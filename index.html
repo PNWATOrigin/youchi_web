@@ -3,32 +3,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>YOUCHI B2B Fin-Media</title>
+    <title>YOUCHI App Web Preview</title>
     <meta
       name="description"
-      content="YOUCHI는 크리에이터 채널 가치 분석, 광고 매칭, 조각 투자, IP 거래를 연결하는 B2B Fin-Media 플랫폼입니다."
+      content="YOUCHI 앱 화면을 웹에서 확인할 수 있는 정적 GitHub Pages 데모입니다."
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="home">
-    <div class="app-shell" data-role="advertiser">
-      <header class="topbar">
-        <button class="icon-button" id="menuButton" aria-label="메뉴 열기">☰</button>
-        <a class="brand" href="./index.html" aria-label="YOUCHI 홈">YOUCHI</a>
-        <div class="top-actions">
-          <div class="dropdown">
-            <button class="role-chip dropdown-toggle" type="button" aria-expanded="false">서비스</button>
-            <div class="dropdown-menu">
-              <a href="./index.html">메인</a>
-              <a href="./creator.html">크리에이터</a>
-              <a href="./investment.html">투자/광고</a>
-            </div>
-          </div>
-          <button class="role-chip" id="roleCycleButton" type="button">광고주</button>
-          <a class="login-link" href="./login.html">로그인</a>
-        </div>
-      </header>
-
+    <div class="app-shell app-preview-shell" data-role="advertiser">
       <aside class="drawer" id="drawer" aria-hidden="true">
         <div class="drawer__panel">
           <div class="drawer__header">
@@ -41,120 +24,43 @@
           </div>
           <nav class="drawer-links" id="drawerLinks"></nav>
           <button class="drawer-mypage" id="myPageButton" type="button">마이페이지 · 지갑/계정/알림</button>
-          <p class="drawer-version">YOUCHI v3 · Premium B2B Fintech</p>
+          <button class="drawer-mypage" type="button" onclick="location.href='./login.html'">로그인 페이지 보기</button>
+          <p class="drawer-version">YOUCHI v3 · App Web Preview</p>
         </div>
       </aside>
 
-      <main>
-        <section class="hero section" id="home">
-          <div class="hero__copy">
-            <p class="eyebrow">B2B Fin-Media Platform</p>
-            <h1>채널 가치 분석부터 광고, 투자, 거래까지 한 번에</h1>
-            <p>
-              YOUCHI는 크리에이터 채널의 CIV 가치를 계산하고, 광고주 매칭과 크라우드 펀딩,
-              지분/IP 거래를 연결하는 통합 데모 플랫폼입니다.
-            </p>
-            <div class="search-panel">
-              <select aria-label="채널 사이즈">
-                <option>전체 채널 사이즈</option>
-                <option>나노 10K 미만</option>
-                <option>마이크로 10K~100K</option>
-                <option>미드 티어 100K~500K</option>
-                <option>메가 1M 이상</option>
-              </select>
-              <select aria-label="카테고리">
-                <option>전체 카테고리</option>
-                <option>뷰티/패션</option>
-                <option>전자제품/IT</option>
-                <option>일상/Vlog</option>
-                <option>게임</option>
-                <option>교육</option>
-              </select>
-              <input type="search" placeholder="키워드 입력" aria-label="검색어" />
-              <button class="primary-button" type="button" data-nav="analysis">분석 보기</button>
-            </div>
-          </div>
-          <div class="hero__visual" aria-label="YOUCHI 플랫폼 미리보기">
-            <div class="phone-frame">
-              <div class="phone-status">
-                <span></span>
-                <strong>YOUCHI</strong>
-                <span></span>
-              </div>
-              <div class="score-card">
-                <span>CIV Score</span>
-                <strong>87.4</strong>
-                <em>상위 8%</em>
-              </div>
-              <div class="mini-list">
-                <span>뷰티풀 마인드</span>
-                <b>연 16.5%</b>
-              </div>
-              <div class="mini-list">
-                <span>테크 인사이드</span>
-                <b>98% 매칭</b>
-              </div>
-              <div class="mini-chart">
-                <span></span><span></span><span></span><span></span><span></span>
-              </div>
-            </div>
-          </div>
-        </section>
+      <main class="mobile-app-layout">
+        <div class="device-frame">
+          <header class="appbar">
+            <button class="icon-button" id="menuButton" aria-label="메뉴 열기">☰</button>
+            <strong class="app-title">YOUCHI</strong>
+            <button class="role-chip" id="roleCycleButton" type="button">광고주</button>
+          </header>
 
-        <section class="section compact">
-          <div class="section-title">
-            <p class="eyebrow">Persona Mode</p>
-            <h2>역할별 서비스 모드</h2>
-          </div>
-          <div class="role-switcher" role="tablist" aria-label="역할 선택">
+          <section class="app-content" id="appContent" aria-live="polite"></section>
+
+          <nav class="app-bottom-nav" id="bottomNav" aria-label="앱 하단 메뉴"></nav>
+        </div>
+
+        <aside class="preview-guide">
+          <p class="eyebrow">Web Preview</p>
+          <h1>앱 화면을 웹에서 그대로 보는 데모</h1>
+          <p>
+            왼쪽 화면은 Flutter v3 앱의 홈, CIV 분석, 광고, 거래, 투자 탭 흐름을
+            웹으로 옮긴 미리보기입니다. 역할 버튼을 누르면 광고주, 크리에이터,
+            투자자 모드가 전환됩니다.
+          </p>
+          <div class="role-switcher preview-role-switcher" role="tablist" aria-label="역할 선택">
             <button class="active" type="button" data-role-button="advertiser">광고주</button>
             <button type="button" data-role-button="creator">크리에이터</button>
             <button type="button" data-role-button="investor">투자자</button>
           </div>
-        </section>
-
-        <section class="section dashboard" id="dashboard">
-          <div class="section-title">
-            <p class="eyebrow">Live Dashboard</p>
-            <h2 id="dashboardTitle">광고주 홈 대시보드</h2>
+          <div class="service-grid preview-links">
+            <a class="service-card" href="./creator.html"><span>Creator</span><strong>크리에이터 설명형 화면</strong><p>앱 화면 외 별도 웹 소개 페이지</p></a>
+            <a class="service-card" href="./investment.html"><span>Invest / Ads</span><strong>투자/광고 설명형 화면</strong><p>투자와 광고 흐름을 묶은 웹 페이지</p></a>
           </div>
-          <div class="kpi-grid" id="kpiGrid"></div>
-          <div class="rank-strip" id="rankStrip"></div>
-        </section>
-
-        <section class="section">
-          <div class="section-title">
-            <div>
-              <p class="eyebrow">Service Pages</p>
-              <h2>기능별 상세 화면</h2>
-            </div>
-          </div>
-          <div class="service-grid">
-            <a class="service-card" href="./creator.html">
-              <span>Creator</span>
-              <strong>크리에이터 화면</strong>
-              <p>내 채널 CIV 관리, 광고 제안 수락/거절, 콘텐츠 제작 관리, 수익 정산, 펀딩 조달</p>
-            </a>
-            <a class="service-card" href="./investment.html">
-              <span>Investment & Ads</span>
-              <strong>투자/광고 화면</strong>
-              <p>AI 광고 매칭, ROI 시뮬레이션, 조각 투자, 채널 거래소, 에스크로 계약</p>
-            </a>
-            <a class="service-card" href="./analysis.html">
-              <span>Detail</span>
-              <strong>기능 상세 화면</strong>
-              <p>1-Way 분석, 2-Way 광고, 3-Way 거래, 4-Way 투자 상세 페이지로 확장 가능</p>
-            </a>
-            <a class="service-card" href="./login.html">
-              <span>Account</span>
-              <strong>로그인 / 마이페이지</strong>
-              <p>데모 로그인, 역할 전환, 통합 지갑, 알림 센터, 고객 지원 흐름</p>
-            </a>
-          </div>
-        </section>
+        </aside>
       </main>
-
-      <nav class="bottom-nav" id="bottomNav" aria-label="주요 메뉴"></nav>
 
       <div class="modal" id="myPageModal" aria-hidden="true" role="dialog" aria-labelledby="myPageTitle">
         <div class="modal__backdrop"></div>
