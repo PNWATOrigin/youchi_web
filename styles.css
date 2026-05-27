@@ -1703,3 +1703,335 @@ input[type="range"] {
     margin-top: 12px;
   }
 }
+
+/* Desktop product polish */
+.pc-product-shell {
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --soft: #eef2f7;
+  --border: #d7dee9;
+  --text: #101828;
+  --secondary: #4b5565;
+  --muted: #8a95a6;
+  background:
+    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.pc-sidebar {
+  gap: 16px;
+  padding: 20px 18px;
+  background: #0f172a;
+  border-right: 0;
+  color: white;
+  box-shadow: 8px 0 26px rgba(15, 23, 42, 0.08);
+}
+
+.pc-logo {
+  color: #ffffff;
+  padding: 4px 2px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 24px;
+  letter-spacing: 0;
+}
+
+.pc-account {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 8px;
+}
+
+.pc-account span {
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.pc-sidebar .avatar {
+  background: color-mix(in srgb, var(--role), white 16%);
+  color: white;
+}
+
+.pc-role-group {
+  border-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.pc-role-group button {
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.58);
+}
+
+.pc-role-group button.active {
+  background: var(--role);
+  color: white;
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--role), transparent 70%);
+}
+
+.pc-nav {
+  gap: 6px;
+}
+
+.pc-nav button {
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.66);
+}
+
+.pc-nav button.active,
+.pc-nav button:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.pc-nav button.active {
+  box-shadow: inset 3px 0 0 var(--role);
+}
+
+.pc-ghost-button,
+.pc-ghost-link {
+  border-color: rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+}
+
+.pc-topbar {
+  min-height: 84px;
+  padding: 18px 30px;
+  background: rgba(255, 255, 255, 0.86);
+  border-bottom-color: var(--border);
+}
+
+.pc-topbar h1 {
+  font-size: 25px;
+}
+
+.pc-topbar .eyebrow {
+  margin-bottom: 5px;
+}
+
+.pc-content {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(245, 247, 251, 0)),
+    var(--bg);
+}
+
+.app-scroll {
+  padding: 24px 30px 42px;
+}
+
+.app-hero-card,
+.app-score-card {
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--role), #0f172a 12%), var(--indigo));
+  box-shadow: 0 18px 36px color-mix(in srgb, var(--role), transparent 82%);
+}
+
+.app-hero-card {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.9fr) minmax(420px, 1.1fr);
+  gap: 18px;
+  align-items: end;
+  min-height: 248px;
+  padding: 24px;
+}
+
+.app-hero-card::after {
+  display: none;
+}
+
+.app-hero-card h2 {
+  max-width: 640px;
+  font-size: 31px;
+}
+
+.app-hero-card p {
+  max-width: 620px;
+}
+
+.app-search {
+  align-self: end;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.12);
+}
+
+.app-search input,
+.app-search select,
+.app-search button,
+.primary-button,
+.secondary-button,
+.danger-button {
+  border-radius: 6px;
+}
+
+.app-section-title {
+  color: var(--text);
+  font-size: 16px;
+}
+
+.app-role-switcher {
+  border-radius: 8px;
+  background: #e8edf5;
+}
+
+.app-role-switcher button {
+  border-radius: 6px;
+}
+
+.app-kpi,
+.app-panel,
+.app-profile,
+.metric-grid div,
+.app-rank-list button,
+.wallet-card,
+.profile-card {
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+}
+
+.app-kpi {
+  min-height: 126px;
+  padding: 16px;
+  border-top: 3px solid color-mix(in srgb, var(--role), white 40%);
+}
+
+.app-kpi strong {
+  margin-top: 20px;
+  font-size: 25px;
+}
+
+.pc-work-grid {
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: 18px;
+}
+
+.pc-side-panel {
+  margin-top: 54px;
+}
+
+.app-rank-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.app-rank-list button {
+  min-height: 104px;
+  padding: 16px;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.app-rank-list button:hover {
+  border-color: color-mix(in srgb, var(--role), white 58%);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+}
+
+.app-rank-list b {
+  border-radius: 8px;
+}
+
+.pc-analysis-grid {
+  grid-template-columns: minmax(420px, 0.8fr) minmax(520px, 1.2fr);
+}
+
+.app-profile {
+  padding: 16px;
+}
+
+.app-score-card {
+  padding: 24px;
+}
+
+.app-score-card strong {
+  font-size: 64px;
+}
+
+.app-metrics {
+  margin-top: 0;
+}
+
+.metric-grid {
+  gap: 14px;
+}
+
+.metric-grid div {
+  background: white;
+}
+
+.metric-grid strong {
+  font-size: 28px;
+}
+
+.app-panel {
+  padding: 18px;
+}
+
+.app-panel h3,
+.app-page-title {
+  color: var(--text);
+}
+
+.app-row {
+  min-height: 50px;
+}
+
+.app-row > span:last-child,
+.app-row > strong:last-child,
+.app-kpi strong,
+.metric-grid strong {
+  color: var(--role);
+}
+
+.result-grid,
+.portfolio-stats {
+  gap: 12px;
+}
+
+.result-grid div,
+.portfolio-stats div {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.trade-chart {
+  border: 1px solid var(--border);
+  color: var(--role);
+}
+
+@media (max-width: 1040px) {
+  .pc-product-shell {
+    grid-template-columns: 236px minmax(0, 1fr);
+  }
+
+  .app-hero-card,
+  .pc-work-grid,
+  .pc-analysis-grid,
+  .app-kpi-grid,
+  .app-rank-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .app-hero-card,
+  .pc-work-grid,
+  .pc-analysis-grid,
+  .app-kpi-grid,
+  .app-rank-list {
+    grid-template-columns: 1fr;
+  }
+
+  .app-hero-card {
+    min-height: 0;
+    padding: 18px;
+  }
+
+  .app-hero-card h2 {
+    font-size: 23px;
+  }
+
+  .pc-topbar {
+    background: white;
+  }
+}
