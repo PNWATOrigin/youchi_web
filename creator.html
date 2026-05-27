@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YOUCHI · 크리에이터</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="creator">
+    <div class="app-shell" data-role="creator">
+      <header class="topbar">
+        <button class="icon-button" id="menuButton" aria-label="메뉴 열기">☰</button>
+        <a class="brand" href="./index.html">YOUCHI</a>
+        <div class="top-actions">
+          <div class="dropdown">
+            <button class="role-chip dropdown-toggle" type="button" aria-expanded="false">화면</button>
+            <div class="dropdown-menu">
+              <a href="./index.html">메인</a>
+              <a href="./creator.html">크리에이터</a>
+              <a href="./investment.html">투자/광고</a>
+            </div>
+          </div>
+          <a class="login-link" href="./login.html">로그인</a>
+        </div>
+      </header>
+
+      <aside class="drawer" id="drawer" aria-hidden="true">
+        <div class="drawer__panel">
+          <div class="drawer__header">
+            <div class="avatar">크</div>
+            <div><strong>크리에이터 센터</strong><span>Channel Studio</span></div>
+            <button class="icon-button" id="drawerCloseButton" aria-label="메뉴 닫기">×</button>
+          </div>
+          <div class="drawer-links">
+            <button onclick="location.href='./index.html'">메인 이동</button>
+            <button class="active" onclick="location.href='./creator.html'">크리에이터 이동</button>
+            <button onclick="location.href='./investment.html'">투자/광고 이동</button>
+          </div>
+          <button class="drawer-mypage" id="myPageButton" type="button">마이페이지 · 정산/알림</button>
+          <p class="drawer-version">YOUCHI Creator Flow</p>
+        </div>
+      </aside>
+
+      <main>
+        <section class="hero section">
+          <div class="hero__copy">
+            <p class="eyebrow">Creator Screen</p>
+            <h1>내 채널 가치를 키우고 광고·투자 제안을 관리</h1>
+            <p>
+              크리에이터 화면은 CIV 리포트, 받은 광고 제안, 콘텐츠 제작 관리,
+              정산/출금, 제작비 펀딩 조달을 한 흐름으로 보여줍니다.
+            </p>
+            <div class="button-row">
+              <button class="primary-button" type="button" onclick="location.href='./analysis.html'">CIV 리포트 보기</button>
+              <button class="secondary-button" type="button" onclick="location.href='./campaign.html'">제안 관리</button>
+            </div>
+          </div>
+          <div class="hero__visual">
+            <div class="phone-frame">
+              <div class="phone-status"><span></span><strong>CREATOR</strong><span></span></div>
+              <div class="score-card"><span>내 채널 CIV</span><strong>AAA</strong><em>기관 투자 추천</em></div>
+              <div class="mini-list"><span>받은 광고 제안</span><b>3건</b></div>
+              <div class="mini-list"><span>출금 가능 잔액</span><b>₩4,850,000</b></div>
+              <div class="mini-list"><span>펀딩 달성률</span><b>82%</b></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title"><div><p class="eyebrow">Creator Functions</p><h2>크리에이터 핵심 기능</h2></div></div>
+          <div class="kpi-grid">
+            <article class="kpi-card"><span>성장성</span><strong>89.4%</strong><em>S등급 달성</em></article>
+            <article class="kpi-card"><span>팬덤</span><strong>125.4K</strong><em>충성 구독자군</em></article>
+            <article class="kpi-card"><span>광고 제안</span><strong>3건</strong><em>수락/거절 관리</em></article>
+            <article class="kpi-card"><span>수익 정산</span><strong>₩28.4M</strong><em>누적 광고 정산액</em></article>
+          </div>
+        </section>
+
+        <section class="section grid-two">
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Ad Offers</p><h2>받은 제안 확인</h2></div><span class="status-pill">대기중</span></div>
+            <div class="item-row"><div><strong>아모레퍼시픽 헤라 뷰티 캠페인</strong><p>제안 금액 ₩8,000,000 · 2026-06-15까지</p></div><span class="tag">대기</span></div>
+            <div class="item-row"><div><strong>삼성전자 갤럭시 S26 브랜디드</strong><p>제안 금액 ₩15,000,000 · 계약 조율</p></div><span class="tag">수락</span></div>
+            <div class="button-row"><button class="secondary-button">거절</button><button class="primary-button">수락</button></div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Funding</p><h2>제작비 조달 관리</h2></div><span class="status-pill">D-3</span></div>
+            <div class="portfolio-stats">
+              <div><span>목표 모집액</span><strong>₩50,000,000</strong></div>
+              <div><span>현재 모금액</span><strong>₩41,000,000</strong></div>
+              <div><span>달성률</span><strong>82%</strong></div>
+              <div><span>참여자</span><strong>48명</strong></div>
+            </div>
+            <input type="range" min="0" max="100" value="82" disabled />
+          </article>
+        </section>
+      </main>
+
+      <div class="modal" id="myPageModal" aria-hidden="true">
+        <div class="modal__backdrop"></div>
+        <div class="modal__panel">
+          <div class="modal__handle"></div>
+          <div class="modal__head"><h2>크리에이터 마이페이지</h2><button class="icon-button" id="modalCloseButton">×</button></div>
+          <div class="wallet-card"><h3>정산 관리</h3><p><span>출금 가능 잔액</span><strong>₩4,850,000</strong></p><p><span>누적 지분 분배금</span><strong>₩4,200,000</strong></p></div>
+          <div class="wallet-card"><h3>알림 센터</h3><p><span>새 광고 제안</span><strong>10분 전</strong></p><p><span>펀딩 참여자 추가</span><strong>1시간 전</strong></p></div>
+        </div>
+      </div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>

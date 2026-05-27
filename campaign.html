@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YOUCHI · 광고 매칭</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="campaign">
+    <div class="app-shell" data-role="advertiser">
+      <header class="topbar">
+        <button class="icon-button" id="menuButton" aria-label="메뉴 열기">☰</button>
+        <a class="brand" href="./index.html">YOUCHI</a>
+        <div class="top-actions">
+          <div class="dropdown">
+            <button class="role-chip dropdown-toggle" type="button" aria-expanded="false">서비스</button>
+            <div class="dropdown-menu">
+              <a href="./index.html">메인</a>
+              <a href="./creator.html">크리에이터</a>
+              <a href="./investment.html">투자/광고</a>
+            </div>
+          </div>
+          <button class="role-chip" id="roleCycleButton" type="button">광고주</button>
+          <a class="login-link" href="./login.html">로그인</a>
+        </div>
+      </header>
+      <aside class="drawer" id="drawer" aria-hidden="true">
+        <div class="drawer__panel">
+          <div class="drawer__header"><div class="avatar">김</div><div><strong>김유치님</strong><span>Premium Member</span></div><button class="icon-button" id="drawerCloseButton">×</button></div>
+          <nav class="drawer-links" id="drawerLinks"></nav>
+          <button class="drawer-mypage" id="myPageButton" type="button">마이페이지 · 지갑/계정/알림</button>
+          <p class="drawer-version">YOUCHI v3 · Premium B2B Fintech</p>
+        </div>
+      </aside>
+      <main>
+        <section class="section compact">
+          <div class="section-title">
+            <div><p class="eyebrow">2-Way Ad Matching</p><h1>맞춤형 광고 매칭</h1></div>
+            <div class="role-switcher"><button class="active" type="button" data-role-button="advertiser">광고주</button><button type="button" data-role-button="creator">크리에이터</button><button type="button" data-role-button="investor">투자자</button></div>
+          </div>
+          <p class="hero__copy">광고주는 ROI를 예측하고 캠페인을 등록합니다. 크리에이터는 받은 제안을 수락/거절하고 콘텐츠 제작 및 정산 흐름을 관리합니다.</p>
+        </section>
+        <section class="section feature-panel" id="campaignPage"></section>
+      </main>
+      <nav class="bottom-nav" id="bottomNav"></nav>
+      <div class="modal" id="myPageModal" aria-hidden="true"><div class="modal__backdrop"></div><div class="modal__panel"><div class="modal__handle"></div><div class="modal__head"><h2 id="myPageTitle">마이페이지</h2><button class="icon-button" id="modalCloseButton">×</button></div><div class="profile-card"><div class="avatar">김</div><div><strong>김유치님</strong><span>youchi.user@youchi.io</span></div><b>PREMIUM</b></div><div class="wallet-card"><h3>알림 센터</h3><p><span>캠페인 제안 도착</span><strong>10분 전</strong></p><p><span>결제 검수 대기</span><strong>오늘</strong></p></div><div class="wallet-card"><h3>고객 지원</h3><p><span>매뉴얼 / 1:1 문의 / 이용약관 / 보안</span><strong>열기</strong></p></div></div></div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>

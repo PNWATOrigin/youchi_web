@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YOUCHI · 투자/광고</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="investment">
+    <div class="app-shell" data-role="investor">
+      <header class="topbar">
+        <button class="icon-button" id="menuButton" aria-label="메뉴 열기">☰</button>
+        <a class="brand" href="./index.html">YOUCHI</a>
+        <div class="top-actions">
+          <div class="dropdown">
+            <button class="role-chip dropdown-toggle" type="button" aria-expanded="false">화면</button>
+            <div class="dropdown-menu">
+              <a href="./index.html">메인</a>
+              <a href="./creator.html">크리에이터</a>
+              <a href="./investment.html">투자/광고</a>
+            </div>
+          </div>
+          <a class="login-link" href="./login.html">로그인</a>
+        </div>
+      </header>
+
+      <aside class="drawer" id="drawer" aria-hidden="true">
+        <div class="drawer__panel">
+          <div class="drawer__header">
+            <div class="avatar">투</div>
+            <div><strong>투자/광고 센터</strong><span>Investor & Advertiser</span></div>
+            <button class="icon-button" id="drawerCloseButton" aria-label="메뉴 닫기">×</button>
+          </div>
+          <div class="drawer-links">
+            <button onclick="location.href='./index.html'">메인 이동</button>
+            <button onclick="location.href='./creator.html'">크리에이터 이동</button>
+            <button class="active" onclick="location.href='./investment.html'">투자/광고 이동</button>
+          </div>
+          <button class="drawer-mypage" id="myPageButton" type="button">마이페이지 · 지갑/알림</button>
+          <p class="drawer-version">YOUCHI Investment & Ads Flow</p>
+        </div>
+      </aside>
+
+      <main>
+        <section class="hero section">
+          <div class="hero__copy">
+            <p class="eyebrow">Investment & Ads Screen</p>
+            <h1>광고 성과와 채널 투자를 같은 데이터로 판단</h1>
+            <p>
+              투자/광고 화면은 광고주용 ROI 매칭과 투자자용 조각 투자·채널 거래소를
+              CIV 가치 데이터 중심으로 묶어 보여줍니다.
+            </p>
+            <div class="button-row">
+              <button class="primary-button" type="button" onclick="location.href='./campaign.html'">광고 매칭 보기</button>
+              <button class="secondary-button" type="button" onclick="location.href='./invest.html'">조각 투자 보기</button>
+            </div>
+          </div>
+          <div class="hero__visual">
+            <div class="phone-frame">
+              <div class="phone-status"><span></span><strong>INVEST / ADS</strong><span></span></div>
+              <div class="score-card"><span>예상 ROI</span><strong>159%</strong><em>광고 매칭</em></div>
+              <div class="mini-list"><span>누적 펀딩액</span><b>₩42.8억</b></div>
+              <div class="mini-list"><span>평균 연배당률</span><b>14.2%</b></div>
+              <div class="mini-list"><span>에스크로 거래</span><b>Verified</b></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section">
+          <div class="section-title"><div><p class="eyebrow">Business Dashboard</p><h2>투자/광고 핵심 지표</h2></div></div>
+          <div class="kpi-grid">
+            <article class="kpi-card"><span>캠페인 ROI</span><strong>148%</strong><em>평균 집행 성과</em></article>
+            <article class="kpi-card"><span>활성 캠페인</span><strong>12건</strong><em>진행 중</em></article>
+            <article class="kpi-card"><span>누적 펀딩액</span><strong>₩42.8억</strong><em>플랫폼 합산</em></article>
+            <article class="kpi-card"><span>모집 성공률</span><strong>98.5%</strong><em>투자 상품 기준</em></article>
+          </div>
+        </section>
+
+        <section class="section grid-two">
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Ad Matching</p><h2>AI 광고 매칭</h2></div><span class="status-pill">98% 매칭</span></div>
+            <div class="control-card">
+              <h3>뷰티풀 마인드</h3>
+              <p>뷰티/패션 · 88.4 CIV · 예산 대비 전환율 우수</p>
+              <div class="result-grid">
+                <div><span>예상 노출</span><strong>1,880,000회</strong></div>
+                <div><span>예상 클릭</span><strong>84,600회</strong></div>
+                <div><span>예상 ROI</span><strong>159.0%</strong></div>
+                <div><span>추천 예산</span><strong>₩8,000,000</strong></div>
+              </div>
+            </div>
+          </article>
+          <article class="panel">
+            <div class="panel-head"><div><p class="eyebrow">Investment</p><h2>조각 투자 / 거래소</h2></div><span class="status-pill">Escrow</span></div>
+            <div class="item-row"><div><strong>뷰티풀 마인드 시즌3 제작 프로젝트</strong><p>목표 ₩50,000,000 · 연 16.5% 추정 · 달성률 82%</p></div><span class="tag">청약</span></div>
+            <div class="item-row"><div><strong>뷰티풀 마인드 채널 지분 10%</strong><p>추정 가치 ₩2.1억 · 최고 매수 ₩20,500,000</p></div><span class="tag">거래</span></div>
+            <div class="button-row"><button class="secondary-button" onclick="location.href='./trade.html'">거래소</button><button class="primary-button" onclick="location.href='./invest.html'">투자하기</button></div>
+          </article>
+        </section>
+      </main>
+
+      <div class="modal" id="myPageModal" aria-hidden="true">
+        <div class="modal__backdrop"></div>
+        <div class="modal__panel">
+          <div class="modal__handle"></div>
+          <div class="modal__head"><h2>투자/광고 마이페이지</h2><button class="icon-button" id="modalCloseButton">×</button></div>
+          <div class="wallet-card"><h3>통합 지갑</h3><p><span>보유 원화</span><strong>₩15,420,000</strong></p><p><span>YOUCHI 토큰</span><strong>25,000</strong></p></div>
+          <div class="wallet-card"><h3>알림 센터</h3><p><span>배당 정산 완료</span><strong>2시간 전</strong></p><p><span>광고 성과 리포트</span><strong>오늘</strong></p></div>
+        </div>
+      </div>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
