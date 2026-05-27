@@ -3,54 +3,18 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>YOUCHI · 채널 거래소</title>
+    <title>YOUCHI · 구좌 선정</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./styles.css?v=v3-home-search" />
+    <link rel="stylesheet" href="./styles.css?v=v3-clean-sync" />
   </head>
-  <body data-page="trade">
-    <div class="app-shell" data-role="advertiser">
-      <header class="topbar">
-        <button class="icon-button" id="menuButton" aria-label="메뉴 열기">☰</button>
-        <a class="brand" href="./index.html">YOUCHI</a>
-        <div class="top-actions">
-          <div class="dropdown">
-            <button class="role-chip dropdown-toggle" type="button" aria-expanded="false">서비스</button>
-            <div class="dropdown-menu">
-              <a href="./index.html">메인</a>
-              <a href="./creator.html">크리에이터</a>
-              <a href="./investment.html">투자/광고</a>
-            </div>
-          </div>
-          <button class="role-chip" id="roleCycleButton" type="button">광고주</button>
-          <a class="login-link" href="./login.html">로그인</a>
-        </div>
-      </header>
-      <aside class="drawer" id="drawer" aria-hidden="true">
-        <div class="drawer__panel">
-          <div class="drawer__header"><div class="avatar">김</div><div><strong>김유치님</strong><span>Premium Member</span></div><button class="icon-button" id="drawerCloseButton">×</button></div>
-          <nav class="drawer-links" id="drawerLinks"></nav>
-          <button class="drawer-mypage" id="myPageButton" type="button">마이페이지 · 지갑/계정/알림</button>
-          <p class="drawer-version">YOUCHI v3 · Premium B2B Fintech</p>
-        </div>
-      </aside>
-      <main>
-        <section class="section compact">
-          <div class="section-title">
-            <div><p class="eyebrow">3-Way Channel Trading</p><h1>채널 매매 거래소</h1></div>
-            <div class="role-switcher"><button class="active" type="button" data-role-button="advertiser">광고주</button><button type="button" data-role-button="creator">크리에이터</button><button type="button" data-role-button="investor">투자자</button></div>
-          </div>
-          <div class="search-panel">
-            <select><option>메가 채널</option><option>수익형 채널</option><option>마이크로 채널</option></select>
-            <select><option>Escrow Secured</option><option>스마트 계약 검증</option></select>
-            <input type="search" placeholder="매물명, 카테고리, CIV 점수 검색" />
-            <button class="primary-button">AI 공정가 조회</button>
-          </div>
-        </section>
-        <section class="section feature-panel" id="tradePage"></section>
-      </main>
-      <nav class="bottom-nav" id="bottomNav"></nav>
-      <div class="modal" id="myPageModal" aria-hidden="true"><div class="modal__backdrop"></div><div class="modal__panel"><div class="modal__handle"></div><div class="modal__head"><h2 id="myPageTitle">마이페이지</h2><button class="icon-button" id="modalCloseButton">×</button></div><div class="profile-card"><div class="avatar">김</div><div><strong>김유치님</strong><span>youchi.user@youchi.io</span></div><b>PREMIUM</b></div><div class="wallet-card"><h3>거래 알림</h3><p><span>에스크로 결제 승인</span><strong>대기중</strong></p><p><span>스마트 계약 트래킹</span><strong>정상</strong></p></div><div class="wallet-card"><h3>고객 지원</h3><p><span>거래 매뉴얼 / 법적 고지 / 1:1 문의</span><strong>CS Center</strong></p></div></div></div>
+  <body data-page="trade" data-role-default="advertiser" data-tab-default="3">
+    <div class="app-shell pc-product-shell" data-role="advertiser">
+      <aside class="pc-sidebar"><a class="pc-logo" href="./index.html">YOUCHI</a><div class="pc-account"><div class="avatar">김</div><div><strong>김유치님</strong><span>Premium Member</span></div></div><div class="pc-role-group" aria-label="역할 선택"><button class="active" type="button" data-role-button="advertiser">광고주</button><button type="button" data-role-button="creator">크리에이터</button><button type="button" data-role-button="investor">투자자</button></div><nav class="pc-nav" id="appSideNav" aria-label="주요 기능"></nav><button class="pc-ghost-button" id="myPageButton" type="button">마이페이지 / 지갑</button><a class="pc-ghost-link" href="./login.html">로그인 화면</a></aside>
+      <div class="pc-main"><header class="pc-topbar"><button class="icon-button mobile-menu" id="menuButton" aria-label="메뉴 열기">☰</button><div><p class="eyebrow">YOUCHI Platform Console</p><h1 id="pcPageTitle">광고주 구좌 선정</h1></div><button class="role-chip" id="roleCycleButton" type="button">광고주</button></header><section class="pc-content" id="appContent" aria-live="polite"></section></div>
+      <nav class="app-bottom-nav pc-mobile-nav" id="bottomNav" aria-label="모바일 하단 메뉴"></nav>
+      <aside class="drawer" id="drawer" aria-hidden="true"><div class="drawer__panel"><div class="drawer__header"><div class="avatar">김</div><div><strong>김유치님</strong><span>Premium Member</span></div><button class="icon-button" id="drawerCloseButton" aria-label="메뉴 닫기">×</button></div><nav class="drawer-links" id="drawerLinks"></nav><button class="drawer-mypage" type="button" onclick="location.href='./login.html'">로그인 페이지 보기</button><p class="drawer-version">YOUCHI Web Dashboard</p></div></aside>
+      <div class="modal" id="myPageModal" aria-hidden="true" role="dialog" aria-labelledby="myPageTitle"><div class="modal__backdrop"></div><div class="modal__panel"><div class="modal__handle"></div><div class="modal__head"><h2 id="myPageTitle">마이페이지</h2><button class="icon-button" id="modalCloseButton" aria-label="마이페이지 닫기">×</button></div><div class="profile-card"><div class="avatar">김</div><div><strong>김유치님</strong><span>youchi.user@youchi.io</span></div><b>PREMIUM</b></div><div class="wallet-card"><h3>통합 자산 지갑</h3><p><span>보유 원화</span><strong>₩ 15,420,000</strong></p><p><span>보유 토큰</span><strong>25,000 YOUCHI</strong></p><p><span>스테이블 코인</span><strong>1,200.50 USDT</strong></p></div><div class="wallet-card"><h3>실시간 알림 리스트</h3><p><span>새 광고 캠페인 제안</span><strong>10분 전</strong></p><p><span>장기 광고비 정산 완료</span><strong>2시간 전</strong></p></div></div></div>
     </div>
-    <script src="./script.js?v=v3-home-search"></script>
+    <script src="./script.js?v=v3-clean-sync"></script>
   </body>
 </html>
