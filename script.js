@@ -44,23 +44,23 @@ const roles = {
   },
   investor: {
     label: "투자자",
-    title: "투자자 장기 계약 홈",
+    title: "투자자 채널 성장 홈",
     nav: [
       ["홈", "index.html"],
       ["계약", "invest.html"],
       ["매매", "invest.html"],
-      ["지분 거래", "trade.html"],
+      ["채널 발굴", "trade.html"],
     ],
     kpis: [
-      ["장기 계약", "6건", "반복 PPL 계약"],
+      ["계약", "3건", "시리즈 기획안 검토"],
       ["매매", "15건", "인수 검토 채널"],
-      ["지분 거래", "12건", "에스크로 보호"],
-      ["예상 수익률", "+8.4%", "광고 수익 기여권"],
+      ["채널 발굴", "12건", "성장 후보 채널"],
+      ["PPL 적합", "8건", "파트너 제안 가능"],
     ],
     insights: [
-      ["장기 PPL 계약", "반복 노출 계약 2건이 검토 대기 중이며 광고 수익 기여권으로 전환 가능합니다."],
+      ["시리즈 계약", "크리에이터가 등록한 전용 영상 시리즈 3건의 제작비 투자와 제품 지원 조건을 검토해야 합니다."],
       ["채널 매매", "브랜드 안전성 점수가 높은 채널 3개가 인수 검토 대상으로 업데이트됐습니다."],
-      ["거래 신뢰", "지분 거래와 권리 양도는 스마트 계약 기반 에스크로로 보호되는 구조입니다."],
+      ["채널 발굴", "PPL 적합 성장 채널 8개가 업데이트되어 장기 광고·제작 지원 제안을 보낼 수 있습니다."],
     ],
   },
 };
@@ -114,6 +114,37 @@ const acquisitionChannels = [
   ["종합겜민수", "게임 · 구독자 128.0만명 · 평균 조회수 290,410회", "CIV 83", "₩ 2,307,203,529"],
 ];
 
+const seriesPlans = [
+  {
+    channel: "온유메이크업",
+    title: "출근 전 10분 메이크업 시즌 3",
+    category: "뷰티",
+    summary: "매주 2편씩 8주간 출근, 데이트, 면접 상황별 메이크업 루틴을 제작하고 고정 제품 PPL을 자연스럽게 노출합니다.",
+    target: "₩50,000,000",
+    raised: "₩41,000,000",
+    progress: 82,
+    minTicket: "₩3,000,000",
+    product: "기초 라인 200세트",
+    exposure: "예상 누적 노출 92만",
+    benefit: "고정 제품 컷 + 더보기 링크",
+    days: "D-3",
+  },
+  {
+    channel: "FPS훈이",
+    title: "게이밍 룸 업그레이드 챌린지",
+    category: "게임",
+    summary: "소형 게임 채널의 성장형 시리즈로 장비 교체, 라이브 플레이, 리뷰 콘텐츠를 묶어 브랜드 노출을 반복 설계합니다.",
+    target: "₩36,000,000",
+    raised: "₩21,500,000",
+    progress: 60,
+    minTicket: "₩2,000,000",
+    product: "헤드셋/키보드 패키지",
+    exposure: "예상 누적 노출 58만",
+    benefit: "장비 세팅 고정 노출",
+    days: "D-8",
+  },
+];
+
 const equityDeals = [
   ["미나뷰티로그", "₩ 1.2억", "₩ 12,987,024", "₩ 12,025,022"],
   ["온유메이크업", "₩ 4.7억", "₩ 51,155,709", "₩ 47,366,397"],
@@ -155,7 +186,7 @@ const appTabs = {
     ["홈", "home"],
     ["계약", "invest"],
     ["매매", "campaign"],
-    ["지분 거래", "trade"],
+    ["채널 발굴", "trade"],
   ],
 };
 
@@ -290,16 +321,16 @@ function renderAppHome() {
     investor: `
       <section class="app-hero-card">
         <span>투자자 모드</span>
-        <h2>채널 가치 분석부터 투자까지</h2>
-        <p>데이터가 증명하는 콘텐츠의 가치, 투자가 되는 새로운 생태계의 시작</p>
+        <h2>성장 채널을 찾고 PPL 파트너십을 제안하세요</h2>
+        <p>시리즈 기획안 계약, 채널 매매, 성장 후보 발굴을 한 화면에서 관리합니다.</p>
       </section>
       <h3 class="app-section-title">투자자 주요 현황</h3>
       <div class="app-kpi-grid">${kpis}</div>
       <section class="app-panel pc-side-panel">
         <h3>오늘 확인할 내용</h3>
-        <div class="app-row"><span>반복 PPL 노출 계약 2건 검토 필요</span><strong>계약</strong></div>
+        <div class="app-row"><span>신규 시리즈 기획안 3건 지원 조건 검토 필요</span><strong>계약</strong></div>
         <div class="app-row"><span>권리 리스크 낮음 채널 3개 업데이트</span><strong>매매</strong></div>
-        <div class="app-row"><span>보유 지분 예상 수익률 +8.4%</span><strong>지분</strong></div>
+        <div class="app-row"><span>PPL 적합 성장 채널 8개 업데이트</span><strong>발굴</strong></div>
       </section>`,
   }[currentRole];
   return `
@@ -436,10 +467,38 @@ function renderAppTrade() {
   }
   return `
     <div class="app-scroll">
-      <h2 class="app-page-title">지분 거래</h2>
-      <p class="app-page-sub">채널 성장에 참여한 장기 PPL 계약 지분과 광고 수익 기여권을 거래하세요.</p>
-      <h3 class="app-section-title">인기 지분 거래 매물</h3>
-      ${equityDeals.map(([name, value, proposed, asked]) => `<section class="app-panel"><div class="app-row"><strong>${name} (장기 PPL 지분 10%)</strong><span>Escrow Secured</span></div><p>추정 평가 가치: ${value} (CIV 기준)</p><svg class="trade-chart" viewBox="0 0 320 92"><polyline points="0,70 45,60 90,66 135,48 180,42 225,46 270,32 320,24" fill="none" stroke="currentColor" stroke-width="4"/></svg><div class="app-row"><span>제안 매수가<br><strong>${proposed}</strong></span><span>희망 양도가<br><strong>${asked}</strong></span></div><div class="button-row"><button class="secondary-button">지원 신청 (Apply)</button><button class="danger-button">권리 양도 (Assign)</button></div></section>`).join("")}
+      <h2 class="app-page-title">성장 채널 발굴</h2>
+      <p class="app-page-sub">아직 작지만 성장 가능성이 높은 크리에이터를 찾아 장기 PPL, 광고, 제작 지원으로 함께 키워갈 채널을 선별하세요.</p>
+      <section class="app-panel">
+        <h3>채널 발굴 조건</h3>
+        <div class="sort-row app-subtabs"><button class="active">전체</button><button>뷰티</button><button>먹방</button><button>IT</button><button>경제</button></div>
+        <div class="sort-row app-subtabs"><button class="active">소형</button><button>중형</button><button>빠른 성장</button><button>PPL 적합</button></div>
+      </section>
+      <h3 class="app-section-title">추천 성장 채널</h3>
+      <div class="channel-grid discovery-grid">
+        ${advertiserChannels.map((channel, index) => {
+          const growth = [95, 89, 86, 92, 84, 79][index] || 82;
+          const fit = Math.round((channel.civ + growth) / 2);
+          const support = 120 + index * 35;
+          return `
+            <article class="channel-card discovery-card">
+              <div class="channel-card__visual">
+                <div class="avatar">${channel.category.slice(0, 1)}</div>
+                <b>성장 ${growth}</b>
+              </div>
+              <div class="channel-card__body">
+                <div class="channel-card__head"><strong>${channel.name}</strong><span>Verified</span></div>
+                <p>${channel.category} · 구독자 ${channel.subscribers} · 평균 조회 ${channel.avgViews}</p>
+                <em>${channel.desc}</em>
+              </div>
+              <div class="channel-card__stats">
+                <span>PPL 적합 <strong>${fit}</strong></span>
+                <span>월 지원 <strong>${support}만</strong></span>
+              </div>
+              <div class="button-row discovery-actions"><button class="secondary-button">상세 보기</button><button class="primary-button">파트너 제안</button></div>
+            </article>`;
+        }).join("")}
+      </div>
     </div>`;
 }
 
@@ -447,15 +506,30 @@ function renderAppInvest() {
   if (currentRole === "investor") {
     return `
       <div class="app-scroll">
-        <h2 class="app-page-title">내 장기 계약 포트폴리오</h2>
-        <p class="app-page-sub">일회성 광고가 아니라 채널의 성장 방향에 맞춰 반복 PPL 노출을 확보한 장기 계약 현황입니다.</p>
+        <h2 class="app-page-title">크리에이터 시리즈 계약</h2>
+        <p class="app-page-sub">크리에이터가 등록한 영상 시리즈 기획안을 보고 제작비 투자 또는 제품 지원을 제안하세요.</p>
         <section class="app-panel">
-          <div class="app-row"><span>총 성장 지원 금액</span><strong>₩4,200,000</strong></div>
-          <div class="app-row"><span>월 예상 PPL 노출 가치 (6월)</span><strong>₩48,500</strong></div>
-          <div class="app-row"><span>누적 장기 계약 ROI</span><strong>14.2% (연 환산)</strong></div>
+          <h3>지원 방식 설정</h3>
+          <div class="app-row"><span>투자 검토 금액</span><strong>₩5,000,000</strong></div>
+          <input type="range" min="1000000" max="20000000" value="5000000" />
+          <label class="check-row"><input type="checkbox" checked /> 제품 지원도 함께 제안</label>
+          <p>현금 투자와 샘플/제품 제공을 조합해 제안합니다.</p>
         </section>
-        <h3 class="app-section-title">장기 PPL 계약 채널 현황</h3>
-        ${holdings.map((x) => `<section class="app-panel"><div class="app-row"><strong>${x.name} 광고 수익 기여권 (${x.own})</strong><span>Verified</span></div><div class="app-row"><strong>${money(x.amount)} (평가액)</strong><span>${x.rate}</span></div><p>거래 건수: ${x.trades}회 · 투자일자: ${x.date} · 매월 5일 정산</p></section>`).join("")}
+        <h3 class="app-section-title">투자 가능한 시리즈</h3>
+        ${seriesPlans.map((plan) => `<section class="app-panel series-card">
+          <div class="app-row"><strong>${plan.title}</strong><span>${plan.days}</span></div>
+          <p><b>${plan.channel}</b> · ${plan.category}</p>
+          <p>${plan.summary}</p>
+          <input type="range" min="0" max="100" value="${plan.progress}" disabled />
+          <div class="app-row"><span>모집 ${plan.raised}</span><span>목표 ${plan.target}</span></div>
+          <div class="result-grid">
+            <div><span>최소 참여</span><strong>${plan.minTicket}</strong></div>
+            <div><span>제품 지원</span><strong>${plan.product}</strong></div>
+            <div><span>노출 규모</span><strong>${plan.exposure}</strong></div>
+            <div><span>계약 혜택</span><strong>${plan.benefit}</strong></div>
+          </div>
+          <div class="button-row"><button class="secondary-button">기획안 보기</button><button class="primary-button">지원 제안</button></div>
+        </section>`).join("")}
       </div>`;
   }
   return `
@@ -600,7 +674,19 @@ function renderTrade() {
     root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Ad Slot Market</p><h2>채널 광고 구좌 선매수 마켓</h2></div></div><div class="list-card"><h3>선매수 추천 구좌 매물</h3>${slotDeals.map(([name, price, discount, score]) => `<div class="item-row"><div><strong>${name}</strong><p>${price} (${discount})</p></div><span class="tag">${score}</span></div>`).join("")}</div>`;
     return;
   }
-  root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Exchange</p><h2>지분 거래</h2></div></div><div class="feature-grid"><div class="control-card"><h3>인기 지분 거래 매물</h3><p>채널 성장에 참여한 장기 PPL 계약 지분과 광고 수익 기여권을 거래하세요.</p></div><div class="list-card">${equityDeals.map(([name, value, proposed, asked]) => `<div class="item-row"><div><strong>${name} 장기 PPL 지분 10%</strong><p>추정 평가 가치 ${value} · 제안 매수가 ${proposed} · 희망 양도가 ${asked}</p></div><span class="tag">Escrow</span></div>`).join("")}</div></div>`;
+  root.innerHTML = `
+    <div class="section-title"><div><p class="eyebrow">Discovery</p><h2>성장 채널 발굴</h2></div></div>
+    <div class="feature-grid">
+      <div class="control-card">
+        <h3>채널 발굴 조건</h3>
+        <div class="portfolio-stats"><div><span>분야</span><strong>전체</strong></div><div><span>규모</span><strong>소형/중형</strong></div><div><span>조건</span><strong>PPL 적합</strong></div></div>
+        <p>장기 PPL, 광고, 제작 지원으로 함께 키울 수 있는 성장 채널을 선별합니다.</p>
+      </div>
+      <div class="list-card">
+        <h3>추천 성장 채널</h3>
+        ${advertiserChannels.slice(0, 6).map((channel, index) => `<div class="item-row"><div><strong>${channel.name}</strong><p>${channel.category} · 구독자 ${channel.subscribers} · 평균 조회 ${channel.avgViews}</p></div><span class="tag">PPL 적합 ${Math.round((channel.civ + 90 - index) / 2)}<br>월 지원 ${120 + index * 35}만</span></div>`).join("")}
+      </div>
+    </div>`;
 }
 
 function renderInvest() {
@@ -613,9 +699,21 @@ function renderInvest() {
   if (currentRole === "advertiser") {
     root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Partnership</p><h2>광고주 펀딩 연계 & 집행 실적</h2></div></div><div class="feature-grid"><div class="control-card"><h3>광고 제휴 혜택</h3><div class="item-row"><div><strong>PPL 매칭 우선권</strong><p>펀딩 성공 시즌 영상 스폰서십 단가 최대 20% 할인</p></div></div><div class="item-row"><div><strong>크로스 미디어 독점권</strong><p>굿즈 및 오프라인 행사 브랜드 노출 독점 보장</p></div></div></div><div class="list-card" id="portfolioList"></div></div>`;
   } else {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Long-term PPL</p><h2>내 장기 계약 포트폴리오</h2></div></div><div class="feature-grid"><div class="control-card"><h3>계약 요약</h3><div class="portfolio-stats"><div><span>총 성장 지원 금액</span><strong>₩4,200,000</strong></div><div><span>월 예상 PPL 노출 가치</span><strong>₩48,500</strong></div><div><span>누적 장기 계약 ROI</span><strong>14.2%</strong></div></div><button class="primary-button">계약 검토하기</button></div><div class="list-card"><h3>장기 PPL 계약 채널 현황</h3><div class="sort-row"><button class="active" data-sort="default">기본</button><button data-sort="amount">투자 금액</button><button data-sort="date">최신순</button><button data-sort="trades">최다 거래</button></div><div id="portfolioList"></div></div></div>`;
+    root.innerHTML = `
+      <div class="section-title"><div><p class="eyebrow">Series Contract</p><h2>크리에이터 시리즈 계약</h2></div></div>
+      <div class="feature-grid">
+        <div class="control-card">
+          <h3>지원 방식 설정</h3>
+          <div class="portfolio-stats"><div><span>투자 검토 금액</span><strong>₩5,000,000</strong></div><div><span>제품 지원</span><strong>포함</strong></div><div><span>제안 방식</span><strong>현금+제품</strong></div></div>
+          <button class="primary-button">지원 조건 저장</button>
+        </div>
+        <div class="list-card">
+          <h3>투자 가능한 시리즈</h3>
+          ${seriesPlans.map((plan) => `<div class="item-row"><div><strong>${plan.title}</strong><p>${plan.channel} · ${plan.category} · ${plan.summary}</p></div><span class="tag">${plan.days}<br>${plan.raised}</span></div>`).join("")}
+        </div>
+      </div>`;
   }
-  renderPortfolio("default");
+  if (currentRole !== "investor") renderPortfolio("default");
   document.querySelectorAll("[data-sort]").forEach((button) => {
     button.addEventListener("click", () => {
       document.querySelectorAll("[data-sort]").forEach((b) => b.classList.remove("active"));
