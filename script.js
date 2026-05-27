@@ -121,6 +121,16 @@ const equityDeals = [
   ["롤체연구소", "₩ 1.5억", "₩ 16,627,386", "₩ 15,395,728"],
 ];
 
+const campaignContracts = [
+  ["(주) 비전유통 numquam 캠페인", "₩ 19,980,000", "크리에이터 검토 중", "2026-06-15"],
+  ["유한회사 조선 rem 캠페인", "₩ 43,680,000", "계약 조율 완료 (정산 대기)", "2026-06-15"],
+];
+
+const campaignReports = [
+  ["(유) 미래코리아시스템 unde 캠페인", "실제 ROI 154.0%", "₩ 47,020,000", "4,702K 노출"],
+  ["디지털리뷰랩 x 원더신라제조 캠페인", "실제 ROI 162.0%", "₩ 52,400,000", "5,240K 노출"],
+];
+
 const page = document.body.dataset.page || "home";
 const pageDefaultRole = { creator: "creator", investment: "investor" }[page];
 let currentRole = pageDefaultRole || localStorage.getItem("youchi-role") || "advertiser";
@@ -271,21 +281,6 @@ function renderAppHome() {
   return `
     <div class="app-scroll">
       ${homeBody}
-      ${currentRole === "advertiser" ? `<h3 class="app-section-title">주요 성과 요약</h3><div class="app-kpi-grid">${kpis}</div>` : ""}
-      ${currentRole !== "investor" ? `<div class="pc-work-grid">
-        <section>
-          <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
-          <div class="app-rank-list">
-            ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
-          </div>
-        </section>
-        <section class="app-panel pc-side-panel">
-          <h3>오늘의 작업</h3>
-          <div class="app-row"><span>CIV 리포트 업데이트</span><strong>완료</strong></div>
-          <div class="app-row"><span>장기 PPL 계약 검토</span><strong>2건</strong></div>
-          <div class="app-row"><span>협찬/정산 알림</span><strong>2건</strong></div>
-        </section>
-      </div>` : ""}
     </div>`;
 }
 
@@ -373,7 +368,9 @@ function renderAppCampaign() {
   }
   return `
     <div class="app-scroll">
+      <div class="sort-row app-subtabs"><button class="active">ROI 시뮬레이터</button><button>성과 및 계약 관리</button></div>
       <h2 class="app-page-title">AI 캠페인 ROI 시뮬레이터</h2>
+      <p class="app-page-sub">광고 예산과 기간을 설정해 예상 성과를 확인하고 최적의 채널을 제안받으세요.</p>
       <section class="app-panel">
         <label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label>
         <input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" />
@@ -385,6 +382,14 @@ function renderAppCampaign() {
         <h3>추천 최적화 매칭 채널</h3>
         <div class="app-row"><span><strong>미나뷰티로그</strong><br><em>뷰티 · 75 CIV · 숏폼 중심 데일리 메이크업·학생 뷰티 채널</em></span><button class="primary-button">제안하기</button></div>
         <div class="app-row"><span><strong>온유메이크업</strong><br><em>뷰티 · 87 CIV · 기초 화장품 리뷰와 출근 메이크업 중심 채널</em></span><button class="primary-button">제안하기</button></div>
+      </section>
+      <section class="app-panel">
+        <h3>진행 중인 광고 캠페인 계약 현황</h3>
+        ${campaignContracts.map(([name, budget, status, date]) => `<div class="app-row"><span><strong>${name}</strong><br><em>캠페인 예산: ${budget} · 계약 체결일: ${date}</em></span><strong>${status}</strong></div>`).join("")}
+      </section>
+      <section class="app-panel">
+        <h3>집행 완료 캠페인 성과 리포트</h3>
+        ${campaignReports.map(([name, roi, budget, impressions]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${budget} · ${impressions}</em></span><strong>${roi}</strong></div>`).join("")}
       </section>
     </div>`;
 }
