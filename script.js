@@ -82,12 +82,12 @@ const holdings = [
 ];
 
 const advertiserChannels = [
-  ["미나뷰티로그", "뷰티 · 구독자 7.8만명", "소형 · 숏폼", "75", "180%"],
-  ["온유메이크업", "뷰티 · 구독자 28.4만명", "중형 · 롱폼+숏폼", "87", "159%"],
-  ["유라글로우", "뷰티 · 구독자 92.5만명", "대형 · 롱폼", "86", "129%"],
-  ["롤체연구소", "게임 · 구독자 8.6만명", "소형 · 숏폼", "65", "173%"],
-  ["FPS훈이", "게임 · 구독자 34.2만명", "중형 · 롱폼+숏폼", "81", "162%"],
-  ["종합겜민수", "게임 · 구독자 128.0만명", "대형 · 롱폼", "83", "105%"],
+  { name: "미나뷰티로그", category: "뷰티", subscribers: "7.8만명", avgViews: "52,237회", scale: "소형", format: "숏폼", civ: 75, roi: "180.2%", value: "₩ 1.2억", desc: "숏폼 중심의 데일리 메이크업·학생 뷰티 채널" },
+  { name: "온유메이크업", category: "뷰티", subscribers: "28.4만명", avgViews: "110,058회", scale: "중형", format: "롱폼+숏폼", civ: 87, roi: "159.4%", value: "₩ 4.7억", desc: "기초 화장품 리뷰와 출근 메이크업 중심 채널" },
+  { name: "유라글로우", category: "뷰티", subscribers: "92.5만명", avgViews: "161,039회", scale: "대형", format: "롱폼", civ: 86, roi: "129.4%", value: "₩ 16.2억", desc: "브랜드 협업 경험이 많은 프리미엄 뷰티 채널" },
+  { name: "롤체연구소", category: "게임", subscribers: "8.6만명", avgViews: "44,339회", scale: "소형", format: "숏폼", civ: 65, roi: "173.4%", value: "₩ 1.5억", desc: "전략 게임 공략과 패치 분석 중심 채널" },
+  { name: "FPS훈이", category: "게임", subscribers: "34.2만명", avgViews: "121,241회", scale: "중형", format: "롱폼+숏폼", civ: 81, roi: "161.9%", value: "₩ 5.7억", desc: "FPS 하이라이트와 장비 리뷰를 함께 다루는 채널" },
+  { name: "종합겜민수", category: "게임", subscribers: "128.0만명", avgViews: "290,410회", scale: "대형", format: "롱폼", civ: 83, roi: "105.2%", value: "₩ 23.1억", desc: "신작 게임 리뷰와 종합 게임 예능형 대형 채널" },
 ];
 
 const creatorOffers = [
@@ -189,6 +189,29 @@ function appCard(title, value, subtext) {
   return `<article class="app-kpi"><span>${title}</span><strong>${value}</strong><em>${subtext}</em></article>`;
 }
 
+function channelCard(channel) {
+  return `
+    <article class="channel-card" data-app-tab="1">
+      <div class="channel-card__visual">
+        <div class="avatar">${channel.category.slice(0, 1)}</div>
+        <b>CIV ${channel.civ}</b>
+      </div>
+      <div class="channel-card__body">
+        <div class="channel-card__head">
+          <strong>${channel.name}</strong>
+          <span>Verified</span>
+        </div>
+        <p>${channel.category} · 구독자 ${channel.subscribers} · 평균 조회수 ${channel.avgViews}</p>
+        <div class="channel-card__tags"><span>${channel.scale}</span><span>${channel.format}</span></div>
+        <em>${channel.desc}</em>
+      </div>
+      <div class="channel-card__stats">
+        <span>예상 ROI <strong>${channel.roi}</strong></span>
+        <span>추정 가치 <strong>${channel.value}</strong></span>
+      </div>
+    </article>`;
+}
+
 function renderAppPreview() {
   const content = document.querySelector("#appContent");
   const bottomNav = document.querySelector("#bottomNav");
@@ -241,14 +264,15 @@ function renderAppHome() {
         <p>광고 캠페인에 최적화된 크리에이터를 상세 조건으로 검색하세요.</p>
         <div class="app-search">
           <select><option>전체 분야</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select>
-          <select><option>전체 규모</option><option>소형 &lt;10만</option><option>중형 10만~50만</option><option>대형 50만+</option></select>
+          <select><option>전체 규모</option><option>소형 (&lt;10만)</option><option>중형 (10만~50만)</option><option>대형 (50만+)</option></select>
+          <select><option>전체 포맷</option><option>롱폼</option><option>숏폼</option><option>롱폼+숏폼</option></select>
           <input placeholder="키워드 입력" />
           <button data-app-tab="1">요약 보기</button>
         </div>
       </section>
       <h3 class="app-section-title">검색 결과 15건</h3>
-      <div class="app-kpi-grid">
-        ${advertiserChannels.map(([name, meta, format, civ, roi]) => appCard(name, `CIV ${civ}`, `${meta} · ${format} · ROI ${roi}`)).join("")}
+      <div class="channel-grid">
+        ${advertiserChannels.map(channelCard).join("")}
       </div>`,
     creator: `
       <section class="app-hero-card">
@@ -295,12 +319,10 @@ function renderAppAnalysis() {
         </section>
         <h3 class="app-section-title">주요 성과 요약</h3>
         <div class="app-kpi-grid">${roles.advertiser.kpis.map(([label, value, sub]) => appCard(label, value, sub)).join("")}</div>
-        <section>
-          <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
-          <div class="app-rank-list">
-            ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
-          </div>
-        </section>
+        <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
+        <div class="app-rank-list">
+          ${ranks.map(([rank, name, info]) => `<button data-app-tab="0"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
+        </div>
       </div>`;
   }
   const title = currentRole === "creator" ? "내 채널 가치 지수 (CIV)" : currentRole === "investor" ? "장기 계약 가치 분석" : "채널 가치 요약 지표";
