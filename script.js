@@ -271,12 +271,6 @@ function renderAppHome() {
   return `
     <div class="app-scroll">
       ${homeBody}
-      <h3 class="app-section-title">맞춤형 서비스 모드</h3>
-      <div class="role-switcher app-role-switcher">
-        <button class="${currentRole === "advertiser" ? "active" : ""}" data-role-button="advertiser">광고주</button>
-        <button class="${currentRole === "creator" ? "active" : ""}" data-role-button="creator">크리에이터</button>
-        <button class="${currentRole === "investor" ? "active" : ""}" data-role-button="investor">투자자</button>
-      </div>
       ${currentRole === "advertiser" ? `<h3 class="app-section-title">주요 성과 요약</h3><div class="app-kpi-grid">${kpis}</div>` : ""}
       ${currentRole !== "investor" ? `<div class="pc-work-grid">
         <section>
@@ -389,9 +383,8 @@ function renderAppCampaign() {
       </section>
       <section class="app-panel">
         <h3>추천 최적화 매칭 채널</h3>
-        <div class="app-row"><span><strong>미나뷰티로그</strong><br><em>뷰티 · 75 CIV · 숏폼 중심 데일리 메이크업·학생 뷰티 채널</em></span><strong>99% 매치</strong></div>
-        <div class="app-row"><span><strong>온유메이크업</strong><br><em>뷰티 · 87 CIV · 기초 화장품 리뷰와 출근 메이크업 중심 채널</em></span><strong>96% 매치</strong></div>
-        <button class="primary-button">제안하기</button>
+        <div class="app-row"><span><strong>미나뷰티로그</strong><br><em>뷰티 · 75 CIV · 숏폼 중심 데일리 메이크업·학생 뷰티 채널</em></span><button class="primary-button">제안하기</button></div>
+        <div class="app-row"><span><strong>온유메이크업</strong><br><em>뷰티 · 87 CIV · 기초 화장품 리뷰와 출근 메이크업 중심 채널</em></span><button class="primary-button">제안하기</button></div>
       </section>
     </div>`;
 }

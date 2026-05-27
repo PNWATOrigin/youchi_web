@@ -2014,6 +2014,10 @@ input[type="range"] {
 }
 
 @media (max-width: 560px) {
+  .app-scroll {
+    padding: 18px 18px 128px;
+  }
+
   .app-hero-card,
   .pc-work-grid,
   .pc-analysis-grid,
