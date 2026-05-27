@@ -53,7 +53,7 @@ const roles = {
     ],
     kpis: [
       ["장기 계약", "6건", "반복 PPL 계약"],
-      ["매매 검토", "3건", "권리 리스크 낮음"],
+      ["매매", "15건", "인수 검토 채널"],
       ["지분 거래", "12건", "에스크로 보호"],
       ["예상 수익률", "+8.4%", "광고 수익 기여권"],
     ],
@@ -66,17 +66,59 @@ const roles = {
 };
 
 const ranks = [
-  ["1", "온유메이크업", "뷰티 · 87 CIV"],
-  ["2", "디지털리뷰랩", "IT · 93 CIV"],
-  ["3", "맛있는형제", "먹방 · 88 CIV"],
+  ["1", "미나뷰티로그", "뷰티 · 75 CIV · ROI 180%"],
+  ["2", "온유메이크업", "뷰티 · 87 CIV · ROI 159%"],
+  ["3", "유라글로우", "뷰티 · 86 CIV · ROI 129%"],
+  ["4", "롤체연구소", "게임 · 65 CIV · ROI 173%"],
+  ["5", "FPS훈이", "게임 · 81 CIV · ROI 162%"],
 ];
 
 const holdings = [
-  { name: "온유메이크업", amount: 3789000, date: "2026-05-20", trades: 173, rate: "ROI 159.4%", own: "0.8%" },
-  { name: "디지털리뷰랩", amount: 10078000, date: "2026-05-18", trades: 191, rate: "ROI 99.7%", own: "1.4%" },
-  { name: "맛있는형제", amount: 19513000, date: "2026-05-16", trades: 201, rate: "ROI 110.5%", own: "1.7%" },
-  { name: "테크살롱", amount: 4797000, date: "2026-05-14", trades: 177, rate: "ROI 136.1%", own: "1.1%" },
-  { name: "야식누나", amount: 5813000, date: "2026-05-12", trades: 181, rate: "ROI 144.0%", own: "2.0%" },
+  { name: "미나뷰티로그", amount: 960000, date: "2026-05-18", trades: 147, rate: "연 180.2% 예상", own: "0.8%" },
+  { name: "온유메이크업", amount: 3780000, date: "2026-05-16", trades: 178, rate: "연 159.4% 예상", own: "1.1%" },
+  { name: "유라글로우", amount: 12960000, date: "2026-05-14", trades: 193, rate: "연 129.4% 예상", own: "1.4%" },
+  { name: "롤체연구소", amount: 1230000, date: "2026-05-12", trades: 168, rate: "연 173.4% 예상", own: "1.7%" },
+  { name: "FPS훈이", amount: 4530000, date: "2026-05-10", trades: 203, rate: "연 161.9% 예상", own: "2.0%" },
+];
+
+const advertiserChannels = [
+  ["미나뷰티로그", "뷰티 · 구독자 7.8만명", "소형 · 숏폼", "75", "180%"],
+  ["온유메이크업", "뷰티 · 구독자 28.4만명", "중형 · 롱폼+숏폼", "87", "159%"],
+  ["유라글로우", "뷰티 · 구독자 92.5만명", "대형 · 롱폼", "86", "129%"],
+  ["롤체연구소", "게임 · 구독자 8.6만명", "소형 · 숏폼", "65", "173%"],
+  ["FPS훈이", "게임 · 구독자 34.2만명", "중형 · 롱폼+숏폼", "81", "162%"],
+  ["종합겜민수", "게임 · 구독자 128.0만명", "대형 · 롱폼", "83", "105%"],
+];
+
+const creatorOffers = [
+  ["(주) 윈드이노센터", "(주) 윈드이노센터 aliquam 캠페인", "4,842만 원", "2026-06-9 까지", "수락됨"],
+  ["(주) 라온씨앤씨네트워크", "(주) 라온씨앤씨네트워크 ducimus 캠페인", "2,630만 원", "2026-06-1 까지", "대기중"],
+  ["유한회사 가야엔지니어링", "유한회사 가야엔지니어링 temporibus 캠페인", "270만 원", "2026-06-19 까지", "대기중"],
+  ["(유) 가람글로벌개발공사", "(유) 가람글로벌개발공사 esse 캠페인", "3,498만 원", "2026-06-13 까지", "대기중"],
+  ["유한회사 라온마을은행", "유한회사 라온마을은행 esse 캠페인", "3,097만 원", "2026-06-10 까지", "거절됨"],
+  ["유한회사 라온마을은행", "유한회사 라온마을은행 perspiciatis 캠페인", "1,857만 원", "2026-06-12 까지", "거절됨"],
+];
+
+const slotDeals = [
+  ["FPS훈이 (유) 가람글로벌개발공사 repudiandae 캠페인", "₩ 16,510,000", "정가 대비 13% 할인", "매칭 점수 93점"],
+  ["온유메이크업 (유) 마루센터 optio 캠페인", "₩ 7,830,000", "정가 대비 21% 할인", "매칭 점수 86점"],
+  ["혼밥대장 (주) 우리코리아에너지 cum 캠페인", "₩ 48,740,000", "정가 대비 17% 할인", "매칭 점수 97점"],
+];
+
+const acquisitionChannels = [
+  ["미나뷰티로그", "뷰티 · 구독자 7.8만명 · 평균 조회수 52,237회", "CIV 75", "₩ 120,250,228"],
+  ["온유메이크업", "뷰티 · 구독자 28.4만명 · 평균 조회수 110,058회", "CIV 87", "₩ 473,663,978"],
+  ["유라글로우", "뷰티 · 구독자 92.5만명 · 평균 조회수 161,039회", "CIV 86", "₩ 1,620,134,856"],
+  ["롤체연구소", "게임 · 구독자 8.6만명 · 평균 조회수 44,339회", "CIV 65", "₩ 153,957,285"],
+  ["FPS훈이", "게임 · 구독자 34.2만명 · 평균 조회수 121,241회", "CIV 81", "₩ 567,489,312"],
+  ["종합겜민수", "게임 · 구독자 128.0만명 · 평균 조회수 290,410회", "CIV 83", "₩ 2,307,203,529"],
+];
+
+const equityDeals = [
+  ["미나뷰티로그", "₩ 1.2억", "₩ 12,987,024", "₩ 12,025,022"],
+  ["온유메이크업", "₩ 4.7억", "₩ 51,155,709", "₩ 47,366,397"],
+  ["유라글로우", "₩ 16.2억", "₩ 174,974,564", "₩ 162,013,485"],
+  ["롤체연구소", "₩ 1.5억", "₩ 16,627,386", "₩ 15,395,728"],
 ];
 
 const page = document.body.dataset.page || "home";
@@ -181,33 +223,62 @@ function renderAppPreview() {
 function renderAppHome() {
   const data = roles[currentRole];
   const kpis = data.kpis.map(([label, value, sub]) => appCard(label, value, sub)).join("");
-  const roleCopy = {
-    advertiser: "CIV 요약부터 캠페인·구좌 선정까지",
-    creator: "협찬 제안, 정산, 장기 PPL 조달 관리",
-    investor: "장기 계약, 채널 매매, 지분 거래 관리",
+  const homeBody = {
+    advertiser: `
+      <section class="app-hero-card">
+        <span>광고주 모드</span>
+        <h2>크리에이터 채널 탐색</h2>
+        <p>광고 캠페인에 최적화된 크리에이터를 상세 조건으로 검색하세요.</p>
+        <div class="app-search">
+          <select><option>전체 분야</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select>
+          <select><option>전체 규모</option><option>소형 &lt;10만</option><option>중형 10만~50만</option><option>대형 50만+</option></select>
+          <input placeholder="키워드 입력" />
+          <button data-app-tab="1">요약 보기</button>
+        </div>
+      </section>
+      <h3 class="app-section-title">검색 결과 15건</h3>
+      <div class="app-kpi-grid">
+        ${advertiserChannels.map(([name, meta, format, civ, roi]) => appCard(name, `CIV ${civ}`, `${meta} · ${format} · ROI ${roi}`)).join("")}
+      </div>`,
+    creator: `
+      <section class="app-hero-card">
+        <span>파트너 파워 크리에이터 · CIV 점수 87.0</span>
+        <h2>온유메이크업 크리에이터님,</h2>
+        <p>채널 성장과 광고 제휴 매칭을 실시간으로 연동하여 가치를 극대화하고 있습니다.</p>
+      </section>
+      <section class="app-panel">
+        <div class="app-row"><strong>내 채널 상세 정보 요약</strong><span>펼쳐서 상세 보기</span></div>
+        <p>카테고리, 구독자 규모, 단가 범위</p>
+      </section>
+      <h3 class="app-section-title">협찬 관리 현황</h3>
+      <section class="app-panel"><h3>신규 협찬 제안 현황</h3><div class="app-row"><span>올리브영 신규 기초 라인업 런칭 협찬 제안<br><em>유한회사 푸르가야뷰티 · 제품 제공 및 ₩1,500,000</em></span><strong>수락</strong></div><div class="app-row"><span>에스티 로더 어드밴스드 나이트 리페어 협찬 협의<br><em>(유) 마루센터 · 제품 제공 및 보상 조율 가능</em></span><strong>수락</strong></div></section>
+      <section class="app-panel"><h3>수령 완료 물품</h3><div class="app-row"><span>샤넬 하이드라 뷰티 마이크로 세럼<br><em>2026.05.20 · 집행 가이드 동봉</em></span><strong>2종</strong></div><div class="app-row"><span>다이슨 에어랩 멀티 스타일러 롱배럴 에디션<br><em>2026.05.15 · PPL 단독 권장</em></span><strong>수령</strong></div></section>`,
+    investor: `
+      <section class="app-hero-card">
+        <span>투자자 모드</span>
+        <h2>채널 가치 분석부터 투자까지</h2>
+        <p>데이터가 증명하는 콘텐츠의 가치, 투자가 되는 새로운 생태계의 시작</p>
+      </section>
+      <h3 class="app-section-title">투자자 주요 현황</h3>
+      <div class="app-kpi-grid">${kpis}</div>
+      <section class="app-panel pc-side-panel">
+        <h3>오늘 확인할 내용</h3>
+        <div class="app-row"><span>반복 PPL 노출 계약 2건 검토 필요</span><strong>계약</strong></div>
+        <div class="app-row"><span>권리 리스크 낮음 채널 3개 업데이트</span><strong>매매</strong></div>
+        <div class="app-row"><span>보유 지분 예상 수익률 +8.4%</span><strong>지분</strong></div>
+      </section>`,
   }[currentRole];
   return `
     <div class="app-scroll">
-      <section class="app-hero-card">
-        <span>${data.label} 모드</span>
-        <h2>${roleCopy}</h2>
-        <p>채널별 CIV, 광고 적합도, 장기 PPL 권리와 매매 상태를 한 화면에서 확인하세요.</p>
-        <div class="app-search">
-          <select><option>전체 채널 사이즈</option><option>소형</option><option>중형</option><option>대형</option></select>
-          <select><option>전체 카테고리</option><option>뷰티</option><option>IT</option><option>먹방</option><option>경제</option></select>
-          <input placeholder="키워드 입력" />
-          <button data-app-tab="1">분석 보기</button>
-        </div>
-      </section>
+      ${homeBody}
       <h3 class="app-section-title">맞춤형 서비스 모드</h3>
       <div class="role-switcher app-role-switcher">
         <button class="${currentRole === "advertiser" ? "active" : ""}" data-role-button="advertiser">광고주</button>
         <button class="${currentRole === "creator" ? "active" : ""}" data-role-button="creator">크리에이터</button>
         <button class="${currentRole === "investor" ? "active" : ""}" data-role-button="investor">투자자</button>
       </div>
-      <h3 class="app-section-title">플랫폼 주요 지표</h3>
-      <div class="app-kpi-grid">${kpis}</div>
-      <div class="pc-work-grid">
+      ${currentRole === "advertiser" ? `<h3 class="app-section-title">주요 성과 요약</h3><div class="app-kpi-grid">${kpis}</div>` : ""}
+      ${currentRole !== "investor" ? `<div class="pc-work-grid">
         <section>
           <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
           <div class="app-rank-list">
@@ -220,25 +291,47 @@ function renderAppHome() {
           <div class="app-row"><span>장기 PPL 계약 검토</span><strong>2건</strong></div>
           <div class="app-row"><span>협찬/정산 알림</span><strong>2건</strong></div>
         </section>
-      </div>
+      </div>` : ""}
     </div>`;
 }
 
 function renderAppAnalysis() {
-  const title = currentRole === "creator" ? "내 채널 스튜디오" : currentRole === "investor" ? "장기 계약 가치 분석" : "채널 가치 요약 지표";
+  if (currentRole === "advertiser") {
+    return `
+      <div class="app-scroll">
+        <section class="app-hero-card">
+          <span>데이터가 증명하는 콘텐츠의 가치</span>
+          <h2>채널 가치 분석부터 투자까지</h2>
+          <p>투자가 되는 새로운 생태계의 시작</p>
+        </section>
+        <h3 class="app-section-title">주요 성과 요약</h3>
+        <div class="app-kpi-grid">${roles.advertiser.kpis.map(([label, value, sub]) => appCard(label, value, sub)).join("")}</div>
+        <section>
+          <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
+          <div class="app-rank-list">
+            ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
+          </div>
+        </section>
+      </div>`;
+  }
+  const title = currentRole === "creator" ? "내 채널 가치 지수 (CIV)" : currentRole === "investor" ? "장기 계약 가치 분석" : "채널 가치 요약 지표";
+  const profileName = currentRole === "creator" ? "미나뷰티로그" : "온유메이크업";
+  const profileMeta = currentRole === "creator" ? "YouTube · 뷰티 · 구독자 7.8만명" : "YouTube · 뷰티 · 구독자 28.4만명";
+  const score = currentRole === "creator" ? "75.0" : "87";
+  const scoreMeta = currentRole === "creator" ? "최근 30일 데이터 기준 · 상승 25% · 추정 공정 가치 ₩1.1억 ~ ₩1.3억" : "안정 성장 · 추정 채널 가치 ₩4.7억";
   return `
     <div class="app-scroll">
       <div class="pc-analysis-grid">
         <div>
           <section class="app-profile">
             <div class="avatar">뷰</div>
-            <div><strong>${currentRole === "creator" ? "온유메이크업 스튜디오" : "온유메이크업"}</strong><span>YouTube · 뷰티 · 구독자 28.4만</span></div>
+            <div><strong>${profileName}</strong><span>${profileMeta}</span></div>
             <i>✓</i>
           </section>
           <section class="app-score-card">
             <span>${title}</span>
-            <strong>87</strong>
-            <em>안정 성장 · 추정 채널 가치 ₩4.7억</em>
+            <strong>${score}</strong>
+            <em>${scoreMeta}</em>
           </section>
         </div>
         <div class="metric-grid app-metrics">
@@ -249,8 +342,8 @@ function renderAppAnalysis() {
         </div>
       </div>
       <section class="app-panel">
-        <h3>${currentRole === "creator" ? "AI 개선 제안" : "AI 분석 요약"}</h3>
-        ${roles[currentRole].insights.map(([title, body]) => `<div class="app-insight"><strong>${title}</strong><p>${body}</p></div>`).join("")}
+        <h3>${currentRole === "creator" ? "CIV 가치 상승 액션 플랜" : "AI 분석 요약"}</h3>
+        ${currentRole === "creator" ? `<div class="app-insight"><strong>정기 업로드 주기 최적화</strong><p>매주 금요일 오후 6시 업로드 시 노출 급상승 예측 · 90% 달성</p></div><div class="button-row"><button class="secondary-button">장기 PPL 지분 양도 신청</button><button class="primary-button">수익 정산하기</button></div>` : roles[currentRole].insights.map(([title, body]) => `<div class="app-insight"><strong>${title}</strong><p>${body}</p></div>`).join("")}
       </section>
     </div>`;
 }
@@ -261,23 +354,27 @@ function renderAppCampaign() {
       <div class="app-scroll">
         <h2 class="app-page-title">광고 제안 관리 센터</h2>
         <p class="app-page-sub">광고주가 CIV 가치를 기반으로 보낸 제안을 관리합니다.</p>
-        ${["올리브영 신규 기초 라인업 런칭 협찬 제안|₩1,500,000|대기중", "에스티 로더 어드밴스드 나이트 리페어 협찬 협의|보상 조율|대기중", "샤넬 하이드라 뷰티 마이크로 세럼 집행|제품 수령|수락됨"].map((item) => {
-          const [name, price, status] = item.split("|");
-          return `<section class="app-panel"><div class="app-row"><strong>${name}</strong><span>${status}</span></div><p>협찬 조건 ${price}</p><div class="button-row"><button class="danger-button">거절</button><button class="primary-button">검토</button></div></section>`;
+        ${creatorOffers.map((item) => {
+          const [company, name, price, date, status] = item;
+          const actions = status === "대기중" ? `<div class="button-row"><button class="danger-button">거절</button><button class="primary-button">수락</button></div>` : `<button class="secondary-button">${status === "수락됨" ? "계약 조율 및 메시지 보내기" : "제안 종료됨"}</button>`;
+          return `<section class="app-panel"><div class="app-row"><strong>${company}</strong><span>${status}</span></div><h3>${name}</h3><div class="app-row"><span>제안 단가<br><strong>${price}</strong></span><span>제안 만료일<br><strong>${date}</strong></span></div>${actions}</section>`;
         }).join("")}
       </div>`;
   }
   if (currentRole === "investor") {
     return `
       <div class="app-scroll">
-        <h2 class="app-page-title">채널 매매 카탈로그</h2>
-        <div class="app-kpi-grid">
-          ${appCard("매매 후보", "3건", "실사 가능")}
-          ${appCard("평균 CIV", "89", "상위 채널")}
-          ${appCard("권리 리스크", "낮음", "에스크로 검토")}
-          ${appCard("공정가 괴리", "±4.8%", "AI 평가 기준")}
-        </div>
-        <section class="app-panel"><h3>인수 검토 채널</h3><div class="app-row"><strong>디지털리뷰랩</strong><span>₩12.6억</span></div><div class="app-row"><strong>맛있는형제</strong><span>₩24.4억</span></div><div class="app-row"><strong>돈박사TV</strong><span>₩13.3억</span></div></section>
+        <h2 class="app-page-title">채널 매매 및 인수 마켓</h2>
+        <p class="app-page-sub">잠재력이 검증된 크리에이터 채널의 전체 권리를 투명하게 인수하세요.</p>
+        <section class="app-panel">
+          <div class="app-search">
+            <select><option>전체 분야</option><option>뷰티</option><option>게임</option><option>IT</option></select>
+            <select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select>
+            <select><option>전체 가격대</option><option>1억 미만</option><option>1억~5억</option><option>5억 초과</option></select>
+          </div>
+        </section>
+        <h3 class="app-section-title">인수 가능 매물 15건</h3>
+        ${acquisitionChannels.map(([name, meta, civ, price]) => `<section class="app-panel"><div class="app-row"><strong>${name}</strong><span>${civ}</span></div><p>${meta}</p><div class="app-row"><span>채널 총 매수 제안가<br><em>즉시 인수 가능</em></span><strong>${price}</strong></div></section>`).join("")}
       </div>`;
   }
   return `
@@ -291,8 +388,9 @@ function renderAppCampaign() {
         <div class="result-grid" id="simResults"></div>
       </section>
       <section class="app-panel">
-        <div class="app-row"><strong>온유메이크업</strong><span>98% 매칭</span></div>
-        <p>뷰티 · 87 CIV · 광고 적합도 90 · 장기 PPL 전환 가능</p>
+        <h3>추천 최적화 매칭 채널</h3>
+        <div class="app-row"><span><strong>미나뷰티로그</strong><br><em>뷰티 · 75 CIV · 숏폼 중심 데일리 메이크업·학생 뷰티 채널</em></span><strong>99% 매치</strong></div>
+        <div class="app-row"><span><strong>온유메이크업</strong><br><em>뷰티 · 87 CIV · 기초 화장품 리뷰와 출근 메이크업 중심 채널</em></span><strong>96% 매치</strong></div>
         <button class="primary-button">제안하기</button>
       </section>
     </div>`;
@@ -303,44 +401,55 @@ function renderAppTrade() {
     return `
       <div class="app-scroll">
         <h2 class="app-page-title">정산 및 채널 자본 조달</h2>
-        <section class="app-panel"><h3>내 수익 및 정산금 현황</h3><div class="app-row"><span>누적 광고 정산액</span><strong>₩28,450,000</strong></div><div class="app-row"><span>출금 가능 잔액</span><strong>₩4,850,000</strong></div><button class="primary-button">출금 신청</button></section>
-        <section class="app-panel"><h3>장기 PPL 수익 지분 양도 신청</h3><label>양도할 광고 수익 기여율 <output>5%</output></label><input type="range" min="1" max="20" value="5" /><button class="primary-button">양도 스마트 계약 등록 신청</button></section>
+        <p class="app-page-sub">광고 수익 및 장기 협찬비를 정산하고, 장기 광고/협찬 집행권 양도를 신청하세요.</p>
+        <section class="app-panel"><h3>내 수익 및 정산금 현황</h3><div class="app-row"><span>누적 광고 정산액</span><strong>₩28,450,000</strong></div><div class="app-row"><span>누적 장기 광고/협찬비</span><strong>₩4,200,000</strong></div><div class="app-row"><span>출금 가능한 잔액</span><strong>₩4,850,000</strong></div><button class="primary-button">출금 신청</button></section>
+        <section class="app-panel"><h3>장기 PPL 수익 지분 양도 신청</h3><label>양도할 광고 수익 기여율 <output>5%</output></label><input type="range" min="1" max="20" value="5" /><label>희망 매도 가격 (총액 기준)</label><input value="₩ 10500000" readonly /><p>* 양도 신청한 장기 PPL 수익 지분은 스마트 계약 기반 에스크로 계정에 등록되며, 승인 완료 시 지분 거래 및 조각 투자 리스트에 공개됩니다.</p><button class="primary-button">양도 스마트 계약 등록 신청</button></section>
       </div>`;
   }
   if (currentRole === "advertiser") {
     return `
       <div class="app-scroll">
         <h2 class="app-page-title">채널 광고 구좌 선매수 마켓</h2>
-        <section class="app-panel"><div class="app-row"><strong>온유메이크업 3분기 장기 PPL 구좌</strong><span>독점</span></div><p>₩10,600,000 · 뷰티 카테고리 단독 노출 협의</p></section>
-        <section class="app-panel"><div class="app-row"><strong>유라글로우 프리미엄 브랜드 협업권</strong><span>얼리버드</span></div><p>₩61,500,000 · 대형 뷰티 채널 장기 스폰서십</p></section>
+        <p class="app-page-sub">크리에이터의 미래 비디오 광고 구좌 및 스폰서십 권리를 선매수하여 단가를 고정하고 독점권을 선점하세요.</p>
+        <section class="app-panel"><h3>선매수 추천 구좌 매물</h3>${slotDeals.map(([name, price, discount, score]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${price} (${discount})</em></span><strong>${score}</strong></div>`).join("")}</section>
       </div>`;
   }
   return `
     <div class="app-scroll">
       <h2 class="app-page-title">지분 거래</h2>
-      <section class="app-panel">
-        <div class="app-row"><strong>온유메이크업 장기 PPL 지분 10%</strong><span>Escrow</span></div>
-        <p>추정 평가 가치 ₩4.7억 · 광고 수익 기여권</p>
-        <svg class="trade-chart" viewBox="0 0 320 92"><polyline points="0,70 45,52 90,58 135,40 180,30 225,34 270,18 320,12" fill="none" stroke="currentColor" stroke-width="4"/></svg>
-        <div class="button-row"><button class="secondary-button">매수 Buy</button><button class="danger-button">매도 Sell</button></div>
-      </section>
-      <section class="app-panel"><h3>실시간 체결 내역</h3><div class="app-row"><span>12초 전 · 지분 1%</span><strong>₩2,050,000</strong></div><div class="app-row"><span>1분 전 · 지분 2%</span><strong>₩4,100,000</strong></div></section>
+      <p class="app-page-sub">채널 성장에 참여한 장기 PPL 계약 지분과 광고 수익 기여권을 거래하세요.</p>
+      <h3 class="app-section-title">인기 지분 거래 매물</h3>
+      ${equityDeals.map(([name, value, proposed, asked]) => `<section class="app-panel"><div class="app-row"><strong>${name} (장기 PPL 지분 10%)</strong><span>Escrow Secured</span></div><p>추정 평가 가치: ${value} (CIV 기준)</p><svg class="trade-chart" viewBox="0 0 320 92"><polyline points="0,70 45,60 90,66 135,48 180,42 225,46 270,32 320,24" fill="none" stroke="currentColor" stroke-width="4"/></svg><div class="app-row"><span>제안 매수가<br><strong>${proposed}</strong></span><span>희망 양도가<br><strong>${asked}</strong></span></div><div class="button-row"><button class="secondary-button">지원 신청 (Apply)</button><button class="danger-button">권리 양도 (Assign)</button></div></section>`).join("")}
     </div>`;
 }
 
 function renderAppInvest() {
+  if (currentRole === "investor") {
+    return `
+      <div class="app-scroll">
+        <h2 class="app-page-title">내 장기 계약 포트폴리오</h2>
+        <p class="app-page-sub">일회성 광고가 아니라 채널의 성장 방향에 맞춰 반복 PPL 노출을 확보한 장기 계약 현황입니다.</p>
+        <section class="app-panel">
+          <div class="app-row"><span>총 성장 지원 금액</span><strong>₩4,200,000</strong></div>
+          <div class="app-row"><span>월 예상 PPL 노출 가치 (6월)</span><strong>₩48,500</strong></div>
+          <div class="app-row"><span>누적 장기 계약 ROI</span><strong>14.2% (연 환산)</strong></div>
+        </section>
+        <h3 class="app-section-title">장기 PPL 계약 채널 현황</h3>
+        ${holdings.map((x) => `<section class="app-panel"><div class="app-row"><strong>${x.name} 광고 수익 기여권 (${x.own})</strong><span>Verified</span></div><div class="app-row"><strong>${money(x.amount)} (평가액)</strong><span>${x.rate}</span></div><p>거래 건수: ${x.trades}회 · 투자일자: ${x.date} · 매월 5일 정산</p></section>`).join("")}
+      </div>`;
+  }
   return `
     <div class="app-scroll">
-      <h2 class="app-page-title">${currentRole === "creator" ? "내 프로젝트 조달 관리" : currentRole === "advertiser" ? "광고주 제휴 연계 & 집행 실적" : "장기 PPL 계약"}</h2>
+      <h2 class="app-page-title">${currentRole === "creator" ? "내 프로젝트 펀딩 관리" : "광고주 제휴 연계 & 집행 실적"}</h2>
       <section class="app-panel">
-        <div class="app-row"><strong>온유메이크업 장기 PPL 조달 프로젝트</strong><span>D-3</span></div>
-        <p>목표 ₩50,000,000 · 현재 ₩41,000,000 · 달성률 82%</p>
+        <div class="app-row"><strong>뷰티풀 마인드 시즌3 제작 프로젝트</strong><span>D-3</span></div>
+        <p>목표 모집 금액 ₩50,000,000 · 현재 모금된 금액 ₩41,000,000 · 달성률 82% · 48명 참여</p>
         <input type="range" min="0" max="100" value="82" disabled />
-        <button class="primary-button">${currentRole === "creator" ? "참여자 보기" : currentRole === "advertiser" ? "제휴 혜택 보기" : "계약 검토하기"}</button>
+        <button class="primary-button">${currentRole === "creator" ? "참여자 보기" : "제휴 혜택 보기"}</button>
       </section>
       <section class="app-panel">
-        <h3>장기 PPL 계약 지분 현황</h3>
-        ${holdings.slice(0, 5).map((x) => `<div class="app-row"><span>${x.name} 계약 지분 ${x.own}<br><em>${money(x.amount)} · ${x.date}</em></span><strong>${x.rate}</strong></div>`).join("")}
+        <h3>${currentRole === "creator" ? "실시간 펀딩 참여자" : "플랫폼 주요 지표"}</h3>
+        ${currentRole === "creator" ? `<div class="app-row"><span>투자자 A님</span><strong>₩5,000,000 참여</strong></div><div class="app-row"><span>투자자 B님</span><strong>₩10,000,000 참여</strong></div><div class="app-row"><span>투자자 C님</span><strong>₩2,000,000 참여</strong></div>` : roles.creator.kpis.map(([label, value, sub]) => `<div class="app-row"><span>${label}</span><strong>${value}<br><em>${sub}</em></strong></div>`).join("")}
       </section>
     </div>`;
 }
@@ -408,8 +517,8 @@ function renderCampaign() {
       <div class="feature-grid">
         <div class="control-card"><h3>받은 제안</h3><p>광고주가 CIV 가치를 기반으로 보낸 프리미엄 제안입니다.</p><div class="portfolio-stats"><div><span>대기중</span><strong>1건</strong></div><div><span>수락됨</span><strong>1건</strong></div></div></div>
         <div class="list-card">
-          ${["올리브영 신규 기초 라인업 런칭 협찬 제안|₩ 1,500,000|대기중", "에스티 로더 어드밴스드 나이트 리페어 협찬 협의|보상 조율|대기중", "샤넬 하이드라 뷰티 마이크로 세럼 집행|제품 수령|수락됨"].map((x) => {
-            const [a,b,c] = x.split("|"); return `<div class="item-row"><div><strong>${a}</strong><p>협찬 조건 ${b}</p></div><span class="tag">${c}</span></div>`;
+          ${creatorOffers.map((x) => {
+            const [company, name, price, date, status] = x; return `<div class="item-row"><div><strong>${name}</strong><p>${company} · ${price} · ${date}</p></div><span class="tag">${status}</span></div>`;
           }).join("")}
         </div>
       </div>`;
@@ -417,10 +526,10 @@ function renderCampaign() {
   }
   if (currentRole === "investor") {
     target.innerHTML = `
-      <div class="section-title"><div><p class="eyebrow">Acquisition</p><h2>채널 매매 카탈로그</h2></div></div>
+      <div class="section-title"><div><p class="eyebrow">Acquisition</p><h2>채널 매매 및 인수 마켓</h2></div></div>
       <div class="feature-grid">
-        <div class="control-card"><h3>매매 검토 요약</h3><div class="portfolio-stats"><div><span>매매 후보</span><strong>3건</strong></div><div><span>평균 CIV</span><strong>89</strong></div><div><span>권리 리스크</span><strong>낮음</strong></div><div><span>공정가 괴리</span><strong>±4.8%</strong></div></div></div>
-        <div class="list-card"><div class="item-row"><div><strong>디지털리뷰랩</strong><p>IT · 93 CIV · 추정 가치 ₩12.6억</p></div><span class="tag">실사 가능</span></div><div class="item-row"><div><strong>맛있는형제</strong><p>먹방 · 88 CIV · 추정 가치 ₩24.4억</p></div><span class="tag">수익 우수</span></div><div class="item-row"><div><strong>돈박사TV</strong><p>경제 · 장기 PPL 전환 후보</p></div><span class="tag">검토중</span></div></div>
+        <div class="control-card"><h3>검색 조건</h3><div class="portfolio-stats"><div><span>분야</span><strong>전체</strong></div><div><span>규모</span><strong>전체</strong></div><div><span>가격대</span><strong>전체</strong></div></div></div>
+        <div class="list-card"><h3>인수 가능 매물 15건</h3>${acquisitionChannels.slice(0, 5).map(([name, meta, civ, price]) => `<div class="item-row"><div><strong>${name}</strong><p>${meta}</p></div><span class="tag">${civ}<br>${price}</span></div>`).join("")}</div>
       </div>`;
     return;
   }
@@ -435,7 +544,7 @@ function renderCampaign() {
         <input id="durationRange" type="range" min="1" max="12" value="4" />
         <div class="result-grid" id="simResults"></div>
       </div>
-      <div class="list-card"><h3>추천 최적 매칭 채널</h3><div class="item-row"><div><strong>온유메이크업</strong><p>뷰티 · 87 CIV · 광고 적합도 90 · 장기 PPL 전환 가능</p></div><button class="primary-button">제안하기</button></div></div>
+      <div class="list-card"><h3>추천 최적 매칭 채널</h3><div class="item-row"><div><strong>미나뷰티로그</strong><p>뷰티 · 75 CIV · 숏폼 중심 데일리 메이크업·학생 뷰티 채널</p></div><button class="primary-button">제안하기</button></div><div class="item-row"><div><strong>온유메이크업</strong><p>뷰티 · 87 CIV · 기초 화장품 리뷰와 출근 메이크업 중심 채널</p></div><button class="primary-button">제안하기</button></div></div>
     </div>`;
   bindSimulator();
 }
@@ -453,7 +562,7 @@ function bindSimulator() {
     const roi = 145 + d * 3.5;
     document.querySelector("#budgetOutput").textContent = money(b);
     document.querySelector("#durationOutput").textContent = `${d}주`;
-    results.innerHTML = `<div><span>예상 노출</span><strong>${Math.round(impressions).toLocaleString("ko-KR")}회</strong></div><div><span>예상 클릭</span><strong>${Math.round(clicks).toLocaleString("ko-KR")}회</strong></div><div><span>예상 ROI</span><strong>${roi.toFixed(1)}%</strong></div><div><span>예상 광고 매출</span><strong>${money(b * roi / 100)}</strong></div>`;
+    results.innerHTML = `<div><span>예상 노출수</span><strong>${Math.round(impressions).toLocaleString("ko-KR")} 회</strong></div><div><span>예상 클릭수</span><strong>${Math.round(clicks).toLocaleString("ko-KR")} 회</strong></div><div><span>예상 ROI</span><strong>${roi.toFixed(1)} %</strong></div><div><span>예상 광고 매출</span><strong>${Math.round((b * roi / 100) / 10000).toLocaleString("ko-KR")}만 원</strong></div>`;
   };
   budget.addEventListener("input", update);
   duration.addEventListener("input", update);
@@ -468,23 +577,23 @@ function renderTrade() {
     return;
   }
   if (currentRole === "advertiser") {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Ad Slot Market</p><h2>채널 광고 구좌 선매수 마켓</h2></div></div><div class="list-card"><div class="item-row"><div><strong>온유메이크업 3분기 장기 PPL 구좌</strong><p>₩10,600,000 · 뷰티 카테고리 단독 노출 협의</p></div><span class="tag">독점 보장</span></div><div class="item-row"><div><strong>유라글로우 프리미엄 브랜드 협업권</strong><p>₩61,500,000 · 대형 뷰티 채널 장기 스폰서십</p></div><span class="tag">카테고리 독점</span></div></div>`;
+    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Ad Slot Market</p><h2>채널 광고 구좌 선매수 마켓</h2></div></div><div class="list-card"><h3>선매수 추천 구좌 매물</h3>${slotDeals.map(([name, price, discount, score]) => `<div class="item-row"><div><strong>${name}</strong><p>${price} (${discount})</p></div><span class="tag">${score}</span></div>`).join("")}</div>`;
     return;
   }
-  root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Exchange</p><h2>지분 거래</h2></div></div><div class="feature-grid"><div class="control-card"><h3>온유메이크업 장기 PPL 지분 10%</h3><p>추정 평가 가치 ₩4.7억 · 광고 수익 기여권 · Escrow Secured</p><svg class="trade-chart" viewBox="0 0 320 92" role="img" aria-label="거래 추이"><polyline points="0,70 45,52 90,58 135,40 180,30 225,34 270,18 320,12" fill="none" stroke="currentColor" stroke-width="4"/></svg><div class="button-row"><button class="secondary-button">지원 신청 Apply</button><button class="danger-button">권리 양도 Assign</button></div></div><div class="list-card"><h3>실시간 지분 거래 내역</h3><div class="item-row"><strong>12초 전 · 지분 1%</strong><span class="tag">₩2,050,000</span></div><div class="item-row"><strong>1분 전 · 지분 2%</strong><span class="tag">₩4,100,000</span></div><div class="item-row"><strong>10분 전 · 지분 0.5%</strong><span class="tag">₩1,025,000</span></div></div></div>`;
+  root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Exchange</p><h2>지분 거래</h2></div></div><div class="feature-grid"><div class="control-card"><h3>인기 지분 거래 매물</h3><p>채널 성장에 참여한 장기 PPL 계약 지분과 광고 수익 기여권을 거래하세요.</p></div><div class="list-card">${equityDeals.map(([name, value, proposed, asked]) => `<div class="item-row"><div><strong>${name} 장기 PPL 지분 10%</strong><p>추정 평가 가치 ${value} · 제안 매수가 ${proposed} · 희망 양도가 ${asked}</p></div><span class="tag">Escrow</span></div>`).join("")}</div></div>`;
 }
 
 function renderInvest() {
   const root = document.querySelector("#investPage") || document.querySelector("#invest");
   if (!root) return;
   if (currentRole === "creator") {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Funding</p><h2>내 프로젝트 조달 관리</h2></div></div><div class="feature-grid"><div class="control-card"><h3>온유메이크업 장기 PPL 조달 프로젝트</h3><p>목표 ₩50,000,000 · 현재 ₩41,000,000 · 달성률 82%</p><input type="range" min="0" max="100" value="82" disabled /></div><div class="list-card"><h3>실시간 참여자</h3><div class="item-row"><strong>투자자 A님</strong><span>₩5,000,000</span></div><div class="item-row"><strong>투자자 B님</strong><span>₩10,000,000</span></div><div class="item-row"><strong>투자자 C님</strong><span>₩2,000,000</span></div></div></div>`;
+    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Funding</p><h2>내 프로젝트 펀딩 관리</h2></div></div><div class="feature-grid"><div class="control-card"><h3>뷰티풀 마인드 시즌3 제작 프로젝트</h3><p>목표 모집 금액 ₩50,000,000 · 현재 모금된 금액 ₩41,000,000 · 달성률 82% · 48명 참여</p><input type="range" min="0" max="100" value="82" disabled /></div><div class="list-card"><h3>실시간 펀딩 참여자</h3><div class="item-row"><strong>투자자 A님</strong><span>₩5,000,000 참여</span></div><div class="item-row"><strong>투자자 B님</strong><span>₩10,000,000 참여</span></div><div class="item-row"><strong>투자자 C님</strong><span>₩2,000,000 참여</span></div></div></div>`;
     return;
   }
   if (currentRole === "advertiser") {
     root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Partnership</p><h2>광고주 펀딩 연계 & 집행 실적</h2></div></div><div class="feature-grid"><div class="control-card"><h3>광고 제휴 혜택</h3><div class="item-row"><div><strong>PPL 매칭 우선권</strong><p>펀딩 성공 시즌 영상 스폰서십 단가 최대 20% 할인</p></div></div><div class="item-row"><div><strong>크로스 미디어 독점권</strong><p>굿즈 및 오프라인 행사 브랜드 노출 독점 보장</p></div></div></div><div class="list-card" id="portfolioList"></div></div>`;
   } else {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Long-term PPL</p><h2>장기 PPL 계약 & 내 투자 포트폴리오</h2></div></div><div class="feature-grid"><div class="control-card"><h3>온유메이크업 장기 PPL 조달 프로젝트</h3><div class="portfolio-stats"><div><span>누적 계약액</span><strong>₩42.8억</strong></div><div><span>평균 예상 수익률</span><strong>14.2%</strong></div><div><span>계약 체결률</span><strong>98.5%</strong></div></div><button class="primary-button">계약 검토하기</button></div><div class="list-card"><h3>장기 PPL 계약 지분 현황</h3><div class="sort-row"><button class="active" data-sort="default">기본</button><button data-sort="amount">투자 금액</button><button data-sort="date">최신순</button><button data-sort="trades">최다 거래</button></div><div id="portfolioList"></div></div></div>`;
+    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Long-term PPL</p><h2>내 장기 계약 포트폴리오</h2></div></div><div class="feature-grid"><div class="control-card"><h3>계약 요약</h3><div class="portfolio-stats"><div><span>총 성장 지원 금액</span><strong>₩4,200,000</strong></div><div><span>월 예상 PPL 노출 가치</span><strong>₩48,500</strong></div><div><span>누적 장기 계약 ROI</span><strong>14.2%</strong></div></div><button class="primary-button">계약 검토하기</button></div><div class="list-card"><h3>장기 PPL 계약 채널 현황</h3><div class="sort-row"><button class="active" data-sort="default">기본</button><button data-sort="amount">투자 금액</button><button data-sort="date">최신순</button><button data-sort="trades">최다 거래</button></div><div id="portfolioList"></div></div></div>`;
   }
   renderPortfolio("default");
   document.querySelectorAll("[data-sort]").forEach((button) => {
@@ -506,7 +615,7 @@ function renderPortfolio(sort) {
     return 0;
   });
   list.innerHTML = rows
-    .map((x) => `<div class="item-row"><div><strong>${x.name} 지분 ${x.own}</strong><p>${money(x.amount)} · 거래 ${x.trades}회 · ${x.date}</p></div><span class="tag">${x.rate}</span></div>`)
+    .map((x) => `<div class="item-row"><div><strong>${x.name} 광고 수익 기여권 (${x.own})</strong><p>${money(x.amount)} 평가액 · 거래 ${x.trades}회 · 투자일자 ${x.date}</p></div><span class="tag">${x.rate}</span></div>`)
     .join("");
 }
 
