@@ -4,7 +4,7 @@ const roles = {
     title: "광고주 홈 대시보드",
     nav: [
       ["홈", "index.html"],
-      ["요약", "analysis.html"],
+      ["상세 검색", "analysis.html"],
       ["캠페인", "campaign.html"],
       ["구좌 선정", "trade.html"],
     ],
@@ -171,7 +171,7 @@ let currentAppTab = 0;
 const appTabs = {
   advertiser: [
     ["홈", "home"],
-    ["요약", "analysis"],
+    ["상세 검색", "analysis"],
     ["캠페인", "campaign"],
     ["구좌 선정", "trade"],
   ],
@@ -291,19 +291,16 @@ function renderAppHome() {
     advertiser: `
       <section class="app-hero-card">
         <span>광고주 모드</span>
-        <h2>크리에이터 채널 탐색</h2>
-        <p>광고 캠페인에 최적화된 크리에이터를 상세 조건으로 검색하세요.</p>
+        <h2>유튜버 검색</h2>
+        <p>키워드만 입력해 캠페인에 맞는 크리에이터를 바로 찾아보세요.</p>
         <div class="app-search">
-          <select><option>전체 분야</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select>
-          <select><option>전체 규모</option><option>소형 (&lt;10만)</option><option>중형 (10만~50만)</option><option>대형 (50만+)</option></select>
-          <select><option>전체 포맷</option><option>롱폼</option><option>숏폼</option><option>롱폼+숏폼</option></select>
-          <input placeholder="키워드 입력" />
-          <button data-app-tab="1">요약 보기</button>
+          <input placeholder="예: 뷰티, 게임, 출근 메이크업" />
+          <button data-app-tab="1">검색</button>
         </div>
       </section>
-      <h3 class="app-section-title">검색 결과 15건</h3>
-      <div class="channel-grid">
-        ${advertiserChannels.map(channelCard).join("")}
+      <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
+      <div class="app-rank-list">
+        ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
       </div>`,
     creator: `
       <section class="app-hero-card">
@@ -344,15 +341,18 @@ function renderAppAnalysis() {
     return `
       <div class="app-scroll">
         <section class="app-hero-card">
-          <span>데이터가 증명하는 콘텐츠의 가치</span>
-          <h2>채널 가치 분석부터 투자까지</h2>
-          <p>투자가 되는 새로운 생태계의 시작</p>
+          <span>상세 검색</span>
+          <h2>크리에이터 채널 탐색</h2>
+          <p>광고 캠페인에 최적화된 크리에이터를 상세 조건으로 검색하세요.</p>
+          <div class="app-search">
+            <select><option>전체 분야</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select>
+            <select><option>전체 규모</option><option>소형 (&lt;10만)</option><option>중형 (10만~50만)</option><option>대형 (50만+)</option></select>
+            <select><option>전체 포맷</option><option>롱폼</option><option>숏폼</option><option>롱폼+숏폼</option></select>
+          </div>
         </section>
-        <h3 class="app-section-title">주요 성과 요약</h3>
-        <div class="app-kpi-grid">${roles.advertiser.kpis.map(([label, value, sub]) => appCard(label, value, sub)).join("")}</div>
-        <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
-        <div class="app-rank-list">
-          ${ranks.map(([rank, name, info]) => `<button data-app-tab="0"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
+        <h3 class="app-section-title">검색 결과 15건</h3>
+        <div class="channel-grid">
+          ${advertiserChannels.map(channelCard).join("")}
         </div>
       </div>`;
   }
@@ -591,7 +591,7 @@ function renderAnalysis() {
   const title = document.querySelector("#analysisTitle");
   const list = document.querySelector("#insightList");
   if (title) {
-    title.textContent = currentRole === "creator" ? "내 채널 CIV 관리" : currentRole === "investor" ? "채널 투자 가치 분석" : "채널 가치 평가 지표";
+    title.textContent = currentRole === "creator" ? "내 채널 CIV 관리" : currentRole === "investor" ? "채널 투자 가치 분석" : "크리에이터 상세 검색";
   }
   if (list) {
     list.innerHTML = roles[currentRole].insights
