@@ -3,15 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>YOUCHI App Web Preview</title>
-    <meta
-      name="description"
-      content="YOUCHI 앱 화면을 웹에서 확인할 수 있는 정적 GitHub Pages 데모입니다."
-    />
+    <title>YOUCHI Web Dashboard</title>
+    <meta name="description" content="YOUCHI 앱 기능을 PC 웹 대시보드로 체험하는 정적 데모입니다." />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body data-page="home">
-    <div class="app-shell app-preview-shell" data-role="advertiser">
+    <div class="app-shell pc-product-shell" data-role="advertiser">
+      <aside class="pc-sidebar">
+        <a class="pc-logo" href="./index.html">YOUCHI</a>
+        <div class="pc-account">
+          <div class="avatar">김</div>
+          <div>
+            <strong>김유치님</strong>
+            <span>Premium Member</span>
+          </div>
+        </div>
+        <div class="pc-role-group" aria-label="역할 선택">
+          <button class="active" type="button" data-role-button="advertiser">광고주</button>
+          <button type="button" data-role-button="creator">크리에이터</button>
+          <button type="button" data-role-button="investor">투자자</button>
+        </div>
+        <nav class="pc-nav" id="appSideNav" aria-label="주요 기능"></nav>
+        <button class="pc-ghost-button" id="myPageButton" type="button">마이페이지 / 지갑</button>
+        <a class="pc-ghost-link" href="./login.html">로그인 화면</a>
+      </aside>
+
+      <div class="pc-main">
+        <header class="pc-topbar">
+          <button class="icon-button mobile-menu" id="menuButton" aria-label="메뉴 열기">☰</button>
+          <div>
+            <p class="eyebrow">YOUCHI Platform Console</p>
+            <h1 id="pcPageTitle">광고주 홈 대시보드</h1>
+          </div>
+          <button class="role-chip" id="roleCycleButton" type="button">광고주</button>
+        </header>
+
+        <section class="pc-content" id="appContent" aria-live="polite"></section>
+      </div>
+
+      <nav class="app-bottom-nav pc-mobile-nav" id="bottomNav" aria-label="모바일 하단 메뉴"></nav>
+
       <aside class="drawer" id="drawer" aria-hidden="true">
         <div class="drawer__panel">
           <div class="drawer__header">
@@ -23,25 +54,10 @@
             <button class="icon-button" id="drawerCloseButton" aria-label="메뉴 닫기">×</button>
           </div>
           <nav class="drawer-links" id="drawerLinks"></nav>
-          <button class="drawer-mypage" id="myPageButton" type="button">마이페이지 · 지갑/계정/알림</button>
           <button class="drawer-mypage" type="button" onclick="location.href='./login.html'">로그인 페이지 보기</button>
-          <p class="drawer-version">YOUCHI v3 · App Web Preview</p>
+          <p class="drawer-version">YOUCHI Web Dashboard</p>
         </div>
       </aside>
-
-      <main class="web-app-layout">
-        <div class="device-frame web-app-frame">
-          <header class="appbar">
-            <button class="icon-button" id="menuButton" aria-label="메뉴 열기">☰</button>
-            <strong class="app-title">YOUCHI</strong>
-            <button class="role-chip" id="roleCycleButton" type="button">광고주</button>
-          </header>
-
-          <section class="app-content" id="appContent" aria-live="polite"></section>
-
-          <nav class="app-bottom-nav" id="bottomNav" aria-label="앱 하단 메뉴"></nav>
-        </div>
-      </main>
 
       <div class="modal" id="myPageModal" aria-hidden="true" role="dialog" aria-labelledby="myPageTitle">
         <div class="modal__backdrop"></div>

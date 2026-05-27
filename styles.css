@@ -1007,29 +1007,151 @@ input[type="range"] {
   background: var(--bg);
 }
 
-.web-app-layout {
-  max-width: 1280px;
+.pc-product-shell {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
   min-height: 100svh;
-  margin: 0 auto;
+}
+
+.pc-sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  height: 100svh;
   padding: 22px;
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+}
+
+.pc-logo {
+  color: var(--role);
+  font-size: 28px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.pc-account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.pc-account span {
+  display: block;
+  margin-top: 3px;
+  color: var(--secondary);
+  font-size: 12px;
+}
+
+.pc-role-group,
+.pc-nav {
+  display: grid;
+  gap: 8px;
+}
+
+.pc-role-group {
+  grid-template-columns: repeat(3, 1fr);
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--soft);
+}
+
+.pc-role-group button,
+.pc-nav button,
+.pc-ghost-button,
+.pc-ghost-link {
+  min-height: 42px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.pc-role-group button {
+  background: transparent;
+  color: var(--secondary);
+  font-size: 12px;
+}
+
+.pc-role-group button.active {
+  background: white;
+  color: var(--role);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.08);
+}
+
+.pc-nav button {
+  padding: 0 14px;
+  background: transparent;
+  color: var(--secondary);
+  text-align: left;
+}
+
+.pc-nav button.active,
+.pc-nav button:hover {
+  background: color-mix(in srgb, var(--role), white 90%);
+  color: var(--role);
+}
+
+.pc-ghost-button,
+.pc-ghost-link {
+  display: grid;
+  place-items: center;
+  margin-top: auto;
+  border: 1px solid var(--border);
+  background: white;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.pc-ghost-link {
+  margin-top: 0;
+}
+
+.pc-main {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.pc-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 92px;
+  padding: 20px 32px;
+  background: rgba(248, 250, 252, 0.9);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+}
+
+.pc-topbar h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.pc-content {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mobile-menu {
+  display: none;
 }
 
 .device-frame {
-  position: relative;
-  display: grid;
-  grid-template-rows: 60px 1fr 76px;
-  width: 100%;
-  height: calc(100svh - 44px);
-  min-height: 680px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  background: var(--bg);
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.1);
+  display: contents;
 }
 
 .appbar {
-  display: grid;
+  display: none;
   grid-template-columns: 44px 1fr auto;
   align-items: center;
   gap: 8px;
@@ -1054,7 +1176,7 @@ input[type="range"] {
 .app-scroll {
   height: 100%;
   overflow: auto;
-  padding: 24px;
+  padding: 28px 32px 48px;
 }
 
 .app-scroll::-webkit-scrollbar {
@@ -1070,6 +1192,10 @@ input[type="range"] {
   background: white;
   border-top: 1px solid var(--border);
   box-shadow: 0 -10px 22px rgba(15, 23, 42, 0.06);
+}
+
+.pc-mobile-nav {
+  display: none;
 }
 
 .app-bottom-nav button {
@@ -1171,19 +1297,19 @@ input[type="range"] {
 }
 
 .app-section-title {
-  margin: 22px 0 10px;
+  margin: 26px 0 12px;
   font-size: 17px;
 }
 
 .app-role-switcher {
-  max-width: none;
+  max-width: 560px;
   border-radius: 999px;
 }
 
 .app-kpi-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
+  gap: 14px;
 }
 
 .app-kpi,
@@ -1264,7 +1390,6 @@ input[type="range"] {
   gap: 12px;
   align-items: center;
   padding: 14px;
-  max-width: 780px;
 }
 
 .app-profile span {
@@ -1286,7 +1411,6 @@ input[type="range"] {
   border-radius: 20px;
   background: linear-gradient(135deg, var(--role), var(--indigo));
   color: white;
-  max-width: 780px;
 }
 
 .app-score-card strong {
@@ -1305,13 +1429,30 @@ input[type="range"] {
 
 .app-metrics {
   margin-top: 14px;
-  max-width: 780px;
 }
 
 .app-panel {
   margin-top: 12px;
   padding: 16px;
   max-width: none;
+}
+
+.pc-work-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(320px, 0.8fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.pc-side-panel {
+  margin-top: 58px;
+}
+
+.pc-analysis-grid {
+  display: grid;
+  grid-template-columns: minmax(360px, 0.9fr) minmax(420px, 1.1fr);
+  gap: 18px;
+  align-items: stretch;
 }
 
 .app-panel h3 {
@@ -1413,7 +1554,9 @@ input[type="range"] {
   .rank-strip,
   .service-grid,
   .app-kpi-grid,
-  .app-rank-list {
+  .app-rank-list,
+  .pc-work-grid,
+  .pc-analysis-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 
@@ -1489,19 +1632,47 @@ input[type="range"] {
     min-height: 42px;
   }
 
-  .web-app-layout {
+  .pc-product-shell {
     display: block;
     min-height: 100svh;
-    padding: 0;
   }
 
-  .device-frame {
-    width: 100%;
+  .pc-sidebar {
+    display: none;
+  }
+
+  .pc-main {
     height: 100svh;
-    min-height: 0;
-    border: 0;
-    border-radius: 0;
-    box-shadow: none;
+    grid-template-rows: 60px minmax(0, 1fr);
+  }
+
+  .pc-topbar {
+    display: grid;
+    grid-template-columns: 40px 1fr auto;
+    min-height: 60px;
+    padding: 8px 12px;
+  }
+
+  .pc-topbar .eyebrow {
+    display: none;
+  }
+
+  .pc-topbar h1 {
+    font-size: 17px;
+  }
+
+  .mobile-menu {
+    display: grid;
+  }
+
+  .pc-mobile-nav {
+    display: grid;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    border-radius: 16px 16px 0 0;
   }
 
   .appbar {
@@ -1509,7 +1680,7 @@ input[type="range"] {
   }
 
   .app-scroll {
-    padding: 18px;
+    padding: 18px 18px 96px;
   }
 
   .app-search,
@@ -1521,5 +1692,14 @@ input[type="range"] {
   .app-search input,
   .app-search button {
     grid-column: span 1;
+  }
+
+  .pc-work-grid,
+  .pc-analysis-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pc-side-panel {
+    margin-top: 12px;
   }
 }

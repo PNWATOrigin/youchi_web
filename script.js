@@ -142,19 +142,24 @@ function appCard(title, value, subtext) {
 function renderAppPreview() {
   const content = document.querySelector("#appContent");
   const bottomNav = document.querySelector("#bottomNav");
+  const sideNav = document.querySelector("#appSideNav");
   const drawerLinks = document.querySelector("#drawerLinks");
-  if (!content || !bottomNav) return;
+  if (!content) return;
 
   const tabs = appTabs[currentRole];
   const currentTabKey = tabs[currentAppTab]?.[1] || "home";
-  bottomNav.innerHTML = tabs
+  const navMarkup = tabs
     .map(([label], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}">${label}</button>`)
     .join("");
+  if (bottomNav) bottomNav.innerHTML = navMarkup;
+  if (sideNav) sideNav.innerHTML = navMarkup;
   if (drawerLinks) {
     drawerLinks.innerHTML = tabs
       .map(([label], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}">${label} 이동</button>`)
       .join("");
   }
+  const pageTitle = document.querySelector("#pcPageTitle");
+  if (pageTitle) pageTitle.textContent = `${roles[currentRole].label} ${tabs[currentAppTab]?.[0] || "홈"}`;
 
   if (currentTabKey === "home") content.innerHTML = renderAppHome();
   if (currentTabKey === "analysis") content.innerHTML = renderAppAnalysis();
@@ -204,9 +209,19 @@ function renderAppHome() {
       </div>
       <h3 class="app-section-title">플랫폼 주요 지표</h3>
       <div class="app-kpi-grid">${kpis}</div>
-      <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
-      <div class="app-rank-list">
-        ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
+      <div class="pc-work-grid">
+        <section>
+          <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
+          <div class="app-rank-list">
+            ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
+          </div>
+        </section>
+        <section class="app-panel pc-side-panel">
+          <h3>오늘의 작업</h3>
+          <div class="app-row"><span>CIV 리포트 업데이트</span><strong>완료</strong></div>
+          <div class="app-row"><span>캠페인 제안 검토</span><strong>3건</strong></div>
+          <div class="app-row"><span>정산/배당 알림</span><strong>2건</strong></div>
+        </section>
       </div>
     </div>`;
 }
@@ -215,21 +230,25 @@ function renderAppAnalysis() {
   const title = currentRole === "creator" ? "내 채널 스튜디오" : currentRole === "investor" ? "투자 가치 분석" : "채널 가치 평가 지표";
   return `
     <div class="app-scroll">
-      <section class="app-profile">
-        <div class="avatar">뷰</div>
-        <div><strong>${currentRole === "creator" ? "내 채널 스튜디오" : "뷰티풀 마인드"}</strong><span>YouTube · 뷰티/패션 · 구독자 24만</span></div>
-        <i>✓</i>
-      </section>
-      <section class="app-score-card">
-        <span>${title}</span>
-        <strong>87.4</strong>
-        <em>상위 8% · 추정 가치 ₩1.8억 ~ ₩2.4억</em>
-      </section>
-      <div class="metric-grid app-metrics">
-        <div><span>영향력</span><strong>92.1</strong><em>우수</em></div>
-        <div><span>참여율</span><strong>85.3</strong><em>양호</em></div>
-        <div><span>수익성</span><strong>88.7</strong><em>우수</em></div>
-        <div><span>안정성</span><strong>76.2</strong><em>보통</em></div>
+      <div class="pc-analysis-grid">
+        <div>
+          <section class="app-profile">
+            <div class="avatar">뷰</div>
+            <div><strong>${currentRole === "creator" ? "내 채널 스튜디오" : "뷰티풀 마인드"}</strong><span>YouTube · 뷰티/패션 · 구독자 24만</span></div>
+            <i>✓</i>
+          </section>
+          <section class="app-score-card">
+            <span>${title}</span>
+            <strong>87.4</strong>
+            <em>상위 8% · 추정 가치 ₩1.8억 ~ ₩2.4억</em>
+          </section>
+        </div>
+        <div class="metric-grid app-metrics">
+          <div><span>영향력</span><strong>92.1</strong><em>우수</em></div>
+          <div><span>참여율</span><strong>85.3</strong><em>양호</em></div>
+          <div><span>수익성</span><strong>88.7</strong><em>우수</em></div>
+          <div><span>안정성</span><strong>76.2</strong><em>보통</em></div>
+        </div>
       </div>
       <section class="app-panel">
         <h3>${currentRole === "creator" ? "AI 개선 제안" : "AI 분석 요약"}</h3>
