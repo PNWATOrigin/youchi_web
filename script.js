@@ -1,152 +1,3 @@
-const roles = {
-  advertiser: {
-    label: "광고주",
-    title: "광고주 홈 대시보드",
-    nav: [
-      ["홈", "index.html"],
-      ["상세 검색", "analysis.html"],
-      ["캠페인", "campaign.html"],
-      ["구좌 선정", "trade.html"],
-    ],
-    kpis: [
-      ["앱에서 집행한 실적", "84.5%", "캠페인 목표 대비"],
-      ["진행 건수", "12건", "활성 캠페인"],
-      ["진행 돈", "4,800만 원", "누적 총 집행액"],
-      ["광고 성과 지표", "148% ROI", "평균 ROI 기준"],
-    ],
-    insights: [
-      ["프리미엄 브랜드 적합도", "온유메이크업은 브랜드 세이프티와 광고 적합도가 높아 뷰티 캠페인 집행에 적합합니다."],
-      ["추천 매칭 채널", "미나뷰티로그는 예산 대비 성장률과 예상 ROI가 높아 초기 테스트 집행에 적합합니다."],
-      ["주의 지표", "구좌 선정 전 채널별 장기 PPL 단가와 권리 범위를 함께 확인해야 합니다."],
-    ],
-  },
-  creator: {
-    label: "크리에이터",
-    title: "크리에이터 스튜디오 홈",
-    nav: [
-      ["홈", "index.html"],
-      ["CIV 관리", "analysis.html"],
-      ["제안 관리", "campaign.html"],
-      ["수익 정산", "trade.html"],
-      ["조달 관리", "invest.html"],
-    ],
-    kpis: [
-      ["성장성", "89.4%", "S등급 달성"],
-      ["팬덤", "125.4K", "충성 구독자군"],
-      ["CIV 리포트", "AAA", "기관 투자 추천"],
-      ["조회수 성장", "+24.8%", "최근 30일 기준"],
-    ],
-    insights: [
-      ["구독자 전환 모멘텀", "시청자가 구독자로 전환되는 비율이 카테고리 평균 대비 높습니다."],
-      ["협찬/광고 협업 가능성", "브랜드 안전성 점수가 높아 제품 협찬과 장기 PPL 제안을 받을 가능성이 큽니다."],
-      ["개선 액션", "협찬 집행 가이드와 업로드 주기를 함께 관리하면 CIV 점수 상승이 예상됩니다."],
-    ],
-  },
-  investor: {
-    label: "투자자",
-    title: "투자자 채널 성장 홈",
-    nav: [
-      ["홈", "index.html"],
-      ["계약", "invest.html"],
-      ["매매", "invest.html"],
-      ["채널 발굴", "trade.html"],
-    ],
-    kpis: [
-      ["계약", "3건", "시리즈 기획안 검토"],
-      ["매매", "15건", "인수 검토 채널"],
-      ["채널 발굴", "12건", "성장 후보 채널"],
-      ["PPL 적합", "8건", "파트너 제안 가능"],
-    ],
-    insights: [
-      ["시리즈 계약", "크리에이터가 등록한 전용 영상 시리즈 3건의 제작비 투자와 제품 지원 조건을 검토해야 합니다."],
-      ["채널 매매", "브랜드 안전성 점수가 높은 채널 3개가 인수 검토 대상으로 업데이트됐습니다."],
-      ["채널 발굴", "PPL 적합 성장 채널 8개가 업데이트되어 장기 광고·제작 지원 제안을 보낼 수 있습니다."],
-    ],
-  },
-};
-
-const ranks = [
-  ["1", "미나뷰티로그", "뷰티 · 75 CIV · ROI 180%"],
-  ["2", "온유메이크업", "뷰티 · 87 CIV · ROI 159%"],
-  ["3", "유라글로우", "뷰티 · 86 CIV · ROI 129%"],
-  ["4", "롤체연구소", "게임 · 65 CIV · ROI 173%"],
-  ["5", "FPS훈이", "게임 · 81 CIV · ROI 162%"],
-];
-
-const advertiserChannels = [
-  { name: "미나뷰티로그", category: "뷰티", subscribers: "7.8만명", avgViews: "52,237회", scale: "소형", format: "숏폼", civ: 75, roi: "180.2%", value: "₩ 1.2억", desc: "숏폼 중심의 데일리 메이크업·학생 뷰티 채널" },
-  { name: "온유메이크업", category: "뷰티", subscribers: "28.4만명", avgViews: "110,058회", scale: "중형", format: "롱폼+숏폼", civ: 87, roi: "159.4%", value: "₩ 4.7억", desc: "기초 화장품 리뷰와 출근 메이크업 중심 채널" },
-  { name: "유라글로우", category: "뷰티", subscribers: "92.5만명", avgViews: "161,039회", scale: "대형", format: "롱폼", civ: 86, roi: "129.4%", value: "₩ 16.2억", desc: "브랜드 협업 경험이 많은 프리미엄 뷰티 채널" },
-  { name: "롤체연구소", category: "게임", subscribers: "8.6만명", avgViews: "44,339회", scale: "소형", format: "숏폼", civ: 65, roi: "173.4%", value: "₩ 1.5억", desc: "전략 게임 공략과 패치 분석 중심 채널" },
-  { name: "FPS훈이", category: "게임", subscribers: "34.2만명", avgViews: "121,241회", scale: "중형", format: "롱폼+숏폼", civ: 81, roi: "161.9%", value: "₩ 5.7억", desc: "FPS 하이라이트와 장비 리뷰를 함께 다루는 채널" },
-  { name: "종합겜민수", category: "게임", subscribers: "128.0만명", avgViews: "290,410회", scale: "대형", format: "롱폼", civ: 83, roi: "105.2%", value: "₩ 23.1억", desc: "신작 게임 리뷰와 종합 게임 예능형 대형 채널" },
-];
-
-const creatorOffers = [
-  ["(주) 윈드이노센터", "(주) 윈드이노센터 aliquam 캠페인", "4,842만 원", "2026-06-9 까지", "수락됨"],
-  ["(주) 라온씨앤씨네트워크", "(주) 라온씨앤씨네트워크 ducimus 캠페인", "2,630만 원", "2026-06-1 까지", "대기중"],
-  ["유한회사 가야엔지니어링", "유한회사 가야엔지니어링 temporibus 캠페인", "270만 원", "2026-06-19 까지", "대기중"],
-  ["(유) 가람글로벌개발공사", "(유) 가람글로벌개발공사 esse 캠페인", "3,498만 원", "2026-06-13 까지", "대기중"],
-  ["유한회사 라온마을은행", "유한회사 라온마을은행 esse 캠페인", "3,097만 원", "2026-06-10 까지", "거절됨"],
-  ["유한회사 라온마을은행", "유한회사 라온마을은행 perspiciatis 캠페인", "1,857만 원", "2026-06-12 까지", "거절됨"],
-];
-
-const slotDeals = [
-  ["FPS훈이 (유) 가람글로벌개발공사 repudiandae 캠페인", "₩ 16,510,000", "정가 대비 13% 할인", "매칭 점수 93점"],
-  ["온유메이크업 (유) 마루센터 optio 캠페인", "₩ 7,830,000", "정가 대비 21% 할인", "매칭 점수 86점"],
-  ["혼밥대장 (주) 우리코리아에너지 cum 캠페인", "₩ 48,740,000", "정가 대비 17% 할인", "매칭 점수 97점"],
-];
-
-const acquisitionChannels = [
-  ["미나뷰티로그", "뷰티 · 구독자 7.8만명 · 평균 조회수 52,237회", "CIV 75", "₩ 120,250,228"],
-  ["온유메이크업", "뷰티 · 구독자 28.4만명 · 평균 조회수 110,058회", "CIV 87", "₩ 473,663,978"],
-  ["유라글로우", "뷰티 · 구독자 92.5만명 · 평균 조회수 161,039회", "CIV 86", "₩ 1,620,134,856"],
-  ["롤체연구소", "게임 · 구독자 8.6만명 · 평균 조회수 44,339회", "CIV 65", "₩ 153,957,285"],
-  ["FPS훈이", "게임 · 구독자 34.2만명 · 평균 조회수 121,241회", "CIV 81", "₩ 567,489,312"],
-  ["종합겜민수", "게임 · 구독자 128.0만명 · 평균 조회수 290,410회", "CIV 83", "₩ 2,307,203,529"],
-];
-
-const seriesPlans = [
-  {
-    channel: "온유메이크업",
-    title: "출근 전 10분 메이크업 시즌 3",
-    category: "뷰티",
-    summary: "매주 2편씩 8주간 출근, 데이트, 면접 상황별 메이크업 루틴을 제작하고 고정 제품 PPL을 자연스럽게 노출합니다.",
-    target: "₩50,000,000",
-    raised: "₩41,000,000",
-    progress: 82,
-    minTicket: "₩3,000,000",
-    product: "기초 라인 200세트",
-    exposure: "예상 누적 노출 92만",
-    benefit: "고정 제품 컷 + 더보기 링크",
-    days: "D-3",
-  },
-  {
-    channel: "FPS훈이",
-    title: "게이밍 룸 업그레이드 챌린지",
-    category: "게임",
-    summary: "소형 게임 채널의 성장형 시리즈로 장비 교체, 라이브 플레이, 리뷰 콘텐츠를 묶어 브랜드 노출을 반복 설계합니다.",
-    target: "₩36,000,000",
-    raised: "₩21,500,000",
-    progress: 60,
-    minTicket: "₩2,000,000",
-    product: "헤드셋/키보드 패키지",
-    exposure: "예상 누적 노출 58만",
-    benefit: "장비 세팅 고정 노출",
-    days: "D-8",
-  },
-];
-
-const campaignContracts = [
-  ["(주) 비전유통 numquam 캠페인", "₩ 19,980,000", "크리에이터 검토 중", "2026-06-15"],
-  ["유한회사 조선 rem 캠페인", "₩ 43,680,000", "계약 조율 완료 (정산 대기)", "2026-06-15"],
-];
-
-const campaignReports = [
-  ["(유) 미래코리아시스템 unde 캠페인", "실제 ROI 154.0%", "₩ 47,020,000", "4,702K 노출"],
-  ["디지털리뷰랩 x 원더신라제조 캠페인", "실제 ROI 162.0%", "₩ 52,400,000", "5,240K 노출"],
-];
-
 const page = document.body.dataset.page || "home";
 const pageDefaultRole = document.body.dataset.roleDefault || { creator: "creator", investment: "investor" }[page];
 const parsedDefaultTab = Number(document.body.dataset.tabDefault || 0);
@@ -154,30 +5,396 @@ let currentRole = pageDefaultRole || localStorage.getItem("youchi-role") || "adv
 let loggedIn = localStorage.getItem("youchi-logged-in") === "true";
 let currentAppTab = Number.isFinite(parsedDefaultTab) ? parsedDefaultTab : 0;
 
+const routeByKey = {
+  home: "index.html",
+  analysis: "analysis.html",
+  campaign: "campaign.html",
+  trade: "trade.html",
+  invest: "invest.html",
+};
+
 const appTabs = {
   advertiser: [
     ["홈", "home"],
-    ["상세 검색", "analysis"],
+    ["인사이트", "analysis"],
     ["캠페인", "campaign"],
-    ["구좌 선정", "trade"],
+    ["채널 매칭", "trade"],
   ],
   creator: [
     ["홈", "home"],
-    ["CIV 관리", "analysis"],
-    ["제안 관리", "campaign"],
+    ["CIV진단", "analysis"],
+    ["협업·제안", "campaign"],
     ["수익 정산", "trade"],
-    ["조달 관리", "invest"],
+    ["채널 운영", "invest"],
   ],
   investor: [
     ["홈", "home"],
-    ["계약", "invest"],
-    ["매매", "campaign"],
-    ["채널 발굴", "trade"],
+    ["리포트", "analysis"],
+    ["마켓", "campaign"],
+    ["파트너십", "trade"],
   ],
 };
 
-function money(value) {
-  return `₩ ${Math.round(value).toLocaleString("ko-KR")}`;
+const roles = {
+  advertiser: {
+    label: "광고주",
+    title: "광고주 홈",
+    kpis: [
+      ["활성 캠페인", "12건", "집행중 5 · 대기 4"],
+      ["평균 브랜드 핏", "91%", "AI 매칭 기준"],
+      ["예상 도달", "142만", "이번 달 누적"],
+      ["성과 ROI", "148%", "완료 캠페인 평균"],
+    ],
+  },
+  creator: {
+    label: "크리에이터",
+    title: "크리에이터 홈",
+    kpis: [
+      ["CIV", "87.0", "상위 9%"],
+      ["팬덤", "125.4K", "충성 시청자군"],
+      ["협업 제안", "14건", "검토 필요 5"],
+      ["정산 예정", "₩ 8,450만", "스마트 계약 확정"],
+    ],
+  },
+  investor: {
+    label: "투자자",
+    title: "내 투자 자산 현황",
+    kpis: [
+      ["리포트", "8건", "수익 배분 업데이트"],
+      ["마켓", "15건", "인수 검토 채널"],
+      ["파트너십", "12건", "협력 로드맵"],
+      ["위험 낮음", "9건", "권리 검토 통과"],
+    ],
+  },
+};
+
+const channels = [
+  { name: "미나뷰티로그", category: "뷰티", scale: "소형", subscribers: 78000, avgViews: 52237, monthlyViews: 470133, growthRate: 23.7, fandom: 71, growth: 95, viewGrowth: 84, civ: 75, adFit: 78, brandSafety: 87, roi: 180.2, value: 120250228, rateMin: 1800000, rateMax: 4300000, format: "숏폼", desc: "숏폼 중심의 데일리 메이크업·학생 뷰티 채널" },
+  { name: "온유메이크업", category: "뷰티", scale: "중형", subscribers: 284000, avgViews: 110058, monthlyViews: 990522, growthRate: 18.6, fandom: 82, growth: 93, viewGrowth: 86, civ: 87, adFit: 90, brandSafety: 84, roi: 159.4, value: 473663978, rateMin: 5200000, rateMax: 11800000, format: "롱폼+숏폼", desc: "기초 화장품 리뷰와 출근 메이크업 중심 채널" },
+  { name: "유라글로우", category: "뷰티", scale: "대형", subscribers: 925000, avgViews: 161039, monthlyViews: 1449351, growthRate: 12.9, fandom: 85, growth: 88, viewGrowth: 79, civ: 86, adFit: 83, brandSafety: 76, roi: 129.4, value: 1620134856, rateMin: 18500000, rateMax: 42000000, format: "롱폼", desc: "브랜드 협업 경험이 많은 프리미엄 뷰티 채널" },
+  { name: "롤체연구소", category: "게임", scale: "소형", subscribers: 86000, avgViews: 44339, monthlyViews: 399051, growthRate: 21.1, fandom: 66, growth: 89, viewGrowth: 82, civ: 65, adFit: 71, brandSafety: 85, roi: 173.4, value: 153957285, rateMin: 1400000, rateMax: 3600000, format: "숏폼", desc: "전략 게임 공략과 패치 분석 중심 채널" },
+  { name: "FPS훈이", category: "게임", scale: "중형", subscribers: 342000, avgViews: 121241, monthlyViews: 1091169, growthRate: 15.3, fandom: 78, growth: 82, viewGrowth: 81, civ: 81, adFit: 81, brandSafety: 92, roi: 161.9, value: 567489312, rateMin: 6500000, rateMax: 13500000, format: "롱폼+숏폼", desc: "FPS 하이라이트와 장비 리뷰를 함께 다루는 채널" },
+  { name: "종합겜민수", category: "게임", scale: "대형", subscribers: 1280000, avgViews: 290410, monthlyViews: 2613690, growthRate: 8.9, fandom: 83, growth: 83, viewGrowth: 74, civ: 83, adFit: 82, brandSafety: 89, roi: 105.2, value: 2307203529, rateMin: 26000000, rateMax: 59000000, format: "롱폼", desc: "신작 게임 리뷰와 종합 게임 예능형 대형 채널" },
+  { name: "개발자준", category: "IT", scale: "소형", subscribers: 67000, avgViews: 38510, monthlyViews: 346590, growthRate: 28.4, fandom: 69, growth: 96, viewGrowth: 95, civ: 77, adFit: 75, brandSafety: 91, roi: 194.7, value: 132908120, rateMin: 1600000, rateMax: 4100000, format: "롱폼+숏폼", desc: "개발 생산성, AI 도구, 사이드 프로젝트 리뷰 채널" },
+  { name: "디지털리뷰랩", category: "IT", scale: "중형", subscribers: 412000, avgViews: 138420, monthlyViews: 1245780, growthRate: 17.5, fandom: 80, growth: 90, viewGrowth: 84, civ: 80, adFit: 82, brandSafety: 88, roi: 151.6, value: 681200552, rateMin: 7800000, rateMax: 16400000, format: "롱폼", desc: "테크 기기, SaaS, 업무용 앱을 깊게 비교하는 리뷰 채널" },
+  { name: "테크살롱", category: "IT", scale: "대형", subscribers: 1010000, avgViews: 214330, monthlyViews: 1928970, growthRate: 9.8, fandom: 88, growth: 81, viewGrowth: 78, civ: 93, adFit: 90, brandSafety: 75, roi: 118.8, value: 1948803400, rateMin: 21000000, rateMax: 51000000, format: "롱폼", desc: "신제품 해설과 B2B 솔루션 리뷰가 강한 IT 채널" },
+  { name: "혼밥대장", category: "먹방", scale: "소형", subscribers: 59000, avgViews: 41220, monthlyViews: 370980, growthRate: 31.2, fandom: 64, growth: 98, viewGrowth: 89, civ: 66, adFit: 74, brandSafety: 90, roi: 188.1, value: 116800390, rateMin: 1300000, rateMax: 3300000, format: "숏폼", desc: "편의점 신상과 혼밥 코스를 빠르게 소개하는 채널" },
+  { name: "야식누나", category: "먹방", scale: "중형", subscribers: 368000, avgViews: 151900, monthlyViews: 1367100, growthRate: 16.4, fandom: 77, growth: 84, viewGrowth: 82, civ: 81, adFit: 86, brandSafety: 77, roi: 142.7, value: 593440000, rateMin: 7200000, rateMax: 15800000, format: "롱폼+숏폼", desc: "배달 음식과 신제품 먹방 반응이 빠른 채널" },
+  { name: "맛있는형제", category: "먹방", scale: "대형", subscribers: 1430000, avgViews: 334100, monthlyViews: 3006900, growthRate: 7.4, fandom: 84, growth: 79, viewGrowth: 71, civ: 88, adFit: 88, brandSafety: 75, roi: 111.5, value: 2640202200, rateMin: 31000000, rateMax: 69000000, format: "롱폼", desc: "프랜차이즈와 지역 맛집 협업 경험이 많은 대형 채널" },
+  { name: "짠테크하루", category: "경제", scale: "소형", subscribers: 73000, avgViews: 46300, monthlyViews: 416700, growthRate: 29.5, fandom: 68, growth: 98, viewGrowth: 91, civ: 67, adFit: 80, brandSafety: 74, roi: 202.4, value: 141102900, rateMin: 1500000, rateMax: 3700000, format: "숏폼", desc: "초보 재테크, 앱테크, 소비 절약 팁을 다루는 채널" },
+  { name: "재테크백서", category: "경제", scale: "중형", subscribers: 436000, avgViews: 129500, monthlyViews: 1165500, growthRate: 14.2, fandom: 82, growth: 86, viewGrowth: 80, civ: 81, adFit: 81, brandSafety: 74, roi: 137.9, value: 702900500, rateMin: 8300000, rateMax: 17800000, format: "롱폼", desc: "금융 앱, 소비 데이터, 투자 기초를 설명하는 교육형 채널" },
+  { name: "돈박사TV", category: "경제", scale: "대형", subscribers: 1180000, avgViews: 248700, monthlyViews: 2238300, growthRate: 6.8, fandom: 86, growth: 76, viewGrowth: 69, civ: 93, adFit: 90, brandSafety: 74, roi: 109.1, value: 2117600000, rateMin: 24500000, rateMax: 57000000, format: "롱폼", desc: "경제 뉴스 해설과 금융 서비스 브랜디드 콘텐츠 채널" },
+];
+
+const creatorOffers = [
+  ["올리브영 신규 기초 라인업", "유한회사 푸르가야뷰티", "₩ 1,500,000", "제품 4종", "검토"],
+  ["에스티 로더 나이트 리페어", "(유) 마루센터", "보상 조율", "제품 2종", "협의"],
+  ["샤넬 하이드라 뷰티", "라온마을커머스", "₩ 3,200,000", "제품 2종", "확정"],
+  ["다이슨 에어랩 스타일러", "윈드이노센터", "₩ 4,800,000", "제품 1종", "진행"],
+  ["출근 전 메이크업 시즌 3", "온유메이크업 파트너", "₩ 12,000,000", "8편", "계약"],
+];
+
+const campaigns = [
+  ["스킨케어 런칭 6월", "온유메이크업", "집행중", "₩ 42,000,000", "ROI 156%", "도달 42.8만"],
+  ["AI 노트앱 생산성", "개발자준", "제안 대기", "₩ 18,000,000", "ROI 193%", "도달 19.4만"],
+  ["게이밍 기어 교체", "FPS훈이", "검수중", "₩ 31,500,000", "ROI 162%", "도달 36.1만"],
+  ["편의점 신상 푸드", "혼밥대장", "집행중", "₩ 14,700,000", "ROI 188%", "도달 21.2만"],
+  ["금융 앱 캠페인", "재테크백서", "완료", "₩ 52,400,000", "ROI 144%", "도달 58.0만"],
+];
+
+function krw(value) {
+  if (value >= 100000000) return `₩ ${(value / 100000000).toFixed(1)}억`;
+  return `₩ ${Math.round(value / 10000).toLocaleString("ko-KR")}만`;
+}
+
+function number(value) {
+  return value.toLocaleString("ko-KR");
+}
+
+function compactCount(value) {
+  return value >= 10000 ? `${(value / 10000).toFixed(value >= 100000 ? 1 : 0)}만` : number(value);
+}
+
+function pct(value) {
+  return `${value.toFixed(1)}%`;
+}
+
+function brandFit(channel) {
+  return Math.round((channel.adFit + channel.growth + channel.brandSafety + channel.civ) / 4);
+}
+
+function marketScore(channel) {
+  return Math.round((channel.civ * 0.28) + (channel.growth * 0.22) + (channel.fandom * 0.18) + (channel.brandSafety * 0.17) + (channel.roi * 0.15));
+}
+
+function appCard(title, value, subtext) {
+  return `<article class="app-kpi"><span>${title}</span><strong>${value}</strong><em>${subtext}</em></article>`;
+}
+
+function metricTiles(items) {
+  return `<div class="app-kpi-grid">${items.map(([label, value, sub]) => appCard(label, value, sub)).join("")}</div>`;
+}
+
+function scorePill(label, value) {
+  return `<span class="score-pill"><b>${label}</b>${value}</span>`;
+}
+
+function ticker(channels = channelsTop(8)) {
+  return `<section class="market-strip">${channels.map((channel) => {
+    const delta = channel.growthRate > 15 ? "▲" : "△";
+    return `<article class="market-tile"><span>${channel.name}</span><strong>${marketScore(channel)}</strong><em>${delta} ${pct(channel.growthRate)}</em></article>`;
+  }).join("")}</section>`;
+}
+
+function channelsTop(limit = 6, sorter = (a, b) => marketScore(b) - marketScore(a)) {
+  return [...channels].sort(sorter).slice(0, limit);
+}
+
+function denseScoreTable(rows, mode = "advertiser") {
+  const label = mode === "investor" ? "마켓" : mode === "creator" ? "운영" : "매칭";
+  return `<div class="dense-table-wrap"><table class="dense-table">
+    <thead><tr><th>#</th><th>채널</th><th>카테고리</th><th>CIV</th><th>성장</th><th>팬덤</th><th>광고핏</th><th>안전성</th><th>ROI</th><th>${label} 점수</th><th>월조회</th><th>가치</th></tr></thead>
+    <tbody>${rows.map((channel, index) => `<tr>
+      <td>${index + 1}</td>
+      <td><strong>${channel.name}</strong><span>${compactCount(channel.subscribers)} · ${channel.format}</span></td>
+      <td>${channel.category}</td>
+      <td>${channel.civ}</td>
+      <td>${channel.growth}</td>
+      <td>${channel.fandom}</td>
+      <td>${channel.adFit}</td>
+      <td>${channel.brandSafety}</td>
+      <td>${pct(channel.roi)}</td>
+      <td><b>${mode === "advertiser" ? brandFit(channel) : marketScore(channel)}</b></td>
+      <td>${compactCount(channel.monthlyViews)}</td>
+      <td>${krw(channel.value)}</td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
+}
+
+function channelCard(channel, mode = "advertiser") {
+  const primary = mode === "investor" ? marketScore(channel) : brandFit(channel);
+  return `<article class="channel-card">
+    <div class="channel-card__visual"><div class="avatar">${channel.category.slice(0, 1)}</div><b>${mode === "investor" ? "마켓" : "핏"} ${primary}</b></div>
+    <div class="channel-card__body">
+      <div class="channel-card__head"><strong>${channel.name}</strong><span>${channel.scale}</span></div>
+      <p>${channel.category} · 구독자 ${compactCount(channel.subscribers)} · 평균 조회 ${number(channel.avgViews)}회</p>
+      <div class="channel-card__tags"><span>CIV ${channel.civ}</span><span>성장 ${channel.growth}</span><span>안전 ${channel.brandSafety}</span></div>
+      <em>${channel.desc}</em>
+    </div>
+    <div class="channel-card__stats">
+      <span>예상 ROI <strong>${pct(channel.roi)}</strong></span>
+      <span>월 조회 <strong>${compactCount(channel.monthlyViews)}</strong></span>
+      <span>추정 가치 <strong>${krw(channel.value)}</strong></span>
+    </div>
+  </article>`;
+}
+
+function signalBoard(channel) {
+  const metrics = [
+    ["CIV", channel.civ],
+    ["성장성", channel.growth],
+    ["조회 성장", channel.viewGrowth],
+    ["팬덤", channel.fandom],
+    ["광고 적합", channel.adFit],
+    ["브랜드 안전", channel.brandSafety],
+  ];
+  return `<section class="app-panel">
+    <h3>${channel.name} 정밀 점수판</h3>
+    <div class="signal-grid">${metrics.map(([label, value]) => `<div><span>${label}</span><strong>${value}</strong><i style="--bar:${value}%"></i></div>`).join("")}</div>
+    <div class="score-row">
+      ${scorePill("월 조회", compactCount(channel.monthlyViews))}
+      ${scorePill("90일 성장", pct(channel.growthRate))}
+      ${scorePill("단가", `${krw(channel.rateMin)}~${krw(channel.rateMax)}`)}
+      ${scorePill("가치", krw(channel.value))}
+    </div>
+  </section>`;
+}
+
+function pageShell(content) {
+  return `<div class="app-scroll">${content}</div>`;
+}
+
+function renderAppHome() {
+  if (currentRole === "advertiser") {
+    const top = channelsTop(5, (a, b) => brandFit(b) - brandFit(a));
+    return pageShell(`
+      <section class="app-hero-card">
+        <div><span>광고주 홈</span><h2>유튜버 검색</h2><p>브랜드 핏, CIV, 성장성, 안전성, 예상 단가를 한 화면에서 비교하고 캠페인 후보를 바로 추립니다.</p></div>
+        <div class="app-search"><input placeholder="예: 뷰티, IT, 출근 메이크업, 생산성 앱" /><select><option>전체 카테고리</option><option>뷰티</option><option>IT</option><option>게임</option><option>먹방</option><option>경제</option></select><select><option>브랜드 안전성 80+</option><option>성장성 90+</option><option>ROI 150%+</option></select><button data-app-tab="1">검색</button></div>
+      </section>
+      <h3 class="app-section-title">핵심 지표</h3>
+      ${metricTiles(roles.advertiser.kpis)}
+      <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
+      <div class="app-rank-list">${top.map((channel, index) => `<button data-app-tab="1"><b>${index + 1}</b><span><strong>${channel.name}</strong><em>${channel.category} · 핏 ${brandFit(channel)} · ROI ${pct(channel.roi)} · 월조회 ${compactCount(channel.monthlyViews)}</em></span></button>`).join("")}</div>
+      <h3 class="app-section-title">브랜드 핏 워치리스트</h3>
+      ${denseScoreTable(top, "advertiser")}
+    `);
+  }
+  if (currentRole === "creator") {
+    return pageShell(`
+      <section class="app-hero-card"><div><span>크리에이터 홈</span><h2>온유메이크업 채널 운영 보드</h2><p>CIV 변화, 협업 제안, 수익 정산, 콘텐츠 운영 지표를 업무용 화면으로 펼쳐 봅니다.</p></div>${ticker([channels[1], channels[0], channels[2], channels[10]])}</section>
+      <h3 class="app-section-title">핵심 상태</h3>
+      ${metricTiles(roles.creator.kpis)}
+      <div class="pc-work-grid">
+        <section class="app-panel"><h3>신규 협업·제안</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>
+        ${signalBoard(channels[1])}
+      </div>
+    `);
+  }
+  return pageShell(`
+    <section class="app-hero-card"><div><span>투자자 홈</span><h2>내 투자 자산 현황</h2><p>채널별 리포트, 마켓 가격, 파트너십 조건, 위험 점수를 촘촘하게 확인합니다.</p></div>${ticker(channelsTop(6))}</section>
+    <h3 class="app-section-title">핵심 지표</h3>
+    ${metricTiles(roles.investor.kpis)}
+    <div class="pc-work-grid">
+      <section class="app-panel"><h3>오늘 확인할 내용</h3><div class="app-row"><span>채널별 광고 수익과 배분 현황 업데이트</span><strong>리포트</strong></div><div class="app-row"><span>권리 리스크 낮음 채널 IP 3개 업데이트</span><strong>마켓</strong></div><div class="app-row"><span>협력 채널 성장 로드맵 8개 업데이트</span><strong>파트너십</strong></div></section>
+      <section class="app-panel"><h3>마켓 스코어 상위</h3>${channelsTop(5).map((channel) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>${channel.category} · ${compactCount(channel.subscribers)} · 가치 ${krw(channel.value)}</em></span><strong>${marketScore(channel)}</strong></div>`).join("")}</section>
+    </div>
+  `);
+}
+
+function renderAppAnalysis() {
+  if (currentRole === "advertiser") {
+    const top = channelsTop(15, (a, b) => brandFit(b) - brandFit(a));
+    return pageShell(`
+      <section class="page-head"><div><p class="eyebrow">Insight</p><h2>채널 인사이트</h2><p>앱보다 더 많은 비교 지표를 PC에서 한 번에 보도록 구성했습니다.</p></div><div class="score-row">${scorePill("검색 결과", "15건")}${scorePill("안전성 80+", `${channels.filter((c) => c.brandSafety >= 80).length}건`)}${scorePill("ROI 150%+", `${channels.filter((c) => c.roi >= 150).length}건`)}</div></section>
+      <section class="app-panel"><h3>필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>브랜드 안전성순</option><option>CIV순</option><option>성장성순</option><option>ROI순</option></select><input placeholder="채널명, 키워드 검색" /></div></section>
+      ${denseScoreTable(top, "advertiser")}
+      <h3 class="app-section-title">정밀 카드</h3><div class="channel-grid">${top.slice(0, 9).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
+      ${signalBoard(top[0])}
+    `);
+  }
+  if (currentRole === "creator") {
+    return pageShell(`
+      <section class="page-head"><div><p class="eyebrow">CIV Diagnosis</p><h2>CIV진단</h2><p>채널 가치, 성장성, 팬덤, 광고 적합도를 실제 운영 지표처럼 자세히 확인합니다.</p></div><div class="score-row">${scorePill("현재 CIV", "87.0")}${scorePill("상위", "9%")}${scorePill("예상 가치", krw(channels[1].value))}</div></section>
+      <div class="pc-analysis-grid">${signalBoard(channels[1])}<section class="app-panel"><h3>개선 액션</h3><div class="app-insight"><strong>정기 업로드 주기 최적화</strong><p>금요일 오후 6시 업로드 패턴에서 조회 성장 점수가 가장 높습니다.</p></div><div class="app-insight"><strong>브랜드 안전성 유지</strong><p>협찬 가이드 준수율과 댓글 위험도가 안정권입니다.</p></div><div class="button-row"><button class="secondary-button" data-app-tab="2">협업·제안 보기</button><button class="primary-button" data-app-tab="3">수익 정산 보기</button></div></section></div>
+      ${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}
+    `);
+  }
+  return pageShell(`
+    <section class="page-head"><div><p class="eyebrow">Report</p><h2>채널 리포트</h2><p>투자자용 리포트는 수익성, 성장성, 권리 위험, 시장 가격을 모두 펼쳐서 봅니다.</p></div><div class="score-row">${scorePill("리포트", "8건")}${scorePill("권리 위험 낮음", "9건")}${scorePill("평균 ROI", "151.2%")}</div></section>
+    ${ticker(channelsTop(8))}
+    ${denseScoreTable(channelsTop(12), "investor")}
+    <div class="pc-work-grid"><section class="app-panel"><h3>수익 배분 업데이트</h3>${channelsTop(5).map((channel, index) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>광고 수익 ${krw(channel.rateMax * (5 + index))} · 예상 ROI ${pct(channel.roi)}</em></span><strong>${index < 2 ? "상향" : "유지"}</strong></div>`).join("")}</section>${signalBoard(channelsTop(1)[0])}</div>
+  `);
+}
+
+function renderAppCampaign() {
+  if (currentRole === "advertiser") {
+    return pageShell(`
+      <section class="page-head"><div><p class="eyebrow">Campaign</p><h2>성과 및 계약 관리</h2><p>집행중 캠페인과 완료 리포트를 같은 화면에서 비교합니다.</p></div><div class="score-row">${scorePill("집행중", "5건")}${scorePill("검수중", "3건")}${scorePill("평균 ROI", "148%")}</div></section>
+      <div class="pc-work-grid">
+        <section class="app-panel"><h3>캠페인 현황</h3>${campaigns.map(([name, channel, status, budget, roi, reach]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${channel} · ${budget} · ${reach}</em></span><strong>${status}<br><em>${roi}</em></strong></div>`).join("")}</section>
+        <section class="app-panel"><h3>예산·성과 시뮬레이터</h3><label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label><input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" /><label>캠페인 기간 <output id="durationOutput">4주</output></label><input id="durationRange" type="range" min="1" max="12" value="4" /><div class="result-grid" id="simResults"></div></section>
+      </div>
+      ${denseScoreTable(channelsTop(8, (a, b) => b.roi - a.roi), "advertiser")}
+    `);
+  }
+  if (currentRole === "creator") {
+    return pageShell(`
+      <section class="page-head"><div><p class="eyebrow">Offers</p><h2>협업·제안</h2><p>받은 협찬, 광고 제안, 제작 조건을 한 화면에서 검토합니다.</p></div><div class="score-row">${scorePill("신규", "5건")}${scorePill("확정", "2건")}${scorePill("예상 매출", "₩ 2,150만")}</div></section>
+      <section class="app-panel"><h3>제안 리스트</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>
+      <div class="channel-grid">${[channels[1], channels[0], channels[2]].map((channel) => channelCard(channel, "creator")).join("")}</div>
+    `);
+  }
+  const market = channelsTop(15, (a, b) => marketScore(b) - marketScore(a));
+  return pageShell(`
+    <section class="page-head"><div><p class="eyebrow">Market</p><h2>채널 매매 및 인수 마켓</h2><p>잠재력이 검증된 크리에이터 채널의 전체 권리를 가격, 성장성, 위험 점수로 비교합니다.</p></div><div class="score-row">${scorePill("마켓", "15건")}${scorePill("평균 가치", "₩ 9.8억")}${scorePill("상승 후보", "6건")}</div></section>
+    ${ticker(market.slice(0, 8))}
+    <section class="app-panel"><h3>마켓 필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>IT</option><option>게임</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>전체 가격대</option><option>3억 이하</option><option>3억~10억</option><option>10억 이상</option></select><input placeholder="채널명 검색" /></div></section>
+    ${denseScoreTable(market, "investor")}
+    <h3 class="app-section-title">인수 검토 카드</h3><div class="channel-grid">${market.slice(0, 9).map((channel) => channelCard(channel, "investor")).join("")}</div>
+  `);
+}
+
+function renderAppTrade() {
+  if (currentRole === "advertiser") {
+    const matches = channels.filter((channel) => channel.brandSafety >= 80).sort((a, b) => brandFit(b) - brandFit(a));
+    return pageShell(`
+      <section class="page-head"><div><p class="eyebrow">Channel Matching</p><h2>채널 매칭</h2><p>AI가 우리 브랜드와 핏이 맞는 유망 채널을 추천하고 카테고리, 성장성, 안전성을 함께 비교합니다.</p></div><div class="score-row">${scorePill("추천", `${matches.length}건`)}${scorePill("평균 핏", "88")}${scorePill("안전성 90+", `${matches.filter((c) => c.brandSafety >= 90).length}건`)}</div></section>
+      <section class="app-panel"><h3>매칭 조건</h3><div class="filter-grid"><select><option>뷰티 브랜드</option><option>IT/SaaS</option><option>게이밍</option><option>푸드</option><option>금융</option></select><select><option>브랜드 안전성 80+</option><option>성장성 90+</option><option>ROI 150%+</option></select><select><option>예산 전체</option><option>500만 이하</option><option>500만~2,000만</option><option>2,000만 이상</option></select><input placeholder="캠페인 키워드" /></div></section>
+      ${denseScoreTable(matches, "advertiser")}
+      <div class="channel-grid">${matches.slice(0, 9).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
+    `);
+  }
+  if (currentRole === "creator") {
+    return pageShell(`
+      <section class="page-head"><div><p class="eyebrow">Settlement</p><h2>수익 정산</h2><p>스마트 계약 기반으로 확정된 제안금과 입금 예정일을 관리합니다.</p></div><div class="score-row">${scorePill("출금 가능", "₩ 4,850만")}${scorePill("확정 예정", "₩ 8,450만")}${scorePill("검수 대기", "3건")}</div></section>
+      <div class="pc-work-grid"><section class="app-panel"><h3>정산 대기</h3><div class="app-row"><span><strong>스킨케어 런칭 6월</strong><br><em>검수 완료 · 2026.06.05 입금 예정</em></span><strong>₩ 18,000,000</strong></div><div class="app-row"><span><strong>에어랩 스타일러</strong><br><em>촬영본 승인 · 2026.06.12 입금 예정</em></span><strong>₩ 4,800,000</strong></div><div class="app-row"><span><strong>출근 메이크업 시즌 3</strong><br><em>1차 콘텐츠 승인</em></span><strong>₩ 12,000,000</strong></div></section><section class="app-panel"><h3>정산 방식</h3><div class="app-row"><span>자동 정산</span><strong>활성</strong></div><div class="app-row"><span>세금계산서</span><strong>연동</strong></div><div class="app-row"><span>출금 계좌</span><strong>확인됨</strong></div><button class="primary-button">출금 신청</button></section></div>
+    `);
+  }
+  const partners = channelsTop(12, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
+  return pageShell(`
+    <section class="page-head"><div><p class="eyebrow">Partnership</p><h2>파트너십</h2><p>협력 채널과의 동반 성장 로드맵을 확인하고 장기 파트너십 후보를 선별합니다.</p></div><div class="score-row">${scorePill("추천", "12건")}${scorePill("PPL 적합", "8건")}${scorePill("빠른 성장", "6건")}</div></section>
+    <section class="app-panel"><h3>파트너십 조건</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>먹방</option><option>IT</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>빠른 성장</option></select><select><option>PPL 적합 우선</option><option>성장성 우선</option><option>위험 낮음 우선</option></select><input placeholder="제안 키워드" /></div></section>
+    ${denseScoreTable(partners, "investor")}
+    <div class="channel-grid">${partners.slice(0, 9).map((channel) => channelCard(channel, "investor")).join("")}</div>
+  `);
+}
+
+function renderAppInvest() {
+  return pageShell(`
+    <section class="page-head"><div><p class="eyebrow">Creator Operation</p><h2>채널 운영</h2><p>콘텐츠 로드맵, 협업 일정, 성장 액션을 크리에이터 업무 화면으로 관리합니다.</p></div><div class="score-row">${scorePill("업로드 예정", "8편")}${scorePill("협업 일정", "5건")}${scorePill("CIV 목표", "90")}</div></section>
+    <div class="pc-work-grid"><section class="app-panel"><h3>콘텐츠 운영 로드맵</h3><div class="app-row"><span><strong>출근 전 10분 메이크업</strong><br><em>촬영 2편 · 편집 1편 · 업로드 금요일</em></span><strong>진행</strong></div><div class="app-row"><span><strong>기초 라인 비교 리뷰</strong><br><em>제품 수령 완료 · 가이드 검토</em></span><strong>준비</strong></div><div class="app-row"><span><strong>라이브 Q&A</strong><br><em>팬덤 반응 테스트</em></span><strong>예약</strong></div></section>${signalBoard(channels[1])}</div>
+  `);
+}
+
+function renderAppPreview() {
+  const content = document.querySelector("#appContent");
+  const bottomNav = document.querySelector("#bottomNav");
+  const sideNav = document.querySelector("#appSideNav");
+  const drawerLinks = document.querySelector("#drawerLinks");
+  if (!content) return;
+
+  const tabs = appTabs[currentRole];
+  const currentTabKey = tabs[currentAppTab]?.[1] || "home";
+  const navMarkup = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label}</button>`).join("");
+  if (bottomNav) bottomNav.innerHTML = navMarkup;
+  if (sideNav) sideNav.innerHTML = navMarkup;
+  if (drawerLinks) drawerLinks.innerHTML = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label} 이동</button>`).join("");
+
+  const pageTitle = document.querySelector("#pcPageTitle");
+  if (pageTitle) pageTitle.textContent = `${roles[currentRole].label} ${tabs[currentAppTab]?.[0] || "홈"}`;
+
+  if (currentTabKey === "home") content.innerHTML = renderAppHome();
+  if (currentTabKey === "analysis") content.innerHTML = renderAppAnalysis();
+  if (currentTabKey === "campaign") content.innerHTML = renderAppCampaign();
+  if (currentTabKey === "trade") content.innerHTML = renderAppTrade();
+  if (currentTabKey === "invest") content.innerHTML = renderAppInvest();
+
+  document.querySelectorAll("[data-app-tab]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const next = Number(button.dataset.appTab);
+      const nextUrl = button.dataset.pageUrl || routeByKey[tabs[next]?.[1]];
+      if (nextUrl && next !== currentAppTab) {
+        location.href = nextUrl;
+        return;
+      }
+      currentAppTab = next;
+      document.querySelector("#drawer")?.classList.remove("open");
+      renderAppPreview();
+    });
+  });
+  bindSimulator();
+}
+
+function bindSimulator() {
+  const budget = document.querySelector("#budgetRange");
+  const duration = document.querySelector("#durationRange");
+  const results = document.querySelector("#simResults");
+  if (!budget || !duration || !results) return;
+  const update = () => {
+    const b = Number(budget.value);
+    const d = Number(duration.value);
+    const impressions = b * 0.31 + d * 135000;
+    const clicks = impressions * 0.047;
+    const roi = 142 + d * 3.8;
+    document.querySelector("#budgetOutput").textContent = krw(b);
+    document.querySelector("#durationOutput").textContent = `${d}주`;
+    results.innerHTML = `<div><span>예상 노출수</span><strong>${Math.round(impressions).toLocaleString("ko-KR")}회</strong></div><div><span>예상 클릭수</span><strong>${Math.round(clicks).toLocaleString("ko-KR")}회</strong></div><div><span>예상 ROI</span><strong>${roi.toFixed(1)}%</strong></div><div><span>예상 매출</span><strong>${krw((b * roi) / 100)}</strong></div>`;
+  };
+  budget.addEventListener("input", update);
+  duration.addEventListener("input", update);
+  update();
 }
 
 function setRole(role) {
@@ -190,519 +407,12 @@ function setRole(role) {
   });
   const roleButton = document.querySelector("#roleCycleButton");
   if (roleButton) roleButton.textContent = roles[role].label;
-  if (document.querySelector("#appContent")) {
-    renderAppPreview();
-    return;
-  }
-  renderNavigation();
-  renderHome();
-  renderAnalysis();
-  renderCampaign();
-  renderTrade();
-  renderInvest();
-}
-
-function appCard(title, value, subtext) {
-  return `<article class="app-kpi"><span>${title}</span><strong>${value}</strong><em>${subtext}</em></article>`;
-}
-
-function channelCard(channel) {
-  return `
-    <article class="channel-card" data-app-tab="1">
-      <div class="channel-card__visual">
-        <div class="avatar">${channel.category.slice(0, 1)}</div>
-        <b>CIV ${channel.civ}</b>
-      </div>
-      <div class="channel-card__body">
-        <div class="channel-card__head">
-          <strong>${channel.name}</strong>
-          <span>Verified</span>
-        </div>
-        <p>${channel.category} · 구독자 ${channel.subscribers} · 평균 조회수 ${channel.avgViews}</p>
-        <div class="channel-card__tags"><span>${channel.scale}</span><span>${channel.format}</span></div>
-        <em>${channel.desc}</em>
-      </div>
-      <div class="channel-card__stats">
-        <span>예상 ROI <strong>${channel.roi}</strong></span>
-        <span>추정 가치 <strong>${channel.value}</strong></span>
-      </div>
-    </article>`;
-}
-
-function renderAppPreview() {
-  const content = document.querySelector("#appContent");
-  const bottomNav = document.querySelector("#bottomNav");
-  const sideNav = document.querySelector("#appSideNav");
-  const drawerLinks = document.querySelector("#drawerLinks");
-  if (!content) return;
-
-  const tabs = appTabs[currentRole];
-  const currentTabKey = tabs[currentAppTab]?.[1] || "home";
-  const navMarkup = tabs
-    .map(([label], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}">${label}</button>`)
-    .join("");
-  if (bottomNav) bottomNav.innerHTML = navMarkup;
-  if (sideNav) sideNav.innerHTML = navMarkup;
-  if (drawerLinks) {
-    drawerLinks.innerHTML = tabs
-      .map(([label], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}">${label} 이동</button>`)
-      .join("");
-  }
-  const pageTitle = document.querySelector("#pcPageTitle");
-  if (pageTitle) pageTitle.textContent = `${roles[currentRole].label} ${tabs[currentAppTab]?.[0] || "홈"}`;
-
-  if (currentTabKey === "home") content.innerHTML = renderAppHome();
-  if (currentTabKey === "analysis") content.innerHTML = renderAppAnalysis();
-  if (currentTabKey === "campaign") content.innerHTML = renderAppCampaign();
-  if (currentTabKey === "trade") content.innerHTML = renderAppTrade();
-  if (currentTabKey === "invest") content.innerHTML = renderAppInvest();
-
-  document.querySelectorAll("[data-app-tab]").forEach((button) => {
-    button.addEventListener("click", () => {
-      currentAppTab = Number(button.dataset.appTab);
-      document.querySelector("#drawer")?.classList.remove("open");
-      renderAppPreview();
-    });
-  });
-  document.querySelectorAll("[data-role-button]").forEach((button) => {
-    button.addEventListener("click", () => setRole(button.dataset.roleButton));
-  });
-  bindSimulator();
-}
-
-function renderAppHome() {
-  const data = roles[currentRole];
-  const kpis = data.kpis.map(([label, value, sub]) => appCard(label, value, sub)).join("");
-  const homeBody = {
-    advertiser: `
-      <section class="app-hero-card">
-        <span>광고주 모드</span>
-        <h2>유튜버 검색</h2>
-        <p>키워드만 입력해 캠페인에 맞는 크리에이터를 바로 찾아보세요.</p>
-        <div class="app-search">
-          <input placeholder="예: 뷰티, 게임, 출근 메이크업" />
-          <button data-app-tab="1">검색</button>
-        </div>
-      </section>
-      <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
-      <div class="app-rank-list">
-        ${ranks.map(([rank, name, info]) => `<button data-app-tab="1"><b>${rank}</b><span><strong>${name}</strong><em>${info}</em></span></button>`).join("")}
-      </div>`,
-    creator: `
-      <section class="app-hero-card">
-        <span>파트너 파워 크리에이터 · CIV 점수 87.0</span>
-        <h2>온유메이크업 크리에이터님,</h2>
-        <p>채널 성장과 광고 제휴 매칭을 실시간으로 연동하여 가치를 극대화하고 있습니다.</p>
-      </section>
-      <section class="app-panel">
-        <div class="app-row"><strong>내 채널 상세 정보 요약</strong><span>펼쳐서 상세 보기</span></div>
-        <p>카테고리, 구독자 규모, 단가 범위</p>
-      </section>
-      <h3 class="app-section-title">협찬 관리 현황</h3>
-      <section class="app-panel"><h3>신규 협찬 제안 현황</h3><div class="app-row"><span>올리브영 신규 기초 라인업 런칭 협찬 제안<br><em>유한회사 푸르가야뷰티 · 제품 제공 및 ₩1,500,000</em></span><strong>수락</strong></div><div class="app-row"><span>에스티 로더 어드밴스드 나이트 리페어 협찬 협의<br><em>(유) 마루센터 · 제품 제공 및 보상 조율 가능</em></span><strong>수락</strong></div></section>
-      <section class="app-panel"><h3>수령 완료 물품</h3><div class="app-row"><span>샤넬 하이드라 뷰티 마이크로 세럼<br><em>2026.05.20 · 집행 가이드 동봉</em></span><strong>2종</strong></div><div class="app-row"><span>다이슨 에어랩 멀티 스타일러 롱배럴 에디션<br><em>2026.05.15 · PPL 단독 권장</em></span><strong>수령</strong></div></section>`,
-    investor: `
-      <section class="app-hero-card">
-        <span>투자자 모드</span>
-        <h2>성장 채널을 찾고 PPL 파트너십을 제안하세요</h2>
-        <p>시리즈 기획안 계약, 채널 매매, 성장 후보 발굴을 한 화면에서 관리합니다.</p>
-      </section>
-      <h3 class="app-section-title">투자자 주요 현황</h3>
-      <div class="app-kpi-grid">${kpis}</div>
-      <section class="app-panel pc-side-panel">
-        <h3>오늘 확인할 내용</h3>
-        <div class="app-row"><span>신규 시리즈 기획안 3건 지원 조건 검토 필요</span><strong>계약</strong></div>
-        <div class="app-row"><span>권리 리스크 낮음 채널 3개 업데이트</span><strong>매매</strong></div>
-        <div class="app-row"><span>PPL 적합 성장 채널 8개 업데이트</span><strong>발굴</strong></div>
-      </section>`,
-  }[currentRole];
-  return `
-    <div class="app-scroll">
-      ${homeBody}
-    </div>`;
-}
-
-function renderAppAnalysis() {
-  if (currentRole === "advertiser") {
-    return `
-      <div class="app-scroll">
-        <section class="app-hero-card">
-          <span>상세 검색</span>
-          <h2>크리에이터 채널 탐색</h2>
-          <p>광고 캠페인에 최적화된 크리에이터를 상세 조건으로 검색하세요.</p>
-          <div class="app-search">
-            <select><option>전체 분야</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select>
-            <select><option>전체 규모</option><option>소형 (&lt;10만)</option><option>중형 (10만~50만)</option><option>대형 (50만+)</option></select>
-            <select><option>전체 포맷</option><option>롱폼</option><option>숏폼</option><option>롱폼+숏폼</option></select>
-          </div>
-        </section>
-        <h3 class="app-section-title">검색 결과 15건</h3>
-        <div class="channel-grid">
-          ${advertiserChannels.map(channelCard).join("")}
-        </div>
-      </div>`;
-  }
-  const title = currentRole === "creator" ? "내 채널 가치 지수 (CIV)" : currentRole === "investor" ? "장기 계약 가치 분석" : "채널 가치 요약 지표";
-  const profileName = currentRole === "creator" ? "미나뷰티로그" : "온유메이크업";
-  const profileMeta = currentRole === "creator" ? "YouTube · 뷰티 · 구독자 7.8만명" : "YouTube · 뷰티 · 구독자 28.4만명";
-  const score = currentRole === "creator" ? "75.0" : "87";
-  const scoreMeta = currentRole === "creator" ? "최근 30일 데이터 기준 · 상승 25% · 추정 공정 가치 ₩1.1억 ~ ₩1.3억" : "안정 성장 · 추정 채널 가치 ₩4.7억";
-  return `
-    <div class="app-scroll">
-      <div class="pc-analysis-grid">
-        <div>
-          <section class="app-profile">
-            <div class="avatar">뷰</div>
-            <div><strong>${profileName}</strong><span>${profileMeta}</span></div>
-            <i>✓</i>
-          </section>
-          <section class="app-score-card">
-            <span>${title}</span>
-            <strong>${score}</strong>
-            <em>${scoreMeta}</em>
-          </section>
-        </div>
-        <div class="metric-grid app-metrics">
-          <div><span>성장성</span><strong>93</strong><em>S등급</em></div>
-          <div><span>팬덤</span><strong>84</strong><em>우수</em></div>
-          <div><span>광고 적합도</span><strong>90</strong><em>우수</em></div>
-          <div><span>브랜드 안전성</span><strong>84</strong><em>A등급</em></div>
-        </div>
-      </div>
-      <section class="app-panel">
-        <h3>${currentRole === "creator" ? "CIV 가치 상승 액션 플랜" : "AI 분석 요약"}</h3>
-        ${currentRole === "creator" ? `<div class="app-insight"><strong>정기 업로드 주기 최적화</strong><p>매주 금요일 오후 6시 업로드 시 노출 급상승 예측 · 90% 달성</p></div><div class="button-row"><button class="secondary-button" data-app-tab="2">제안 관리</button><button class="primary-button" data-app-tab="3">수익 정산하기</button></div>` : roles[currentRole].insights.map(([title, body]) => `<div class="app-insight"><strong>${title}</strong><p>${body}</p></div>`).join("")}
-      </section>
-    </div>`;
-}
-
-function renderAppCampaign() {
-  if (currentRole === "creator") {
-    return `
-      <div class="app-scroll">
-        <h2 class="app-page-title">광고 제안 관리 센터</h2>
-        <p class="app-page-sub">광고주가 CIV 가치를 기반으로 보낸 제안을 관리합니다.</p>
-        ${creatorOffers.map((item) => {
-          const [company, name, price, date, status] = item;
-          const actions = status === "대기중" ? `<div class="button-row"><button class="danger-button">거절</button><button class="primary-button">수락</button></div>` : `<button class="secondary-button">${status === "수락됨" ? "계약 조율 및 메시지 보내기" : "제안 종료됨"}</button>`;
-          return `<section class="app-panel"><div class="app-row"><strong>${company}</strong><span>${status}</span></div><h3>${name}</h3><div class="app-row"><span>제안 단가<br><strong>${price}</strong></span><span>제안 만료일<br><strong>${date}</strong></span></div>${actions}</section>`;
-        }).join("")}
-      </div>`;
-  }
-  if (currentRole === "investor") {
-    return `
-      <div class="app-scroll">
-        <h2 class="app-page-title">채널 매매 및 인수 마켓</h2>
-        <p class="app-page-sub">잠재력이 검증된 크리에이터 채널의 전체 권리를 투명하게 인수하세요.</p>
-        <section class="app-panel">
-          <div class="app-search">
-            <select><option>전체 분야</option><option>뷰티</option><option>게임</option><option>IT</option></select>
-            <select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select>
-            <select><option>전체 가격대</option><option>1억 미만</option><option>1억~5억</option><option>5억 초과</option></select>
-          </div>
-        </section>
-        <h3 class="app-section-title">인수 가능 매물 15건</h3>
-        ${acquisitionChannels.map(([name, meta, civ, price]) => `<section class="app-panel"><div class="app-row"><strong>${name}</strong><span>${civ}</span></div><p>${meta}</p><div class="app-row"><span>채널 총 매수 제안가<br><em>즉시 인수 가능</em></span><strong>${price}</strong></div></section>`).join("")}
-      </div>`;
-  }
-  return `
-    <div class="app-scroll">
-      <div class="sort-row app-subtabs"><button class="active">ROI 시뮬레이터</button><button>성과 및 계약 관리</button></div>
-      <h2 class="app-page-title">AI 캠페인 ROI 시뮬레이터</h2>
-      <p class="app-page-sub">광고 예산과 기간을 설정해 예상 성과를 확인하고 최적의 채널을 제안받으세요.</p>
-      <section class="app-panel">
-        <label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label>
-        <input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" />
-        <label>캠페인 기간 <output id="durationOutput">4주</output></label>
-        <input id="durationRange" type="range" min="1" max="12" value="4" />
-        <div class="result-grid" id="simResults"></div>
-      </section>
-      <section class="app-panel">
-        <h3>추천 최적화 매칭 채널</h3>
-        <div class="app-row"><span><strong>미나뷰티로그</strong><br><em>뷰티 · 75 CIV · 숏폼 중심 데일리 메이크업·학생 뷰티 채널</em></span><button class="primary-button">제안하기</button></div>
-        <div class="app-row"><span><strong>온유메이크업</strong><br><em>뷰티 · 87 CIV · 기초 화장품 리뷰와 출근 메이크업 중심 채널</em></span><button class="primary-button">제안하기</button></div>
-      </section>
-      <section class="app-panel">
-        <h3>진행 중인 광고 캠페인 계약 현황</h3>
-        ${campaignContracts.map(([name, budget, status, date]) => `<div class="app-row"><span><strong>${name}</strong><br><em>캠페인 예산: ${budget} · 계약 체결일: ${date}</em></span><strong>${status}</strong></div>`).join("")}
-      </section>
-      <section class="app-panel">
-        <h3>집행 완료 캠페인 성과 리포트</h3>
-        ${campaignReports.map(([name, roi, budget, impressions]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${budget} · ${impressions}</em></span><strong>${roi}</strong></div>`).join("")}
-      </section>
-    </div>`;
-}
-
-function renderAppTrade() {
-  if (currentRole === "creator") {
-    return `
-      <div class="app-scroll">
-        <h2 class="app-page-title">정산 및 채널 자본 조달</h2>
-        <p class="app-page-sub">광고 수익 및 장기 협찬비를 정산하고, 장기 광고/협찬 집행권 양도를 신청하세요.</p>
-        <section class="app-panel"><h3>내 수익 및 정산금 현황</h3><div class="app-row"><span>누적 광고 정산액</span><strong>₩28,450,000</strong></div><div class="app-row"><span>누적 장기 광고/협찬비</span><strong>₩4,200,000</strong></div><div class="app-row"><span>출금 가능한 잔액</span><strong>₩4,850,000</strong></div><button class="primary-button">출금 신청</button></section>
-      </div>`;
-  }
-  if (currentRole === "advertiser") {
-    return `
-      <div class="app-scroll">
-        <h2 class="app-page-title">채널 광고 구좌 선매수 마켓</h2>
-        <p class="app-page-sub">크리에이터의 미래 비디오 광고 구좌 및 스폰서십 권리를 선매수하여 단가를 고정하고 독점권을 선점하세요.</p>
-        <section class="app-panel"><h3>선매수 추천 구좌 매물</h3>${slotDeals.map(([name, price, discount, score]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${price} (${discount})</em></span><strong>${score}</strong></div>`).join("")}</section>
-      </div>`;
-  }
-  return `
-    <div class="app-scroll">
-      <h2 class="app-page-title">성장 채널 발굴</h2>
-      <p class="app-page-sub">아직 작지만 성장 가능성이 높은 크리에이터를 찾아 장기 PPL, 광고, 제작 지원으로 함께 키워갈 채널을 선별하세요.</p>
-      <section class="app-panel">
-        <h3>채널 발굴 조건</h3>
-        <div class="sort-row app-subtabs"><button class="active">전체</button><button>뷰티</button><button>먹방</button><button>IT</button><button>경제</button></div>
-        <div class="sort-row app-subtabs"><button class="active">소형</button><button>중형</button><button>빠른 성장</button><button>PPL 적합</button></div>
-      </section>
-      <h3 class="app-section-title">추천 성장 채널</h3>
-      <div class="channel-grid discovery-grid">
-        ${advertiserChannels.map((channel, index) => {
-          const growth = [95, 89, 86, 92, 84, 79][index] || 82;
-          const fit = Math.round((channel.civ + growth) / 2);
-          const support = 120 + index * 35;
-          return `
-            <article class="channel-card discovery-card">
-              <div class="channel-card__visual">
-                <div class="avatar">${channel.category.slice(0, 1)}</div>
-                <b>성장 ${growth}</b>
-              </div>
-              <div class="channel-card__body">
-                <div class="channel-card__head"><strong>${channel.name}</strong><span>Verified</span></div>
-                <p>${channel.category} · 구독자 ${channel.subscribers} · 평균 조회 ${channel.avgViews}</p>
-                <em>${channel.desc}</em>
-              </div>
-              <div class="channel-card__stats">
-                <span>PPL 적합 <strong>${fit}</strong></span>
-                <span>월 지원 <strong>${support}만</strong></span>
-              </div>
-              <div class="button-row discovery-actions"><button class="secondary-button">상세 보기</button><button class="primary-button">파트너 제안</button></div>
-            </article>`;
-        }).join("")}
-      </div>
-    </div>`;
-}
-
-function renderAppInvest() {
-  if (currentRole === "investor") {
-    return `
-      <div class="app-scroll">
-        <h2 class="app-page-title">크리에이터 시리즈 계약</h2>
-        <p class="app-page-sub">크리에이터가 등록한 영상 시리즈 기획안을 보고 제작비 투자 또는 제품 지원을 제안하세요.</p>
-        <section class="app-panel">
-          <h3>지원 방식 설정</h3>
-          <div class="app-row"><span>투자 검토 금액</span><strong>₩5,000,000</strong></div>
-          <input type="range" min="1000000" max="20000000" value="5000000" />
-          <label class="check-row"><input type="checkbox" checked /> 제품 지원도 함께 제안</label>
-          <p>현금 투자와 샘플/제품 제공을 조합해 제안합니다.</p>
-        </section>
-        <h3 class="app-section-title">투자 가능한 시리즈</h3>
-        ${seriesPlans.map((plan) => `<section class="app-panel series-card">
-          <div class="app-row"><strong>${plan.title}</strong><span>${plan.days}</span></div>
-          <p><b>${plan.channel}</b> · ${plan.category}</p>
-          <p>${plan.summary}</p>
-          <input type="range" min="0" max="100" value="${plan.progress}" disabled />
-          <div class="app-row"><span>모집 ${plan.raised}</span><span>목표 ${plan.target}</span></div>
-          <div class="result-grid">
-            <div><span>최소 참여</span><strong>${plan.minTicket}</strong></div>
-            <div><span>제품 지원</span><strong>${plan.product}</strong></div>
-            <div><span>노출 규모</span><strong>${plan.exposure}</strong></div>
-            <div><span>계약 혜택</span><strong>${plan.benefit}</strong></div>
-          </div>
-          <div class="button-row"><button class="secondary-button">기획안 보기</button><button class="primary-button">지원 제안</button></div>
-        </section>`).join("")}
-      </div>`;
-  }
-  return `
-    <div class="app-scroll">
-      <h2 class="app-page-title">${currentRole === "creator" ? "내 프로젝트 펀딩 관리" : "광고주 제휴 연계 & 집행 실적"}</h2>
-      <section class="app-panel">
-        <div class="app-row"><strong>뷰티풀 마인드 시즌3 제작 프로젝트</strong><span>D-3</span></div>
-        <p>목표 모집 금액 ₩50,000,000 · 현재 모금된 금액 ₩41,000,000 · 달성률 82% · 48명 참여</p>
-        <input type="range" min="0" max="100" value="82" disabled />
-        <button class="primary-button">${currentRole === "creator" ? "참여자 보기" : "제휴 혜택 보기"}</button>
-      </section>
-      <section class="app-panel">
-        <h3>${currentRole === "creator" ? "실시간 펀딩 참여자" : "플랫폼 주요 지표"}</h3>
-        ${currentRole === "creator" ? `<div class="app-row"><span>투자자 A님</span><strong>₩5,000,000 참여</strong></div><div class="app-row"><span>투자자 B님</span><strong>₩10,000,000 참여</strong></div><div class="app-row"><span>투자자 C님</span><strong>₩2,000,000 참여</strong></div>` : roles.creator.kpis.map(([label, value, sub]) => `<div class="app-row"><span>${label}</span><strong>${value}<br><em>${sub}</em></strong></div>`).join("")}
-      </section>
-    </div>`;
-}
-
-function renderNavigation() {
-  const activeMap = { home: "index.html", analysis: "analysis.html", campaign: "campaign.html", trade: "trade.html", invest: "invest.html" };
-  const items = roles[currentRole].nav;
-  const navHtml = items
-    .map(([label, href]) => `<button class="${activeMap[page] === href ? "active" : ""}" onclick="location.href='${href}'">${label}</button>`)
-    .join("");
-  const drawerHtml = items
-    .map(([label, href]) => `<button class="${activeMap[page] === href ? "active" : ""}" onclick="location.href='${href}'">${label} 이동</button>`)
-    .join("");
-  const bottomNav = document.querySelector("#bottomNav");
-  const drawerLinks = document.querySelector("#drawerLinks");
-  if (bottomNav) bottomNav.innerHTML = navHtml;
-  if (drawerLinks) drawerLinks.innerHTML = drawerHtml;
+  renderAppPreview();
   document.querySelectorAll(".login-link").forEach((link) => {
     if (loggedIn && link.getAttribute("href") === "./login.html") {
       link.textContent = "내 계정";
-      link.href = "./index.html#dashboard";
+      link.href = "./index.html";
     }
-  });
-}
-
-function renderHome() {
-  const data = roles[currentRole];
-  const title = document.querySelector("#dashboardTitle");
-  const kpiGrid = document.querySelector("#kpiGrid");
-  const rankStrip = document.querySelector("#rankStrip");
-  if (title) title.textContent = data.title;
-  if (kpiGrid) {
-    kpiGrid.innerHTML = data.kpis
-      .map(([label, value, sub]) => `<article class="kpi-card"><span>${label}</span><strong>${value}</strong><em>${sub}</em></article>`)
-      .join("");
-  }
-  if (rankStrip) {
-    rankStrip.innerHTML = ranks
-      .map(([rank, name, info]) => `<article class="rank-card"><b class="rank-badge">${rank}</b><div><strong>${name}</strong><span>${info}</span></div></article>`)
-      .join("");
-  }
-}
-
-function renderAnalysis() {
-  const title = document.querySelector("#analysisTitle");
-  const list = document.querySelector("#insightList");
-  if (title) {
-    title.textContent = currentRole === "creator" ? "내 채널 CIV 관리" : currentRole === "investor" ? "채널 투자 가치 분석" : "크리에이터 상세 검색";
-  }
-  if (list) {
-    list.innerHTML = roles[currentRole].insights
-      .map(([title, body]) => `<article class="insight"><strong>${title}</strong><p>${body}</p></article>`)
-      .join("");
-  }
-}
-
-function renderCampaign() {
-  const root = document.querySelector("#campaignPage");
-  const homeRoot = document.querySelector("#campaign");
-  const target = root || homeRoot;
-  if (!target) return;
-  if (currentRole === "creator") {
-    target.innerHTML = `
-      <div class="section-title"><div><p class="eyebrow">Offers</p><h2>광고 제안 관리 센터</h2></div></div>
-      <div class="feature-grid">
-        <div class="control-card"><h3>받은 제안</h3><p>광고주가 CIV 가치를 기반으로 보낸 프리미엄 제안입니다.</p><div class="portfolio-stats"><div><span>대기중</span><strong>1건</strong></div><div><span>수락됨</span><strong>1건</strong></div></div></div>
-        <div class="list-card">
-          ${creatorOffers.map((x) => {
-            const [company, name, price, date, status] = x; return `<div class="item-row"><div><strong>${name}</strong><p>${company} · ${price} · ${date}</p></div><span class="tag">${status}</span></div>`;
-          }).join("")}
-        </div>
-      </div>`;
-    return;
-  }
-  if (currentRole === "investor") {
-    target.innerHTML = `
-      <div class="section-title"><div><p class="eyebrow">Acquisition</p><h2>채널 매매 및 인수 마켓</h2></div></div>
-      <div class="feature-grid">
-        <div class="control-card"><h3>검색 조건</h3><div class="portfolio-stats"><div><span>분야</span><strong>전체</strong></div><div><span>규모</span><strong>전체</strong></div><div><span>가격대</span><strong>전체</strong></div></div></div>
-        <div class="list-card"><h3>인수 가능 매물 15건</h3>${acquisitionChannels.slice(0, 5).map(([name, meta, civ, price]) => `<div class="item-row"><div><strong>${name}</strong><p>${meta}</p></div><span class="tag">${civ}<br>${price}</span></div>`).join("")}</div>
-      </div>`;
-    return;
-  }
-  target.innerHTML = `
-    <div class="section-title"><div><p class="eyebrow">Campaign</p><h2>AI 캠페인 ROI 시뮬레이터</h2></div></div>
-    <div class="feature-grid">
-      <div class="control-card">
-        <h3>예산과 기간 설정</h3>
-        <label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label>
-        <input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" />
-        <label>캠페인 기간 <output id="durationOutput">4주</output></label>
-        <input id="durationRange" type="range" min="1" max="12" value="4" />
-        <div class="result-grid" id="simResults"></div>
-      </div>
-      <div class="list-card"><h3>추천 최적 매칭 채널</h3><div class="item-row"><div><strong>미나뷰티로그</strong><p>뷰티 · 75 CIV · 숏폼 중심 데일리 메이크업·학생 뷰티 채널</p></div><button class="primary-button">제안하기</button></div><div class="item-row"><div><strong>온유메이크업</strong><p>뷰티 · 87 CIV · 기초 화장품 리뷰와 출근 메이크업 중심 채널</p></div><button class="primary-button">제안하기</button></div></div>
-    </div>`;
-  bindSimulator();
-}
-
-function bindSimulator() {
-  const budget = document.querySelector("#budgetRange");
-  const duration = document.querySelector("#durationRange");
-  const results = document.querySelector("#simResults");
-  if (!budget || !duration || !results) return;
-  const update = () => {
-    const b = Number(budget.value);
-    const d = Number(duration.value);
-    const impressions = b * 0.28 + d * 120000;
-    const clicks = impressions * 0.045;
-    const roi = 145 + d * 3.5;
-    document.querySelector("#budgetOutput").textContent = money(b);
-    document.querySelector("#durationOutput").textContent = `${d}주`;
-    results.innerHTML = `<div><span>예상 노출수</span><strong>${Math.round(impressions).toLocaleString("ko-KR")} 회</strong></div><div><span>예상 클릭수</span><strong>${Math.round(clicks).toLocaleString("ko-KR")} 회</strong></div><div><span>예상 ROI</span><strong>${roi.toFixed(1)} %</strong></div><div><span>예상 광고 매출</span><strong>${Math.round((b * roi / 100) / 10000).toLocaleString("ko-KR")}만 원</strong></div>`;
-  };
-  budget.addEventListener("input", update);
-  duration.addEventListener("input", update);
-  update();
-}
-
-function renderTrade() {
-  const root = document.querySelector("#tradePage") || document.querySelector("#trade");
-  if (!root) return;
-  if (currentRole === "creator") {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Settlement</p><h2>수익 정산</h2></div></div><div class="feature-grid"><div class="control-card"><h3>내 수익 및 정산금 현황</h3><div class="portfolio-stats"><div><span>누적 광고 정산액</span><strong>₩28,450,000</strong></div><div><span>누적 장기 광고/협찬비</span><strong>₩4,200,000</strong></div><div><span>출금 가능 잔액</span><strong>₩4,850,000</strong></div></div><button class="primary-button">출금 신청</button></div><div class="list-card"><h3>정산 안내</h3><div class="item-row"><div><strong>진행 완료 광고 정산</strong><p>검수 완료 캠페인의 정산금을 확인하고 출금 신청을 진행합니다.</p></div><span class="tag">정산</span></div></div></div>`;
-    return;
-  }
-  if (currentRole === "advertiser") {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Ad Slot Market</p><h2>채널 광고 구좌 선매수 마켓</h2></div></div><div class="list-card"><h3>선매수 추천 구좌 매물</h3>${slotDeals.map(([name, price, discount, score]) => `<div class="item-row"><div><strong>${name}</strong><p>${price} (${discount})</p></div><span class="tag">${score}</span></div>`).join("")}</div>`;
-    return;
-  }
-  root.innerHTML = `
-    <div class="section-title"><div><p class="eyebrow">Discovery</p><h2>성장 채널 발굴</h2></div></div>
-    <div class="feature-grid">
-      <div class="control-card">
-        <h3>채널 발굴 조건</h3>
-        <div class="portfolio-stats"><div><span>분야</span><strong>전체</strong></div><div><span>규모</span><strong>소형/중형</strong></div><div><span>조건</span><strong>PPL 적합</strong></div></div>
-        <p>장기 PPL, 광고, 제작 지원으로 함께 키울 수 있는 성장 채널을 선별합니다.</p>
-      </div>
-      <div class="list-card">
-        <h3>추천 성장 채널</h3>
-        ${advertiserChannels.slice(0, 6).map((channel, index) => `<div class="item-row"><div><strong>${channel.name}</strong><p>${channel.category} · 구독자 ${channel.subscribers} · 평균 조회 ${channel.avgViews}</p></div><span class="tag">PPL 적합 ${Math.round((channel.civ + 90 - index) / 2)}<br>월 지원 ${120 + index * 35}만</span></div>`).join("")}
-      </div>
-    </div>`;
-}
-
-function renderInvest() {
-  const root = document.querySelector("#investPage") || document.querySelector("#invest");
-  if (!root) return;
-  if (currentRole === "creator") {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Funding</p><h2>내 프로젝트 펀딩 관리</h2></div></div><div class="feature-grid"><div class="control-card"><h3>뷰티풀 마인드 시즌3 제작 프로젝트</h3><p>목표 모집 금액 ₩50,000,000 · 현재 모금된 금액 ₩41,000,000 · 달성률 82% · 48명 참여</p><input type="range" min="0" max="100" value="82" disabled /></div><div class="list-card"><h3>실시간 펀딩 참여자</h3><div class="item-row"><strong>투자자 A님</strong><span>₩5,000,000 참여</span></div><div class="item-row"><strong>투자자 B님</strong><span>₩10,000,000 참여</span></div><div class="item-row"><strong>투자자 C님</strong><span>₩2,000,000 참여</span></div></div></div>`;
-    return;
-  }
-  if (currentRole === "advertiser") {
-    root.innerHTML = `<div class="section-title"><div><p class="eyebrow">Partnership</p><h2>광고주 펀딩 연계 & 집행 실적</h2></div></div><div class="feature-grid"><div class="control-card"><h3>광고 제휴 혜택</h3><div class="item-row"><div><strong>PPL 매칭 우선권</strong><p>펀딩 성공 시즌 영상 스폰서십 단가 최대 20% 할인</p></div></div><div class="item-row"><div><strong>크로스 미디어 독점권</strong><p>굿즈 및 오프라인 행사 브랜드 노출 독점 보장</p></div></div></div><div class="list-card"><h3>플랫폼 주요 지표</h3>${roles.advertiser.kpis.map(([label, value, sub]) => `<div class="item-row"><div><strong>${label}</strong><p>${sub}</p></div><span class="tag">${value}</span></div>`).join("")}</div></div>`;
-  } else {
-    root.innerHTML = `
-      <div class="section-title"><div><p class="eyebrow">Series Contract</p><h2>크리에이터 시리즈 계약</h2></div></div>
-      <div class="feature-grid">
-        <div class="control-card">
-          <h3>지원 방식 설정</h3>
-          <div class="portfolio-stats"><div><span>투자 검토 금액</span><strong>₩5,000,000</strong></div><div><span>제품 지원</span><strong>포함</strong></div><div><span>제안 방식</span><strong>현금+제품</strong></div></div>
-          <button class="primary-button">지원 조건 저장</button>
-        </div>
-        <div class="list-card">
-          <h3>투자 가능한 시리즈</h3>
-          ${seriesPlans.map((plan) => `<div class="item-row"><div><strong>${plan.title}</strong><p>${plan.channel} · ${plan.category} · ${plan.summary}</p></div><span class="tag">${plan.days}<br>${plan.raised}</span></div>`).join("")}
-        </div>
-      </div>`;
-  }
-  document.querySelectorAll("[data-sort]").forEach((button) => {
-    button.addEventListener("click", () => {
-      document.querySelectorAll("[data-sort]").forEach((b) => b.classList.remove("active"));
-      button.classList.add("active");
-    });
   });
 }
 
@@ -732,7 +442,7 @@ document.querySelector("#loginForm")?.addEventListener("submit", (event) => {
   const role = form.get("role") || "advertiser";
   localStorage.setItem("youchi-role", role);
   localStorage.setItem("youchi-logged-in", "true");
-  location.href = "./index.html#dashboard";
+  location.href = "./index.html";
 });
 
 document.querySelector("#roleCycleButton")?.addEventListener("click", () => {
@@ -751,11 +461,5 @@ document.querySelector("#myPageButton")?.addEventListener("click", () => {
 });
 document.querySelector("#modalCloseButton")?.addEventListener("click", () => document.querySelector("#myPageModal")?.classList.remove("open"));
 document.querySelector(".modal__backdrop")?.addEventListener("click", () => document.querySelector("#myPageModal")?.classList.remove("open"));
-document.querySelectorAll("[data-nav]").forEach((button) => {
-  button.addEventListener("click", () => {
-    const targetPage = { analysis: "analysis.html", campaign: "campaign.html", trade: "trade.html", invest: "invest.html" }[button.dataset.nav];
-    if (targetPage) location.href = targetPage;
-  });
-});
 
 setRole(currentRole);
