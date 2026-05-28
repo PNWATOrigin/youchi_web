@@ -71,22 +71,10 @@ const submenuGroups = {
     ],
   },
   investor: {
-    home: [
-      ["자산", ["투자 자산 현황", "마켓 스코어", "오늘 확인할 내용"]],
-      ["업데이트", ["수익 배분", "권리 리스크"]],
-    ],
-    analysis: [
-      ["리포트", ["채널 리포트", "수익 배분 리포트", "위험 점수"]],
-      ["분석", ["시장 가격", "성장성 비교"]],
-    ],
-    campaign: [
-      ["마켓", ["채널 매매 및 인수", "마켓 필터", "인수 검토 카드"]],
-      ["검토", ["검토함", "리포트 생성", "권리 조건"]],
-    ],
-    trade: [
-      ["파트너십", ["파트너십 조건", "추천 파트너", "PPL 적합"]],
-      ["제안", ["파트너 제안", "유사 채널 추천"]],
-    ],
+    home: [],
+    analysis: [],
+    campaign: [],
+    trade: [],
   },
 };
 
@@ -129,27 +117,9 @@ const subpageRoutes = {
     "CIV 목표": "creator-civ-goal.html",
   },
   investor: {
-    "투자 자산 현황": "investor-assets.html",
-    "마켓 스코어": "investor-market-score.html",
-    "오늘 확인할 내용": "investor-today.html",
-    "수익 배분": "investor-revenue-share.html",
-    "권리 리스크": "investor-risk.html",
-    "채널 리포트": "investor-report.html",
-    "수익 배분 리포트": "investor-revenue-report.html",
-    "위험 점수": "investor-risk-score.html",
-    "시장 가격": "investor-price.html",
-    "성장성 비교": "investor-growth-compare.html",
-    "채널 매매 및 인수": "investor-market.html",
-    "마켓 필터": "investor-market-filter.html",
-    "인수 검토 카드": "investor-acquisition-cards.html",
-    "검토함": "investor-review-box.html",
-    "리포트 생성": "investor-report-create.html",
-    "권리 조건": "investor-rights.html",
-    "파트너십 조건": "investor-partnership.html",
-    "추천 파트너": "investor-partner-recommend.html",
-    "PPL 적합": "investor-ppl-fit.html",
-    "파트너 제안": "investor-partner-proposal.html",
-    "유사 채널 추천": "investor-similar-channel.html",
+    "리포트": "investor-report.html",
+    "마켓": "investor-market.html",
+    "파트너십": "investor-partnership.html",
   },
 };
 
@@ -159,6 +129,9 @@ const fileRouteMeta = Object.entries(subpageRoutes).reduce((acc, [role, routeMap
     if (role === "creator" && title === "CIV진단") tabIndex = 1;
     if (role === "creator" && title === "협업 제안") tabIndex = 2;
     if (role === "creator" && title === "수익 정산") tabIndex = 3;
+    if (role === "investor" && title === "리포트") tabIndex = 1;
+    if (role === "investor" && title === "마켓") tabIndex = 2;
+    if (role === "investor" && title === "파트너십") tabIndex = 3;
     acc[file] = { role, title, tabIndex: Math.max(0, tabIndex) };
   });
   return acc;
@@ -334,6 +307,10 @@ function navFlyout(label, key) {
 function firstSubHref(key) {
   if (currentRole === "creator" && key === "trade") return "creator-settlement.html";
   if (currentRole === "creator" && key === "analysis") return "creator-civ-diagnosis.html";
+  if (currentRole === "investor" && key === "home") return "investment.html";
+  if (currentRole === "investor" && key === "analysis") return "investor-report.html";
+  if (currentRole === "investor" && key === "campaign") return "investor-market.html";
+  if (currentRole === "investor" && key === "trade") return "investor-partnership.html";
   const first = submenuGroups[currentRole]?.[key]?.[0]?.[1]?.[0];
   return first ? subpageHref(currentRole, key, first) : routeByKey[key] || "index.html";
 }
@@ -958,6 +935,55 @@ function creatorScheduleBoard(title = "협업 일정") {
   </section>`);
 }
 
+function investorReportView(title = "리포트") {
+  const owned = channelsTop(8, (a, b) => b.value - a.value);
+  const revenue = owned.slice(0, 5).map((channel, index) => ({
+    channel,
+    adRevenue: channel.rateMax * (6 + index),
+    share: 12 + index * 3,
+    valuationDelta: [8.4, 6.1, 4.8, -1.2, 3.6][index],
+  }));
+  return pageShell(`
+    ${subpageHead(roles.investor.label, title, "데이터 기반의 자산 가치 변화 분석, 채널별 광고 수익과 배분 현황을 확인합니다.")}
+    <section class="app-hero-card"><div><span>Asset Report</span><h2>내 투자 채널 리포트</h2><p>보유 중인 채널 IP의 가치, 광고 수익, 배분 예정 금액, 권리 위험을 한 화면에서 검토합니다.</p></div><div class="score-row">${scorePill("평가액", "₩ 42.7억")}${scorePill("월 광고 수익", "₩ 2.8억")}${scorePill("배분 예정", "₩ 6,420만")}</div></section>
+    <div class="pc-work-grid">
+      <section class="app-panel"><h3>자산 가치 변화</h3>${revenue.map(({ channel, valuationDelta }) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>${channel.category} · 구독자 ${compactCount(channel.subscribers)} · 현재 가치 ${krw(channel.value)}</em></span><strong>${valuationDelta > 0 ? "+" : ""}${valuationDelta}%</strong></div>`).join("")}</section>
+      <section class="app-panel"><h3>광고 수익 배분</h3>${revenue.map(({ channel, adRevenue, share }) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>최근 광고 수익 ${krw(adRevenue)} · 보유 권리 ${share}%</em></span><strong>${krw(adRevenue * share / 100)}</strong></div>`).join("")}</section>
+    </div>
+    <section class="app-panel"><h3>리스크 메모</h3><div class="result-grid"><div><span>권리 서류 정상</span><strong>6건</strong></div><div><span>수익 배분 검수</span><strong>2건</strong></div><div><span>가격 재평가 필요</span><strong>1건</strong></div></div></section>
+    ${denseScoreTable(owned, "investor")}
+  `);
+}
+
+function investorMarketView(title = "마켓") {
+  const market = channelsTop(15, (a, b) => marketScore(b) - marketScore(a));
+  return pageShell(`
+    ${subpageHead(roles.investor.label, title, "신규 우량 자산인 채널 IP를 발굴하고, CIV 데이터 기반의 공정 가격으로 채널 거래를 검토합니다.")}
+    ${investorSearchExperience(market.slice(0, 10))}
+    <section class="app-panel"><h3>검색 이후 매매 검토</h3><div class="result-grid"><div><span>검토함 담기</span><strong>후보 저장</strong></div><div><span>가격 산정</span><strong>CIV 기반</strong></div><div><span>인수 리포트</span><strong>즉시 생성</strong></div></div></section>
+    ${detailedSettings("investor")}
+    ${basketPanel("investor")}
+    <section class="app-panel"><h3>마켓 필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>IT</option><option>게임</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>전체 가격대</option><option>3억 이하</option><option>3억~10억</option><option>10억 이상</option></select><input placeholder="채널명 검색" /></div></section>
+    ${denseScoreTable(market, "investor")}
+    <h3 class="app-section-title">인수 검토 카드</h3><div class="channel-grid">${market.slice(0, 9).map((channel) => channelCard(channel, "investor")).join("")}</div>
+  `);
+}
+
+function investorPartnershipView(title = "파트너십") {
+  const partners = channelsTop(8, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
+  const steps = ["공동 PPL 패키지 설계", "분기별 콘텐츠 로드맵 협의", "수익 배분 조건 갱신", "브랜드 공동 제안서 발송"];
+  return pageShell(`
+    ${subpageHead(roles.investor.label, title, "협력 채널과의 동반 성장 로드맵 및 소통을 관리합니다.")}
+    <section class="app-hero-card"><div><span>Partnership Desk</span><h2>협력 중인 채널 관리</h2><p>이미 협력 중인 채널의 성장 목표, 다음 미팅, PPL 적합도, 공동 제안 진행 상태를 관리합니다.</p></div><div class="score-row">${scorePill("협력 채널", "8건")}${scorePill("진행 로드맵", "12개")}${scorePill("이번 주 미팅", "4건")}</div></section>
+    <div class="pc-work-grid">
+      <section class="app-panel"><h3>협력 채널 리스트</h3>${partners.slice(0, 6).map((channel, index) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>${channel.category} · 성장 ${channel.growth} · PPL 적합 ${channel.adFit} · 다음 미팅 06.${10 + index}</em></span><strong>${index < 2 ? "진행중" : "관리중"}</strong></div>`).join("")}</section>
+      <section class="app-panel"><h3>동반 성장 로드맵</h3>${steps.map((step, index) => `<div class="app-row"><span><strong>${step}</strong><br><em>${partners[index]?.name || partners[0].name} · 담당자 확인 필요</em></span><strong>${["협의", "진행", "검토", "대기"][index]}</strong></div>`).join("")}</section>
+    </div>
+    <section class="app-panel"><h3>소통 도구</h3><div class="filter-grid"><select><option>전체 협력 채널</option>${partners.slice(0, 5).map((channel) => `<option>${channel.name}</option>`).join("")}</select><select><option>로드맵 미팅</option><option>수익 배분 협의</option><option>PPL 공동 제안</option></select><input placeholder="메시지 제목" /><button class="primary-button" type="button">협력 채널에 보내기</button></div></section>
+    ${denseScoreTable(partners, "investor")}
+  `);
+}
+
 function showCreatorSearchModal() {
   document.querySelector(".creator-search-modal")?.remove();
   document.body.insertAdjacentHTML("beforeend", `<div class="creator-search-modal open" role="dialog" aria-modal="true">
@@ -1022,19 +1048,13 @@ function renderFocusedSubpage(title) {
     return creatorScheduleBoard(normalized);
   }
 
-  if (normalized.includes("마켓") || normalized.includes("인수") || normalized.includes("검토") || normalized.includes("권리") || normalized.includes("가격")) {
-    const market = channelsTop(12, (a, b) => marketScore(b) - marketScore(a));
-    return pageShell(`${subpageHead(roleName, normalized, "투자자는 채널을 검색하고, 마켓 점수와 권리 리스크를 같이 검토합니다.")}${investorSearchExperience(market.slice(0, 10))}${detailedSettings("investor")}${basketPanel("investor")}${denseScoreTable(market, "investor")}`);
-  }
-  if (normalized.includes("파트너") || normalized.includes("PPL") || normalized.includes("추천") || normalized.includes("유사")) {
-    const partners = channelsTop(10, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
-    return pageShell(`${subpageHead(roleName, normalized, "파트너십과 PPL 적합 채널을 검색하고 제안 후보로 담습니다.")}${investorSearchExperience(partners)}${detailedSettings("investor")}<div class="channel-grid">${partners.slice(0, 8).map((channel) => channelCard(channel, "investor")).join("")}</div>`);
-  }
-  return pageShell(`${subpageHead(roleName, normalized, "투자 리포트와 자산 현황을 채널 검색과 함께 확인합니다.")}${investorSearchExperience()}${denseScoreTable(channelsTop(12), "investor")}${signalBoard(channelsTop(1)[0])}`);
+  if (normalized.includes("마켓") || normalized.includes("인수") || normalized.includes("검토") || normalized.includes("권리") || normalized.includes("가격")) return investorMarketView("마켓");
+  if (normalized.includes("파트너") || normalized.includes("PPL") || normalized.includes("추천") || normalized.includes("유사")) return investorPartnershipView("파트너십");
+  return investorReportView("리포트");
 }
 
 function subpageHead(roleName, title, description) {
-  const eyebrow = roleName === roles.creator.label ? roleName : `${roleName} / 소분류`;
+  const eyebrow = roleName === roles.creator.label || roleName === roles.investor.label ? roleName : `${roleName} / 소분류`;
   return `<section class="page-head subpage-head"><div><p class="eyebrow">${eyebrow}</p><h2>${title}</h2><p>${description}</p></div></section>`;
 }
 
@@ -1098,12 +1118,7 @@ function renderAppAnalysis() {
       ${creatorCivTrendPanel()}
     `);
   }
-  return pageShell(`
-    <section class="page-head"><div><p class="eyebrow">Report</p><h2>채널 리포트</h2><p>투자자용 리포트는 수익성, 성장성, 권리 위험, 시장 가격을 모두 펼쳐서 봅니다.</p></div><div class="score-row">${scorePill("리포트", "8건")}${scorePill("권리 위험 낮음", "9건")}${scorePill("평균 ROI", "151.2%")}</div></section>
-    ${ticker(channelsTop(8))}
-    ${denseScoreTable(channelsTop(12), "investor")}
-    <div class="pc-work-grid"><section class="app-panel"><h3>수익 배분 업데이트</h3>${channelsTop(5).map((channel, index) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>광고 수익 ${krw(channel.rateMax * (5 + index))} · 예상 ROI ${pct(channel.roi)}</em></span><strong>${index < 2 ? "상향" : "유지"}</strong></div>`).join("")}</section>${signalBoard(channelsTop(1)[0])}</div>
-  `);
+  return investorReportView("리포트");
 }
 
 function renderAppCampaign() {
@@ -1122,17 +1137,7 @@ function renderAppCampaign() {
   if (currentRole === "creator") {
     return creatorOfferBoard();
   }
-  const market = channelsTop(15, (a, b) => marketScore(b) - marketScore(a));
-  return pageShell(`
-    <section class="page-head"><div><p class="eyebrow">Market</p><h2>채널 매매 및 인수 마켓</h2><p>잠재력이 검증된 크리에이터 채널의 전체 권리를 가격, 성장성, 위험 점수로 비교합니다.</p></div><div class="score-row">${scorePill("마켓", "15건")}${scorePill("평균 가치", "₩ 9.8억")}${scorePill("상승 후보", "6건")}</div></section>
-    ${investorSearchExperience(market.slice(0, 10))}
-    ${ticker(market.slice(0, 8))}
-    ${detailedSettings("investor")}
-    ${basketPanel("investor")}
-    <section class="app-panel"><h3>마켓 필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>IT</option><option>게임</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>전체 가격대</option><option>3억 이하</option><option>3억~10억</option><option>10억 이상</option></select><input placeholder="채널명 검색" /></div></section>
-    ${denseScoreTable(market, "investor")}
-    <h3 class="app-section-title">인수 검토 카드</h3><div class="channel-grid">${market.slice(0, 9).map((channel) => channelCard(channel, "investor")).join("")}</div>
-  `);
+  return investorMarketView("마켓");
 }
 
 function renderAppTrade() {
@@ -1153,15 +1158,7 @@ function renderAppTrade() {
       <div class="pc-work-grid"><section class="app-panel"><h3>정산 대기</h3><div class="app-row"><span><strong>스킨케어 런칭 6월</strong><br><em>검수 완료 · 2026.06.05 입금 예정</em></span><strong>₩ 18,000,000</strong></div><div class="app-row"><span><strong>에어랩 스타일러</strong><br><em>촬영본 승인 · 2026.06.12 입금 예정</em></span><strong>₩ 4,800,000</strong></div><div class="app-row"><span><strong>출근 메이크업 시즌 3</strong><br><em>1차 콘텐츠 승인</em></span><strong>₩ 12,000,000</strong></div></section><section class="app-panel"><h3>정산 방식</h3><div class="app-row"><span>자동 정산</span><strong>활성</strong></div><div class="app-row"><span>세금계산서</span><strong>연동</strong></div><div class="app-row"><span>출금 계좌</span><strong>확인됨</strong></div><button class="primary-button">출금 신청</button></section></div>
     `);
   }
-  const partners = channelsTop(12, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
-  return pageShell(`
-    <section class="page-head"><div><p class="eyebrow">Partnership</p><h2>파트너십</h2><p>협력 채널과의 동반 성장 로드맵을 확인하고 장기 파트너십 후보를 선별합니다.</p></div><div class="score-row">${scorePill("추천", "12건")}${scorePill("PPL 적합", "8건")}${scorePill("빠른 성장", "6건")}</div></section>
-    ${detailedSettings("investor")}
-    ${basketPanel("investor")}
-    <section class="app-panel"><h3>파트너십 조건</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>먹방</option><option>IT</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>빠른 성장</option></select><select><option>PPL 적합 우선</option><option>성장성 우선</option><option>위험 낮음 우선</option></select><input placeholder="제안 키워드" /></div></section>
-    ${denseScoreTable(partners, "investor")}
-    <div class="channel-grid">${partners.slice(0, 9).map((channel) => channelCard(channel, "investor")).join("")}</div>
-  `);
+  return investorPartnershipView("파트너십");
 }
 
 function renderAppInvest() {
