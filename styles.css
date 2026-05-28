@@ -2547,6 +2547,10 @@ input[type="range"] {
   content: "";
 }
 
+.signal-grid + .score-row {
+  margin-top: 14px;
+}
+
 .role-model-panel {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
