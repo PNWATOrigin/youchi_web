@@ -128,6 +128,43 @@ function marketScore(channel) {
   return Math.round((channel.civ * 0.28) + (channel.growth * 0.22) + (channel.fandom * 0.18) + (channel.brandSafety * 0.17) + (channel.roi * 0.15));
 }
 
+function channelHistory(channel) {
+  const seed = channel.name.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return [5, 4, 3, 2, 1, 0].map((offset) => {
+    const wave = ((seed + offset * 17) % 9) - 4;
+    const growthFactor = (5 - offset) * channel.growthRate * 0.018;
+    return {
+      month: `${6 - offset}월`,
+      civ: Math.max(40, Math.min(98, Math.round(channel.civ - offset * 1.8 + wave * 0.6))),
+      fandom: Math.max(35, Math.min(98, Math.round(channel.fandom - offset * 1.2 + wave * 0.5))),
+      subscribers: Math.round(channel.subscribers * (1 - offset * 0.022 + growthFactor / 100)),
+      views: Math.round(channel.monthlyViews * (1 - offset * 0.026 + growthFactor / 90)),
+    };
+  });
+}
+
+function sparkline(points, key, color = "var(--role)") {
+  const values = points.map((point) => point[key]);
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = Math.max(1, max - min);
+  const coords = values.map((value, index) => {
+    const x = 14 + index * 58;
+    const y = 106 - ((value - min) / range) * 78;
+    return `${x},${y}`;
+  }).join(" ");
+  return `<svg class="line-chart" viewBox="0 0 320 126" role="img" aria-label="${key} 추세">
+    <polyline class="line-chart__grid" points="14,106 304,106" />
+    <polyline class="line-chart__grid" points="14,67 304,67" />
+    <polyline class="line-chart__grid" points="14,28 304,28" />
+    <polyline class="line-chart__line" style="--line:${color}" points="${coords}" />
+    ${values.map((value, index) => {
+      const [x, y] = coords.split(" ")[index].split(",");
+      return `<circle cx="${x}" cy="${y}" r="4"><title>${points[index].month} ${number(value)}</title></circle>`;
+    }).join("")}
+  </svg>`;
+}
+
 function appCard(title, value, subtext) {
   return `<article class="app-kpi"><span>${title}</span><strong>${value}</strong><em>${subtext}</em></article>`;
 }
@@ -138,6 +175,17 @@ function metricTiles(items) {
 
 function scorePill(label, value) {
   return `<span class="score-pill"><b>${label}</b>${value}</span>`;
+}
+
+function navFlyout(label, key) {
+  const menus = {
+    home: ["AI 유튜버 검색", "추천 검색어", "최근 검색 결과"],
+    analysis: ["채널 점수 비교", "CIV·팬덤 점수", "브랜드 안전성"],
+    campaign: ["캠페인 세팅", "제안 후보함", "성과 리포트"],
+    trade: ["AI 채널 매칭", "제안 발송", "유사 채널 추천"],
+    invest: ["채널 운영", "콘텐츠 로드맵", "협업 일정"],
+  };
+  return `<div class="nav-flyout"><strong>${label}</strong>${(menus[key] || []).map((item) => `<span>${item}</span>`).join("")}</div>`;
 }
 
 function ticker(channels = channelsTop(8)) {
@@ -195,6 +243,92 @@ function channelCard(channel, mode = "advertiser") {
     </div>
     ${actions}
   </article>`;
+}
+
+function searchResultRow(channel) {
+  return `<article class="creator-search-row" data-search-name="${channel.name}" data-search-category="${channel.category}">
+    <div class="creator-search-row__main">
+      <div class="avatar">${channel.category.slice(0, 1)}</div>
+      <div>
+        <strong>${channel.name}</strong>
+        <p>${channel.category} · ${channel.scale} · ${channel.format} · ${channel.desc}</p>
+      </div>
+    </div>
+    <div class="latest-score-board">
+      ${scorePill("CIV", channel.civ)}
+      ${scorePill("팬덤", channel.fandom)}
+      ${scorePill("광고핏", channel.adFit)}
+      ${scorePill("안전성", channel.brandSafety)}
+      ${scorePill("ROI", pct(channel.roi))}
+    </div>
+    <div class="creator-search-row__actions">
+      <button class="secondary-button" data-detail-channel="${channel.name}">자세히 보기</button>
+      <button class="primary-button" data-work-action="proposal" data-channel="${channel.name}">제안 보내기</button>
+    </div>
+  </article>`;
+}
+
+function aiSearchExperience(rows = channelsTop(10, (a, b) => brandFit(b) - brandFit(a))) {
+  return `<section class="ai-search-panel">
+    <div class="ai-search-copy">
+      <p class="eyebrow">YOUCHI AI Search</p>
+      <h2>AI로 캠페인에 맞는 유튜버를 찾기</h2>
+      <p>검색창에는 자연어로 조건을 입력합니다. 결과에서는 최신 CIV, 팬덤, 광고핏만 빠르게 보고 자세히 보기에서 과거 추세를 확인합니다.</p>
+    </div>
+    <div class="ai-search-box">
+      <span>AI</span>
+      <input id="aiCreatorSearch" placeholder="예: 20대 여성 타겟, 뷰티 숏폼, 최근 성장률 높은 채널 찾아줘" />
+      <button id="aiSearchButton" type="button">검색</button>
+    </div>
+    <div class="prompt-chip-row">
+      <button data-ai-prompt="뷰티 성장성 높은 소형 채널">뷰티 성장성 높은 소형 채널</button>
+      <button data-ai-prompt="브랜드 안전성 90점 이상 IT 채널">브랜드 안전성 90점 이상 IT 채널</button>
+      <button data-ai-prompt="ROI 높은 먹방 채널">ROI 높은 먹방 채널</button>
+      <button data-ai-prompt="경제 앱 PPL 적합 채널">경제 앱 PPL 적합 채널</button>
+    </div>
+    <div class="ai-search-meta">
+      ${scorePill("검색 데이터", `${channels.length}개 채널`)}
+      ${scorePill("점수 업데이트", "방금")}
+      ${scorePill("추천 기준", "CIV·팬덤·광고핏")}
+    </div>
+  </section>
+  <section class="app-panel search-results-panel">
+    <div class="panel-title-row"><h3>AI 검색 결과</h3><span id="aiResultCount">${rows.length}개</span></div>
+    <div class="creator-search-list" id="creatorSearchList">${rows.map(searchResultRow).join("")}</div>
+  </section>`;
+}
+
+function showChannelDetailModal(channelName) {
+  const channel = channels.find((item) => item.name === channelName) || channels[0];
+  const history = channelHistory(channel);
+  const subscriberGrowth = ((history.at(-1).subscribers / history[0].subscribers - 1) * 100).toFixed(1);
+  const viewGrowth = ((history.at(-1).views / history[0].views - 1) * 100).toFixed(1);
+  document.querySelector(".channel-detail-modal")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `<div class="channel-detail-modal open" role="dialog" aria-modal="true">
+    <div class="recommend-modal__backdrop" data-work-action="close-detail"></div>
+    <div class="channel-detail-modal__panel">
+      <div class="panel-title-row">
+        <div><p class="eyebrow">Creator Detail</p><h2>${channel.name}</h2><p class="modal-lead">${channel.desc}</p></div>
+        <button class="icon-button" data-work-action="close-detail" aria-label="닫기">×</button>
+      </div>
+      <div class="detail-summary-grid">
+        ${scorePill("CIV", channel.civ)}
+        ${scorePill("팬덤", channel.fandom)}
+        ${scorePill("광고핏", channel.adFit)}
+        ${scorePill("브랜드 안전성", channel.brandSafety)}
+        ${scorePill("90일 성장", pct(channel.growthRate))}
+        ${scorePill("예상 ROI", pct(channel.roi))}
+      </div>
+      <div class="detail-layout">
+        <section class="chart-card"><div class="panel-title-row"><h3>CIV / 팬덤 점수 추세</h3><span>최근 6개월</span></div>${sparkline(history, "civ", "#727bee")}${sparkline(history, "fandom", "#16a34a")}<div class="chart-legend"><span>CIV</span><span>팬덤</span></div></section>
+        <section class="chart-card"><div class="panel-title-row"><h3>구독자·월조회 추세</h3><span>성장 ${subscriberGrowth}%</span></div>${sparkline(history, "subscribers", "#2563eb")}${sparkline(history, "views", "#f59e0b")}<div class="chart-legend"><span>구독자 ${subscriberGrowth}%</span><span>월조회 ${viewGrowth}%</span></div></section>
+      </div>
+      <div class="detail-layout">
+        <section class="app-panel"><h3>광고주 검토 포인트</h3><div class="app-row"><span>권장 제안 단가</span><strong>${krw(channel.rateMin)} ~ ${krw(channel.rateMax)}</strong></div><div class="app-row"><span>월 조회수</span><strong>${compactCount(channel.monthlyViews)}</strong></div><div class="app-row"><span>브랜드 핏</span><strong>${brandFit(channel)}</strong></div><div class="app-row"><span>추정 채널 가치</span><strong>${krw(channel.value)}</strong></div></section>
+        <section class="app-panel"><h3>AI 요약</h3><p>${channel.category} 캠페인에서 최근 성과가 안정적이며, ${channel.growth >= 90 ? "성장성 기반 테스트 집행에 적합합니다." : "검증된 조회수 기반 캠페인에 적합합니다."} 팬덤 점수와 브랜드 안전성을 함께 보면 단발 제안보다 2~3편 묶음 제안이 효율적입니다.</p><div class="button-row"><button class="secondary-button" data-work-action="basket" data-channel="${channel.name}">후보 담기</button><button class="primary-button" data-work-action="proposal" data-channel="${channel.name}">제안 보내기</button></div></section>
+      </div>
+    </div>
+  </div>`);
 }
 
 function detailedSettings(type) {
@@ -333,10 +467,7 @@ function renderAppHome() {
   if (currentRole === "advertiser") {
     const top = channelsTop(5, (a, b) => brandFit(b) - brandFit(a));
     return pageShell(`
-      <section class="app-hero-card">
-        <div><span>광고주 홈</span><h2>유튜버 검색</h2><p>브랜드 핏, CIV, 성장성, 안전성, 예상 단가를 한 화면에서 비교하고 캠페인 후보를 바로 추립니다.</p></div>
-        <div class="app-search"><input placeholder="예: 뷰티, IT, 출근 메이크업, 생산성 앱" /><select><option>전체 카테고리</option><option>뷰티</option><option>IT</option><option>게임</option><option>먹방</option><option>경제</option></select><select><option>브랜드 안전성 80+</option><option>성장성 90+</option><option>ROI 150%+</option></select><button data-app-tab="1">검색</button></div>
-      </section>
+      ${aiSearchExperience(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)))}
       <h3 class="app-section-title">핵심 지표</h3>
       ${metricTiles(roles.advertiser.kpis)}
       <h3 class="app-section-title">실시간 인기 채널 랭킹</h3>
@@ -372,6 +503,7 @@ function renderAppAnalysis() {
     const top = channelsTop(15, (a, b) => brandFit(b) - brandFit(a));
     return pageShell(`
       <section class="page-head"><div><p class="eyebrow">Insight</p><h2>채널 인사이트</h2><p>앱보다 더 많은 비교 지표를 PC에서 한 번에 보도록 구성했습니다.</p></div><div class="score-row">${scorePill("검색 결과", "15건")}${scorePill("안전성 80+", `${channels.filter((c) => c.brandSafety >= 80).length}건`)}${scorePill("ROI 150%+", `${channels.filter((c) => c.roi >= 150).length}건`)}</div></section>
+      ${aiSearchExperience(top.slice(0, 8))}
       ${detailedSettings("advertiser")}
       ${basketPanel("advertiser")}
       <section class="app-panel"><h3>필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>브랜드 안전성순</option><option>CIV순</option><option>성장성순</option><option>ROI순</option></select><input placeholder="채널명, 키워드 검색" /></div></section>
@@ -472,9 +604,10 @@ function renderAppPreview() {
 
   const tabs = appTabs[currentRole];
   const currentTabKey = tabs[currentAppTab]?.[1] || "home";
-  const navMarkup = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label}</button>`).join("");
-  if (bottomNav) bottomNav.innerHTML = navMarkup;
-  if (sideNav) sideNav.innerHTML = navMarkup;
+  const sideMarkup = tabs.map(([label, key], index) => `<div class="pc-nav-item"><button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label}</button>${navFlyout(label, key)}</div>`).join("");
+  const bottomMarkup = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label}</button>`).join("");
+  if (bottomNav) bottomNav.innerHTML = bottomMarkup;
+  if (sideNav) sideNav.innerHTML = sideMarkup;
   if (drawerLinks) drawerLinks.innerHTML = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label} 이동</button>`).join("");
 
   const pageTitle = document.querySelector("#pcPageTitle");
@@ -501,6 +634,7 @@ function renderAppPreview() {
   });
   bindSimulator();
   bindWorkActions();
+  bindAiSearch();
 }
 
 function bindWorkActions() {
@@ -510,6 +644,10 @@ function bindWorkActions() {
       const channel = event.currentTarget.dataset.channel || channels[0].name;
       if (action === "close-modal") {
         document.querySelector(".recommend-modal")?.remove();
+        return;
+      }
+      if (action === "close-detail") {
+        document.querySelector(".channel-detail-modal")?.remove();
         return;
       }
       if (action === "clear-basket") {
@@ -529,6 +667,41 @@ function bindWorkActions() {
           bindWorkActions();
         });
       }
+    });
+  });
+  document.querySelectorAll("[data-detail-channel]").forEach((button) => {
+    button.addEventListener("click", () => {
+      showChannelDetailModal(button.dataset.detailChannel);
+      bindWorkActions();
+    });
+  });
+}
+
+function bindAiSearch() {
+  const input = document.querySelector("#aiCreatorSearch");
+  const button = document.querySelector("#aiSearchButton");
+  const list = document.querySelector("#creatorSearchList");
+  const count = document.querySelector("#aiResultCount");
+  if (!input || !list) return;
+  const render = () => {
+    const query = input.value.trim().toLowerCase();
+    const filtered = channels
+      .filter((channel) => {
+        const text = `${channel.name} ${channel.category} ${channel.scale} ${channel.format} ${channel.desc}`.toLowerCase();
+        return !query || query.split(/\s+/).some((token) => text.includes(token));
+      })
+      .sort((a, b) => brandFit(b) - brandFit(a))
+      .slice(0, 10);
+    list.innerHTML = filtered.map(searchResultRow).join("");
+    if (count) count.textContent = `${filtered.length}개`;
+    bindWorkActions();
+  };
+  input.addEventListener("input", render);
+  button?.addEventListener("click", render);
+  document.querySelectorAll("[data-ai-prompt]").forEach((prompt) => {
+    prompt.addEventListener("click", () => {
+      input.value = prompt.dataset.aiPrompt;
+      render();
     });
   });
 }
