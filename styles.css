@@ -3532,7 +3532,7 @@ input[type="range"] {
 
 .ai-search-box {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) 120px;
+  grid-template-columns: auto minmax(0, 1fr) 120px 52px;
   gap: 8px;
   width: min(920px, 100%);
   margin: 0 auto;
@@ -3570,6 +3570,21 @@ input[type="range"] {
   background: var(--text);
   color: white;
   font-weight: 900;
+}
+
+.ai-search-box .mic-button {
+  min-width: 48px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--role), white 70%);
+  background: color-mix(in srgb, var(--role), white 88%);
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.ai-search-box .mic-button:hover {
+  border-color: color-mix(in srgb, var(--role), white 42%);
+  background: color-mix(in srgb, var(--role), white 78%);
 }
 
 .prompt-chip-row {

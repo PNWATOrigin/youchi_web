@@ -425,6 +425,7 @@ function aiSearchExperience(rows = channelsTop(10, (a, b) => brandFit(b) - brand
       <span>AI</span>
       <input id="aiCreatorSearch" placeholder="예: 20대 여성 타겟, 뷰티 숏폼, 최근 성장률 높은 채널 찾아줘" />
       <button id="aiSearchButton" type="button">검색</button>
+      <button class="mic-button" data-work-action="voice-search" type="button" aria-label="음성 검색">🎙️</button>
     </div>
     <div class="prompt-chip-row">
       <button data-ai-prompt="뷰티 성장성 높은 소형 채널">뷰티 성장성 높은 소형 채널</button>
@@ -480,6 +481,7 @@ function campaignSearchExperience(rows = creatorOffers) {
       <span>AI</span>
       <input id="campaignSearchInput" placeholder="예: 뷰티 브랜드, 2주 안 촬영 가능, 현금 보상 캠페인" />
       <button id="campaignSearchButton" type="button">검색</button>
+      <button class="mic-button" data-work-action="voice-search" type="button" aria-label="음성 검색">🎙️</button>
     </div>
     <div class="prompt-chip-row">
       <button data-campaign-prompt="현금 보상 확정 캠페인">현금 보상 확정</button>
@@ -528,6 +530,7 @@ function investorSearchExperience(rows = channelsTop(10, (a, b) => marketScore(b
       <span>AI</span>
       <input id="investorChannelSearch" placeholder="예: 성장률 높은 IT 채널, 권리 리스크 낮음, 마켓 점수 100 이상" />
       <button id="investorSearchButton" type="button">검색</button>
+      <button class="mic-button" data-work-action="voice-search" type="button" aria-label="음성 검색">🎙️</button>
     </div>
     <div class="prompt-chip-row">
       <button data-investor-prompt="마켓 점수 100 이상 채널">마켓 100+</button>
@@ -1395,6 +1398,10 @@ function bindWorkActions() {
       const channel = event.currentTarget.dataset.channel || channels[0].name;
       if (action === "close-modal") {
         document.querySelector(".recommend-modal")?.remove();
+        return;
+      }
+      if (action === "voice-search") {
+        showToast("마이크 음성 검색을 시작합니다.");
         return;
       }
       if (action === "close-detail") {
