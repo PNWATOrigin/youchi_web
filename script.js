@@ -1007,9 +1007,13 @@ function investorComparisonMarkup(leftName, rightName) {
   const chart = (label, leftValue, rightValue, format) => {
     const low = Math.min(Number(leftValue), Number(rightValue));
     const high = Math.max(Number(leftValue), Number(rightValue));
-    const range = Math.max(1, high - low);
-    const leftPct = high === low ? 100 : 36 + ((Number(leftValue) - low) / range) * 64;
-    const rightPct = high === low ? 100 : 36 + ((Number(rightValue) - low) / range) * 64;
+    const scaledPct = (value) => {
+      if (high === low) return 100;
+      const relativeGap = (high - Number(value)) / Math.max(high, 1);
+      return Math.max(58, 100 - relativeGap * 160);
+    };
+    const leftPct = scaledPct(leftValue);
+    const rightPct = scaledPct(rightValue);
     const winner = Number(leftValue) === Number(rightValue) ? "동률" : Number(leftValue) > Number(rightValue) ? left.name : right.name;
     const delta = Math.abs(Number(leftValue) - Number(rightValue));
     return `<div class="comparison-hover-chart" role="tooltip">
