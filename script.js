@@ -996,18 +996,31 @@ function investorComparisonMarkup(leftName, rightName) {
   const left = channels.find((channel) => channel.name === leftName) || investorReviewChannels()[0] || channels[0];
   const right = channels.find((channel) => channel.name === rightName) || investorReviewChannels()[1] || channels[1];
   const rows = [
-    ["CIV 점수", left.civ, right.civ],
-    ["팬덤 점수", left.fandom, right.fandom],
-    ["구독자 수", compactCount(left.subscribers), compactCount(right.subscribers)],
-    ["월 조회수", compactCount(left.monthlyViews), compactCount(right.monthlyViews)],
-    ["마켓 점수", marketScore(left), marketScore(right)],
-    ["추정 가치", krw(left.value), krw(right.value)],
-    ["예상 ROI", pct(left.roi), pct(right.roi)],
+    ["CIV 점수", left.civ, right.civ, left.civ, right.civ, (value) => value],
+    ["팬덤 점수", left.fandom, right.fandom, left.fandom, right.fandom, (value) => value],
+    ["구독자 수", compactCount(left.subscribers), compactCount(right.subscribers), left.subscribers, right.subscribers, compactCount],
+    ["월 조회수", compactCount(left.monthlyViews), compactCount(right.monthlyViews), left.monthlyViews, right.monthlyViews, compactCount],
+    ["마켓 점수", marketScore(left), marketScore(right), marketScore(left), marketScore(right), (value) => value],
+    ["추정 가치", krw(left.value), krw(right.value), left.value, right.value, krw],
+    ["예상 ROI", pct(left.roi), pct(right.roi), left.roi, right.roi, pct],
   ];
+  const chart = (label, leftValue, rightValue, format) => {
+    const max = Math.max(Number(leftValue), Number(rightValue), 1);
+    return `<div class="comparison-hover-chart" role="tooltip">
+      <div class="mini-compare-head"><strong>${label} 비교</strong><span>hover chart</span></div>
+      <div class="mini-bar-row"><span>${left.name}</span><i style="--bar:${(leftValue / max) * 100}%"><em>${format(leftValue)}</em></i></div>
+      <div class="mini-bar-row"><span>${right.name}</span><i class="alt" style="--bar:${(rightValue / max) * 100}%"><em>${format(rightValue)}</em></i></div>
+    </div>`;
+  };
   return `<div class="comparison-board">
     <div class="comparison-head"><div><strong>${left.name}</strong><span>${left.category} · ${left.scale}</span></div><b>VS</b><div><strong>${right.name}</strong><span>${right.category} · ${right.scale}</span></div></div>
-    ${rows.map(([label, a, b]) => `<div class="comparison-row"><span>${label}</span><strong>${a}</strong><strong>${b}</strong></div>`).join("")}
+    ${rows.map(([label, a, b, rawA, rawB, format]) => `<div class="comparison-row" tabindex="0"><span>${label}</span><strong>${a}</strong><strong>${b}</strong>${chart(label, rawA, rawB, format)}</div>`).join("")}
   </div>`;
+}
+
+function investorCompareSelector(id, label, selectedName, channelsList) {
+  const selected = channelsList.find((channel) => channel.name === selectedName) || channelsList[0] || channels[0];
+  return `<label class="compare-select-card"><span>${label}</span><strong>${selected.name}</strong><em>${selected.category} · CIV ${selected.civ} · 팬덤 ${selected.fandom}</em><select id="${id}" aria-label="${label}">${channelsList.map((channel) => `<option ${channel.name === selected.name ? "selected" : ""}>${channel.name}</option>`).join("")}</select></label>`;
 }
 
 function investorReviewBoxView(title = "검토함") {
@@ -1016,8 +1029,8 @@ function investorReviewBoxView(title = "검토함") {
   const second = reviewed[1] || channels[1];
   const compareBlock = reviewed.length >= 2
     ? `<div class="compare-selectors">
-          <label>채널 A<select id="compareChannelA">${reviewed.map((channel) => `<option ${channel.name === first.name ? "selected" : ""}>${channel.name}</option>`).join("")}</select></label>
-          <label>채널 B<select id="compareChannelB">${reviewed.map((channel) => `<option ${channel.name === second.name ? "selected" : ""}>${channel.name}</option>`).join("")}</select></label>
+          ${investorCompareSelector("compareChannelA", "채널 A", first.name, reviewed)}
+          ${investorCompareSelector("compareChannelB", "채널 B", second.name, reviewed)}
         </div>
         <div id="investorComparisonPanel">${investorComparisonMarkup(first.name, second.name)}</div>`
     : `<p>비교하려면 검토함에 채널을 2개 이상 담아야 합니다.</p>`;
@@ -1480,6 +1493,13 @@ function bindInvestorReviewBox() {
   if (!left || !right || !panel) return;
   const update = () => {
     panel.innerHTML = investorComparisonMarkup(left.value, right.value);
+    document.querySelectorAll(".compare-select-card").forEach((card) => {
+      const select = card.querySelector("select");
+      const channel = channels.find((item) => item.name === select?.value);
+      if (!channel) return;
+      card.querySelector("strong").textContent = channel.name;
+      card.querySelector("em").textContent = `${channel.category} · CIV ${channel.civ} · 팬덤 ${channel.fandom}`;
+    });
   };
   left.addEventListener("change", update);
   right.addEventListener("change", update);
