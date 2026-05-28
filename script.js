@@ -40,10 +40,7 @@ const appTabs = {
 
 const submenuGroups = {
   advertiser: {
-    home: [
-      ["AI 검색", ["AI 유튜버 검색", "추천 프롬프트", "최근 검색 결과"]],
-      ["빠른 실행", ["후보 장바구니", "브랜드 핏 워치리스트"]],
-    ],
+    home: [],
     analysis: [
       ["점수 분석", ["CIV·팬덤 비교", "브랜드 안전성", "광고핏 랭킹"]],
       ["데이터", ["최근 점수표", "정밀 카드", "채널 상세 팝업"]],
@@ -305,6 +302,10 @@ function navFlyout(label, key) {
 }
 
 function firstSubHref(key) {
+  if (currentRole === "advertiser" && key === "home") return "index.html";
+  if (currentRole === "advertiser" && key === "analysis") return "analysis.html";
+  if (currentRole === "advertiser" && key === "campaign") return "campaign.html";
+  if (currentRole === "advertiser" && key === "trade") return "trade.html";
   if (currentRole === "creator" && key === "home") return "creator.html";
   if (currentRole === "creator" && key === "trade") return "creator-settlement.html";
   if (currentRole === "creator" && key === "analysis") return "creator-civ-diagnosis.html";
@@ -1186,16 +1187,22 @@ function renderAppHome() {
 
 function renderAppAnalysis() {
   if (currentRole === "advertiser") {
-    const top = channelsTop(15, (a, b) => brandFit(b) - brandFit(a));
+    const matched = channelsTop(8, (a, b) => brandFit(b) - brandFit(a));
+    const insightRows = [
+      [matched[0], "댓글 구매 의도", "저장/장바구니 언급이 많고 광고 고지 이후 이탈이 낮습니다.", "유료"],
+      [matched[1], "브랜드 신뢰", "제품 비교 질문이 많아 상세 랜딩과 FAQ 연결 효율이 높습니다.", "무료"],
+      [matched[2], "전환 반응", "리뷰형 콘텐츠에서 링크 클릭 가능성이 높고 재검색 댓글이 반복됩니다.", "유료"],
+      [matched[3], "도달 확장", "숏폼 재가공 시 신규 유입은 높지만 브랜드 안전성 검수가 필요합니다.", "무료"],
+    ];
     return pageShell(`
-      <section class="page-head"><div><p class="eyebrow">Insight</p><h2>채널 인사이트</h2><p>앱보다 더 많은 비교 지표를 PC에서 한 번에 보도록 구성했습니다.</p></div><div class="score-row">${scorePill("검색 결과", "15건")}${scorePill("안전성 80+", `${channels.filter((c) => c.brandSafety >= 80).length}건`)}${scorePill("ROI 150%+", `${channels.filter((c) => c.roi >= 150).length}건`)}</div></section>
-      ${aiSearchExperience(top.slice(0, 8))}
-      ${detailedSettings("advertiser")}
-      ${basketPanel("advertiser")}
-      <section class="app-panel"><h3>필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>브랜드 안전성순</option><option>CIV순</option><option>성장성순</option><option>ROI순</option></select><input placeholder="채널명, 키워드 검색" /></div></section>
-      ${denseScoreTable(top, "advertiser")}
-      <h3 class="app-section-title">정밀 카드</h3><div class="channel-grid">${top.slice(0, 9).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
-      ${signalBoard(top[0])}
+      <section class="page-head"><div><p class="eyebrow">Insight</p><h2>브랜드 매칭 채널 반응 분석</h2><p>우리 브랜드와 매칭된 채널들이 어떤 반응을 얻고 있는지 무료 요약과 유료 상세 분석으로 나눠 확인합니다.</p></div><div class="score-row">${scorePill("매칭 채널", `${matched.length}건`)}${scorePill("유료 상세", "3건")}${scorePill("긍정 반응", "84%")}</div></section>
+      <div class="pc-work-grid">
+        <section class="app-panel"><h3>반응 요약</h3>${insightRows.map(([channel, label, summary, tier]) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>${label} · ${summary}</em></span><strong>${tier}</strong></div>`).join("")}</section>
+        <section class="app-panel"><h3>상세 분석 잠금</h3><div class="result-grid"><div><span>무료 제공</span><strong>최근 점수·요약</strong></div><div><span>유료 제공</span><strong>댓글 감성·전환 추정</strong></div><div><span>고급 리포트</span><strong>과거 추세·경쟁사 비교</strong></div></div></section>
+      </div>
+      ${denseScoreTable(matched, "advertiser")}
+      <h3 class="app-section-title">매칭 채널 상세 카드</h3><div class="channel-grid">${matched.slice(0, 8).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
+      ${signalBoard(matched[0])}
     `);
   }
   if (currentRole === "creator") {
@@ -1211,10 +1218,12 @@ function renderAppAnalysis() {
 
 function renderAppCampaign() {
   if (currentRole === "advertiser") {
+    const campaignStatusType = (status) => status.includes("완료") ? "done" : status.includes("제안") || status.includes("대기") ? "waiting" : "running";
+    const campaignRows = campaigns.map(([name, channel, status, budget, roi, reach]) => ({ name, channel, status, budget, roi, reach, type: campaignStatusType(status) }));
     return pageShell(`
-      <section class="page-head"><div><p class="eyebrow">Campaign</p><h2>성과 및 계약 관리</h2><p>집행중 캠페인과 완료 리포트를 같은 화면에서 비교합니다.</p></div><div class="score-row">${scorePill("집행중", "5건")}${scorePill("검수중", "3건")}${scorePill("평균 ROI", "148%")}</div></section>
+      <section class="page-head"><div><p class="eyebrow">Campaign</p><h2>진행중인 광고 리스트</h2><p>완료, 집행중, 대기 중 상태를 필터로 나눠 캠페인 진행 상황을 관리합니다.</p></div><div class="score-row">${scorePill("집행중", `${campaignRows.filter((item) => item.type === "running").length}건`)}${scorePill("대기", `${campaignRows.filter((item) => item.type === "waiting").length}건`)}${scorePill("완료", `${campaignRows.filter((item) => item.type === "done").length}건`)}</div></section>
       <div class="pc-work-grid">
-        <section class="app-panel"><h3>캠페인 현황</h3>${campaigns.map(([name, channel, status, budget, roi, reach]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${channel} · ${budget} · ${reach}</em></span><strong>${status}<br><em>${roi}</em></strong></div>`).join("")}</section>
+        <section class="app-panel"><div class="panel-title-row"><h3>캠페인 현황</h3><span id="campaignFilterCount">${campaignRows.length}건</span></div><div class="segmented-filter"><button class="active" type="button" data-campaign-filter="all">전체</button><button type="button" data-campaign-filter="running">집행중</button><button type="button" data-campaign-filter="waiting">대기</button><button type="button" data-campaign-filter="done">완료</button></div><div class="campaign-list">${campaignRows.map((item) => `<div class="app-row" data-campaign-status="${item.type}"><span><strong>${item.name}</strong><br><em>${item.channel} · ${item.budget} · ${item.reach}</em></span><strong>${item.status}<br><em>${item.roi}</em></strong></div>`).join("")}</div></section>
         <section class="app-panel"><h3>예산·성과 시뮬레이터</h3><label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label><input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" /><label>캠페인 기간 <output id="durationOutput">4주</output></label><input id="durationRange" type="range" min="1" max="12" value="4" /><div class="result-grid" id="simResults"></div></section>
       </div>
       ${detailedSettings("advertiser")}
@@ -1318,6 +1327,7 @@ function renderAppPreview() {
   bindAiSearch();
   bindCampaignSearch();
   bindInvestorSearch();
+  bindCampaignStatusFilter();
 }
 
 function bindWorkActions() {
@@ -1500,6 +1510,26 @@ function bindInvestorSearch() {
     prompt.addEventListener("click", () => {
       input.value = prompt.dataset.investorPrompt;
       render();
+    });
+  });
+}
+
+function bindCampaignStatusFilter() {
+  const buttons = document.querySelectorAll("[data-campaign-filter]");
+  const rows = document.querySelectorAll("[data-campaign-status]");
+  const count = document.querySelector("#campaignFilterCount");
+  if (!buttons.length || !rows.length) return;
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const filter = button.dataset.campaignFilter;
+      buttons.forEach((item) => item.classList.toggle("active", item === button));
+      let visible = 0;
+      rows.forEach((row) => {
+        const show = filter === "all" || row.dataset.campaignStatus === filter;
+        row.hidden = !show;
+        if (show) visible += 1;
+      });
+      if (count) count.textContent = `${visible}건`;
     });
   });
 }

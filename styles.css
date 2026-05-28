@@ -3140,6 +3140,36 @@ input[type="range"] {
   font-weight: 800;
 }
 
+.segmented-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.segmented-filter button {
+  min-height: 34px;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: white;
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.segmented-filter button.active,
+.segmented-filter button:hover {
+  border-color: color-mix(in srgb, var(--role), white 42%);
+  background: color-mix(in srgb, var(--role), white 88%);
+  color: var(--role);
+}
+
+.campaign-list {
+  display: grid;
+  gap: 0;
+}
+
 .work-toast {
   position: fixed;
   right: 24px;
