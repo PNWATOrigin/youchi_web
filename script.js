@@ -62,20 +62,17 @@ const submenuGroups = {
       ["지표", ["CIV 요약", "팬덤 상태"]],
     ],
     analysis: [
-      ["진단", ["CIV진단", "점수 추세", "개선 액션"]],
+      ["진단", ["CIV진단", "점수 추세", "AI 분석"]],
       ["비교", ["카테고리 비교", "브랜드 안전성"]],
     ],
     campaign: [
       ["협업", ["협업·제안", "제안 리스트", "확정 제안"]],
       ["관리", ["촬영 조건", "제품 수령"]],
     ],
-    trade: [
-      ["정산", ["수익 정산", "입금 예정", "출금 신청"]],
-      ["계약", ["스마트 계약", "검수 대기"]],
-    ],
+    trade: [],
     invest: [
-      ["채널 운영", ["콘텐츠 로드맵", "협업 일정", "CIV 목표"]],
-      ["업로드", ["촬영 예정", "편집 상태"]],
+      ["운영 목표", ["CIV 목표"]],
+      ["일정 관리", ["협업 일정", "제작 타임라인", "업로드 준비"]],
     ],
   },
   investor: {
@@ -132,7 +129,7 @@ const subpageRoutes = {
     "팬덤 상태": "creator-fandom-status.html",
     "CIV진단": "creator-civ-diagnosis.html",
     "점수 추세": "creator-score-trend.html",
-    "개선 액션": "creator-actions.html",
+    "AI 분석": "creator-ai-analysis.html",
     "카테고리 비교": "creator-category-compare.html",
     "브랜드 안전성": "creator-brand-safety.html",
     "협업·제안": "creator-offers.html",
@@ -141,15 +138,10 @@ const subpageRoutes = {
     "촬영 조건": "creator-shooting-conditions.html",
     "제품 수령": "creator-products.html",
     "수익 정산": "creator-settlement.html",
-    "입금 예정": "creator-payment-schedule.html",
-    "출금 신청": "creator-withdrawal.html",
-    "스마트 계약": "creator-smart-contract.html",
-    "검수 대기": "creator-review-queue.html",
-    "콘텐츠 로드맵": "creator-roadmap.html",
     "협업 일정": "creator-schedule.html",
     "CIV 목표": "creator-civ-goal.html",
-    "촬영 예정": "creator-shooting-plan.html",
-    "편집 상태": "creator-editing-status.html",
+    "제작 타임라인": "creator-production-timeline.html",
+    "업로드 준비": "creator-upload-ready.html",
   },
   investor: {
     "투자 자산 현황": "investor-assets.html",
@@ -178,7 +170,8 @@ const subpageRoutes = {
 
 const fileRouteMeta = Object.entries(subpageRoutes).reduce((acc, [role, routeMap]) => {
   Object.entries(routeMap).forEach(([title, file]) => {
-    const tabIndex = appTabs[role].findIndex(([, key]) => submenuGroups[role]?.[key]?.some(([, items]) => items.includes(title)));
+    let tabIndex = appTabs[role].findIndex(([, key]) => submenuGroups[role]?.[key]?.some(([, items]) => items.includes(title)));
+    if (role === "creator" && title === "수익 정산") tabIndex = 3;
     acc[file] = { role, title, tabIndex: Math.max(0, tabIndex) };
   });
   return acc;
@@ -347,10 +340,12 @@ function scorePill(label, value) {
 
 function navFlyout(label, key) {
   const groups = submenuGroups[currentRole]?.[key] || [];
+  if (!groups.length) return "";
   return `<div class="nav-flyout"><strong>${label}</strong>${groups.map(([title, items]) => `<section><b>${title}</b>${items.map((item) => `<a href="./${subpageHref(currentRole, key, item)}">${item}</a>`).join("")}</section>`).join("")}</div>`;
 }
 
 function firstSubHref(key) {
+  if (currentRole === "creator" && key === "trade") return "creator-settlement.html";
   const first = submenuGroups[currentRole]?.[key]?.[0]?.[1]?.[0];
   return first ? subpageHref(currentRole, key, first) : routeByKey[key] || "index.html";
 }
@@ -827,6 +822,84 @@ function creatorSearchLauncher() {
   return `<button class="floating-search-button" data-work-action="open-creator-search" type="button" aria-label="크리에이터 검색 열기"><span></span></button>`;
 }
 
+function creatorRoleModelPanel() {
+  return `<section class="app-panel creator-model-panel">
+    <div class="panel-title-row"><h3>나의 롤모델 설정</h3><span>CIV 비교 기준</span></div>
+    <div class="settings-grid">
+      <label>롤모델 유튜버<input value="회사원A" /></label>
+      <label>비교 방식<select><option>뷰티 리뷰형</option><option>숏폼 성장형</option><option>커머스 전환형</option><option>팬덤 커뮤니티형</option></select></label>
+      <label>목표 CIV<input type="number" value="95" min="70" max="100" /></label>
+      <label>비교 가중치<select><option>CIV 40 / 팬덤 30 / 조회 30</option><option>팬덤 우선</option><option>광고 안정성 우선</option></select></label>
+    </div>
+    <div class="button-row"><button class="secondary-button" type="button">롤모델 추가</button><button class="primary-button" type="button">롤모델과 비교</button></div>
+  </section>`;
+}
+
+function creatorCivTrendPanel() {
+  const channel = channels[1];
+  const history = channelHistory(channel);
+  const roleModel = history.map((point, index) => ({
+    ...point,
+    civ: Math.min(98, point.civ + 4 + index),
+    fandom: Math.min(98, point.fandom + 3),
+  }));
+  return `<section class="app-panel">
+    <div class="panel-title-row"><h3>점수 추세</h3><span>최근 6개월 · 롤모델 비교</span></div>
+    <div class="detail-layout">
+      <section class="chart-card"><div class="panel-title-row"><h3>내 채널 CIV</h3><span>현재 ${channel.civ}</span></div>${sparkline(history, "civ", "#727bee")}</section>
+      <section class="chart-card"><div class="panel-title-row"><h3>롤모델 CIV</h3><span>목표 95</span></div>${sparkline(roleModel, "civ", "#16a34a")}</section>
+    </div>
+  </section>`;
+}
+
+function creatorAiAnalysisPanel(mode = "diagnosis") {
+  const copy = {
+    diagnosis: ["왜 이 점수가 나왔는지", "최근 비교 리뷰 영상의 댓글 긍정률은 높지만 업로드 간격이 흔들려 성장성 점수가 일부 깎였습니다. 롤모델 대비 부족한 부분은 월간 반복 포맷과 고정 업로드 슬롯입니다."],
+    goal: ["목표 CIV 95 달성 AI 분석", "현재 CIV 87에서 95까지 올리려면 팬덤 반복 시청과 조회 성장성을 동시에 올려야 합니다. 비교 리뷰 2편, Q&A 1편, 숏폼 리마인드 3편을 4주 안에 묶는 플랜이 가장 효율적입니다."],
+    action: ["AI 개선 제안", "롤모델 채널은 제품 비교표와 고정 댓글 링크 전환이 강합니다. 온유메이크업은 댓글 신뢰도는 좋으므로 영상 말미 CTA와 쇼츠 재활용 비중을 올리면 CIV 상승 속도가 빨라집니다."],
+  }[mode] || ["AI 분석", "채널 운영 데이터를 기준으로 다음 액션을 정리했습니다."];
+  return `<section class="app-panel ai-insight-panel">
+    <div class="panel-title-row"><h3>${copy[0]}</h3><span>YOUCHI AI</span></div>
+    <p>${copy[1]}</p>
+    <div class="ai-action-grid">
+      <div><span>1주차</span><strong>비교 리뷰 업로드</strong><em>CIV +1.8 예상</em></div>
+      <div><span>2주차</span><strong>댓글 Q&A 수집</strong><em>팬덤 +2.1 예상</em></div>
+      <div><span>3주차</span><strong>숏폼 3편 재가공</strong><em>조회 성장 +3.4 예상</em></div>
+      <div><span>4주차</span><strong>협찬 가이드 정리</strong><em>안전성 유지</em></div>
+    </div>
+  </section>`;
+}
+
+function creatorCivDiagnosisView(title = "CIV진단") {
+  return pageShell(`${subpageHead(roles.creator.label, title, "CIV가 왜 이렇게 나왔는지 설명하고, 롤모델 유튜버와 비교할 수 있게 구성했습니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div>${creatorAiAnalysisPanel(title === "AI 분석" ? "action" : "diagnosis")}${creatorCivTrendPanel()}${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}`);
+}
+
+function creatorCivGoalView() {
+  return pageShell(`${subpageHead(roles.creator.label, "CIV 목표", "목표치를 직접 입력하고, 목표 달성에 필요한 AI 실행안을 확인합니다.")}<section class="app-panel civ-goal-editor"><div class="panel-title-row"><h3>목표치 입력</h3><span>임의 목표 95점</span></div><div class="settings-grid"><label>현재 CIV<input value="87" readonly /></label><label>목표 CIV<input id="creatorCivGoalInput" type="number" value="95" min="70" max="100" /></label><label>달성 기간<select><option>4주</option><option>8주</option><option>12주</option></select></label><label>우선 전략<select><option>팬덤과 조회 성장 동시 개선</option><option>댓글 반응 우선</option><option>협찬 안전성 우선</option></select></label></div></section>${signalBoard(channels[1])}${creatorAiAnalysisPanel("goal")}${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}`);
+}
+
+function creatorScheduleBoard(title = "협업 일정") {
+  const items = [
+    ["협의중", "올리브영 기초 라인", "05.28", "06.03", "#727bee"],
+    ["진행중", "여름 쿠션 비교 리뷰", "06.01", "06.14", "#16a34a"],
+    ["촬영", "다이슨 스타일러", "06.05", "06.09", "#f59e0b"],
+    ["편집", "출근 메이크업 시즌 3", "06.10", "06.18", "#ec4899"],
+    ["업로드", "민감성 피부 Q&A", "06.16", "06.21", "#06b6d4"],
+  ];
+  return pageShell(`${subpageHead(roles.creator.label, title, "협업을 받은 날짜부터 업로드 마감일까지 한눈에 보이도록 일정형 보드로 정리했습니다.")}<section class="schedule-board">
+    <div class="schedule-side">
+      <div class="schedule-status-card"><span>협의중 일정</span><strong>2건</strong><em>조건 조율 필요</em></div>
+      <div class="schedule-status-card active"><span>진행중 일정</span><strong>3건</strong><em>촬영·편집 진행</em></div>
+      <div class="schedule-status-card"><span>마감 임박</span><strong>1건</strong><em>06.09 촬영본 제출</em></div>
+      <div class="schedule-status-card"><span>업로드 예정</span><strong>2건</strong><em>다음 2주 안</em></div>
+    </div>
+    <div class="schedule-timeline">
+      <div class="timeline-head">${["05.28", "06.01", "06.05", "06.10", "06.14", "06.18", "06.21"].map((day) => `<span>${day}</span>`).join("")}</div>
+      ${items.map(([status, name, start, end, color], index) => `<div class="timeline-row"><span><b>${status}</b>${name}</span><div class="timeline-track"><i style="--start:${index * 9 + 4}%;--width:${34 + index * 5}%;--bar:${color}"><em>${start} → ${end}</em></i></div></div>`).join("")}
+    </div>
+  </section>`);
+}
+
 function showCreatorSearchModal() {
   document.querySelector(".creator-search-modal")?.remove();
   document.body.insertAdjacentHTML("beforeend", `<div class="creator-search-modal open" role="dialog" aria-modal="true">
@@ -883,10 +956,12 @@ function renderFocusedSubpage(title) {
 
   if (currentRole === "creator") {
     if (normalized === "채널 홈") return pageShell(`${subpageHead(roleName, normalized, "채널 프로필, 최근 영상, 댓글 반응, CIV 변화를 Playboard식 분석 보드로 봅니다.")}${creatorChannelAnalytics()}${recentVideoPanel()}<div class="pc-analysis-grid">${signalBoard(channels[1])}<section class="app-panel"><h3>채널 운영 메모</h3><div class="app-row"><span>다음 업로드 권장 시간</span><strong>금요일 18:00</strong></div><div class="app-row"><span>강한 콘텐츠 포맷</span><strong>비교 리뷰</strong></div><div class="app-row"><span>협찬 적합도</span><strong>뷰티·커머스 높음</strong></div></section></div>`);
+    if (normalized === "CIV 목표") return creatorCivGoalView();
+    if (normalized === "협업 일정" || normalized === "제작 타임라인" || normalized === "업로드 준비") return creatorScheduleBoard(normalized);
+    if (normalized.includes("CIV") || normalized.includes("점수") || normalized.includes("팬덤") || normalized.includes("카테고리") || normalized.includes("안전성") || normalized.includes("AI") || normalized.includes("핵심")) return creatorCivDiagnosisView(normalized);
     if (normalized.includes("협업") || normalized.includes("제안") || normalized.includes("제품") || normalized.includes("신규")) return pageShell(`${subpageHead(roleName, normalized, "받은 협업, 기업 조건, 제품 수령 상태를 검토합니다. 검색은 오른쪽 하단 도구에서 따로 엽니다.")}<section class="app-panel"><h3>협업 리스트</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>${recentVideoPanel()}`);
     if (normalized.includes("정산") || normalized.includes("입금") || normalized.includes("출금") || normalized.includes("계약") || normalized.includes("검수")) return pageShell(`${subpageHead(roleName, normalized, "계약, 검수, 입금 예정, 출금 신청을 분리해서 관리합니다.")}<div class="pc-work-grid"><section class="app-panel"><h3>정산 큐</h3><div class="app-row"><span><strong>스킨케어 협찬 6월</strong><br><em>검수 완료 · 2026.06.05 입금 예정</em></span><strong>₩18,000,000</strong></div><div class="app-row"><span><strong>헤어케어 스타일러</strong><br><em>촬영본 승인 · 2026.06.12 입금 예정</em></span><strong>₩4,800,000</strong></div><div class="app-row"><span><strong>출근 메이크업 시즌 3</strong><br><em>1차 콘텐츠 승인</em></span><strong>₩12,000,000</strong></div></section><section class="app-panel"><h3>계약 상태</h3><div class="result-grid"><div><span>스마트 계약</span><strong>4건</strong></div><div><span>검수 대기</span><strong>3건</strong></div><div><span>출금 가능</span><strong>₩4,850만</strong></div></div><button class="primary-button">출금 신청</button></section></div>`);
-    if (normalized.includes("CIV") || normalized.includes("점수") || normalized.includes("팬덤") || normalized.includes("카테고리") || normalized.includes("안전성") || normalized.includes("개선") || normalized.includes("핵심")) return pageShell(`${subpageHead(roleName, normalized, "채널의 CIV, 팬덤, 안전성, 카테고리 경쟁력을 진단합니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}<section class="app-panel"><h3>개선 액션</h3><div class="app-insight"><strong>업로드 주기 고정</strong><p>금요일 오후 업로드 패턴에서 팬덤 반응이 가장 안정적입니다.</p></div><div class="app-insight"><strong>브랜드 안전성 유지</strong><p>협찬 표기와 댓글 검수 기준을 유지하면 광고주 제안 전환이 높습니다.</p></div></section></div>${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}`);
-    return pageShell(`${subpageHead(roleName, normalized, "콘텐츠 로드맵과 촬영, 편집, 협업 일정을 운영합니다.")}<div class="pc-work-grid"><section class="app-panel"><h3>콘텐츠 운영 로드맵</h3><div class="app-row"><span><strong>출근 전 10분 메이크업</strong><br><em>촬영 2일 · 편집 1일 · 업로드 금요일</em></span><strong>진행</strong></div><div class="app-row"><span><strong>기초 라인 비교 리뷰</strong><br><em>제품 수령 완료 · 가이드 검토</em></span><strong>준비</strong></div><div class="app-row"><span><strong>라이브 Q&A</strong><br><em>팬덤 반응 테스트</em></span><strong>예약</strong></div></section>${signalBoard(channels[1])}</div>${recentVideoPanel()}`);
+    return creatorScheduleBoard(normalized);
   }
 
   if (normalized.includes("마켓") || normalized.includes("인수") || normalized.includes("검토") || normalized.includes("권리") || normalized.includes("가격")) {
@@ -958,8 +1033,10 @@ function renderAppAnalysis() {
   }
   if (currentRole === "creator") {
     return pageShell(`
-      <section class="page-head"><div><p class="eyebrow">CIV Diagnosis</p><h2>CIV진단</h2><p>채널 가치, 성장성, 팬덤, 광고 적합도를 실제 운영 지표처럼 자세히 확인합니다.</p></div><div class="score-row">${scorePill("현재 CIV", "87.0")}${scorePill("상위", "9%")}${scorePill("예상 가치", krw(channels[1].value))}</div></section>
-      <div class="pc-analysis-grid">${signalBoard(channels[1])}<section class="app-panel"><h3>개선 액션</h3><div class="app-insight"><strong>정기 업로드 주기 최적화</strong><p>금요일 오후 6시 업로드 패턴에서 조회 성장 점수가 가장 높습니다.</p></div><div class="app-insight"><strong>브랜드 안전성 유지</strong><p>협찬 가이드 준수율과 댓글 위험도가 안정권입니다.</p></div><div class="button-row"><button class="secondary-button" data-app-tab="2">협업·제안 보기</button><button class="primary-button" data-app-tab="3">수익 정산 보기</button></div></section></div>
+      <section class="page-head"><div><p class="eyebrow">CIV Diagnosis</p><h2>CIV진단</h2><p>왜 이 점수가 나왔는지 보고, 롤모델 유튜버와 비교해 다음 액션을 정합니다.</p></div><div class="score-row">${scorePill("현재 CIV", "87.0")}${scorePill("목표", "95")}${scorePill("롤모델", "회사원A")}</div></section>
+      <div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div>
+      ${creatorAiAnalysisPanel("diagnosis")}
+      ${creatorCivTrendPanel()}
       ${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}
     `);
   }
@@ -1035,8 +1112,11 @@ function renderAppTrade() {
 
 function renderAppInvest() {
   return pageShell(`
-    <section class="page-head"><div><p class="eyebrow">Creator Operation</p><h2>채널 운영</h2><p>콘텐츠 로드맵, 협업 일정, 성장 액션을 크리에이터 업무 화면으로 관리합니다.</p></div><div class="score-row">${scorePill("업로드 예정", "8편")}${scorePill("협업 일정", "5건")}${scorePill("CIV 목표", "90")}</div></section>
-    <div class="pc-work-grid"><section class="app-panel"><h3>콘텐츠 운영 로드맵</h3><div class="app-row"><span><strong>출근 전 10분 메이크업</strong><br><em>촬영 2편 · 편집 1편 · 업로드 금요일</em></span><strong>진행</strong></div><div class="app-row"><span><strong>기초 라인 비교 리뷰</strong><br><em>제품 수령 완료 · 가이드 검토</em></span><strong>준비</strong></div><div class="app-row"><span><strong>라이브 Q&A</strong><br><em>팬덤 반응 테스트</em></span><strong>예약</strong></div></section>${signalBoard(channels[1])}</div>
+    <section class="page-head"><div><p class="eyebrow">Creator Operation</p><h2>채널 운영</h2><p>CIV 목표와 협업 일정을 같이 보면서 촬영, 편집, 업로드 마감 흐름을 관리합니다.</p></div><div class="score-row">${scorePill("목표 CIV", "95")}${scorePill("협업 일정", "5건")}${scorePill("마감 임박", "1건")}</div></section>
+    <section class="app-panel civ-goal-editor"><div class="panel-title-row"><h3>목표치 입력</h3><span>임의 목표 95점</span></div><div class="settings-grid"><label>현재 CIV<input value="87" readonly /></label><label>목표 CIV<input type="number" value="95" min="70" max="100" /></label><label>달성 기간<select><option>4주</option><option>8주</option><option>12주</option></select></label><label>우선 전략<select><option>팬덤과 조회 성장 동시 개선</option><option>댓글 반응 우선</option><option>협찬 안전성 우선</option></select></label></div></section>
+    ${signalBoard(channels[1])}
+    ${creatorAiAnalysisPanel("goal")}
+    ${creatorScheduleBoard("협업 일정").replace('<div class="app-scroll">', '').replace('</div><button class="floating-search-button" data-work-action="open-creator-search" type="button" aria-label="크리에이터 검색 열기"><span></span></button>', '')}
   `);
 }
 
@@ -1049,11 +1129,11 @@ function renderAppPreview() {
 
   const tabs = appTabs[currentRole];
   const currentTabKey = tabs[currentAppTab]?.[1] || "home";
-  const sideMarkup = tabs.map(([label, key], index) => `<div class="pc-nav-item"><button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label}</button>${navFlyout(label, key)}</div>`).join("");
-  const bottomMarkup = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label}</button>`).join("");
+  const sideMarkup = tabs.map(([label, key], index) => `<div class="pc-nav-item"><button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${firstSubHref(key)}">${label}</button>${navFlyout(label, key)}</div>`).join("");
+  const bottomMarkup = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${firstSubHref(key)}">${label}</button>`).join("");
   if (bottomNav) bottomNav.innerHTML = bottomMarkup;
   if (sideNav) sideNav.innerHTML = sideMarkup;
-  if (drawerLinks) drawerLinks.innerHTML = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label} 이동</button>`).join("");
+  if (drawerLinks) drawerLinks.innerHTML = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${firstSubHref(key)}">${label} 이동</button>`).join("");
   const topbar = document.querySelector(".pc-topbar");
   if (topbar) {
     let menu = topbar.querySelector("#topMegaMenuMount");
