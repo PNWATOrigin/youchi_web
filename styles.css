@@ -1502,7 +1502,8 @@ input[type="range"] {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
   padding: 10px 0;
   border-bottom: 1px solid var(--border);
 }
@@ -1512,20 +1513,38 @@ input[type="range"] {
 }
 
 .app-row span {
+  min-width: 0;
   color: var(--secondary);
   font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: keep-all;
 }
 
 .app-row span em {
+  display: inline;
   color: var(--muted);
   font-style: normal;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+
+.app-row > span:first-child {
+  flex: 1 1 220px;
+  min-width: 0;
 }
 
 .app-row > span:last-child,
 .app-row > strong:last-child {
+  flex: 0 1 180px;
+  max-width: 45%;
   color: var(--role);
   text-align: right;
   font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: break-word;
+  word-break: keep-all;
 }
 
 .app-panel .primary-button,
@@ -2176,6 +2195,7 @@ input[type="range"] {
   display: inline-grid;
   gap: 2px;
   min-width: 96px;
+  max-width: 180px;
   padding: 9px 11px;
   border: 1px solid color-mix(in srgb, var(--role), white 72%);
   border-radius: 8px;
@@ -2183,6 +2203,9 @@ input[type="range"] {
   color: var(--role);
   font-size: 13px;
   font-weight: 900;
+  line-height: 1.25;
+  overflow-wrap: break-word;
+  word-break: keep-all;
 }
 
 .score-pill b {
@@ -2326,6 +2349,7 @@ input[type="range"] {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 12px;
 }
@@ -2336,13 +2360,17 @@ input[type="range"] {
 }
 
 .panel-title-row > span {
+  max-width: min(320px, 100%);
   padding: 5px 8px;
-  border-radius: 999px;
+  border-radius: 8px;
   background: color-mix(in srgb, var(--role), white 90%);
   color: var(--role);
   font-size: 11px;
   font-weight: 900;
-  white-space: nowrap;
+  line-height: 1.35;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .settings-grid {
@@ -3110,7 +3138,7 @@ input[type="range"] {
   gap: 5px;
   justify-content: initial;
   align-items: start;
-  min-height: 92px;
+  min-height: 102px;
   margin-top: 0;
   padding: 14px 44px 14px 14px;
   overflow: hidden;
@@ -3141,29 +3169,31 @@ input[type="range"] {
   font-size: 11px;
   font-weight: 900;
   line-height: 1.2;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .app-panel label.compare-select-card strong {
   display: block;
-  overflow: hidden;
   color: var(--text);
   font-size: 15px;
   line-height: 1.25;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .app-panel label.compare-select-card em {
   display: block;
-  overflow: hidden;
   color: #475569;
   font-size: 12px;
   font-style: normal;
   font-weight: 800;
   line-height: 1.35;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: keep-all;
 }
 
 .app-panel label.compare-select-card select {
