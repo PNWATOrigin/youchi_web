@@ -1005,11 +1005,17 @@ function investorComparisonMarkup(leftName, rightName) {
     ["예상 ROI", pct(left.roi), pct(right.roi), left.roi, right.roi, pct],
   ];
   const chart = (label, leftValue, rightValue, format) => {
-    const max = Math.max(Number(leftValue), Number(rightValue), 1);
+    const low = Math.min(Number(leftValue), Number(rightValue));
+    const high = Math.max(Number(leftValue), Number(rightValue));
+    const range = Math.max(1, high - low);
+    const leftPct = high === low ? 100 : 36 + ((Number(leftValue) - low) / range) * 64;
+    const rightPct = high === low ? 100 : 36 + ((Number(rightValue) - low) / range) * 64;
+    const winner = Number(leftValue) === Number(rightValue) ? "동률" : Number(leftValue) > Number(rightValue) ? left.name : right.name;
+    const delta = Math.abs(Number(leftValue) - Number(rightValue));
     return `<div class="comparison-hover-chart" role="tooltip">
-      <div class="mini-compare-head"><strong>${label} 비교</strong><span>hover chart</span></div>
-      <div class="mini-bar-row"><span>${left.name}</span><i style="--bar:${(leftValue / max) * 100}%"><em>${format(leftValue)}</em></i></div>
-      <div class="mini-bar-row"><span>${right.name}</span><i class="alt" style="--bar:${(rightValue / max) * 100}%"><em>${format(rightValue)}</em></i></div>
+      <div class="mini-compare-head"><strong>${label} 비교</strong><span>${winner} ${winner === "동률" ? "" : `+${format(delta)}`}</span></div>
+      <div class="mini-bar-row"><span>${left.name}</span><i style="--bar:${leftPct}%"><em>${format(leftValue)}</em></i></div>
+      <div class="mini-bar-row"><span>${right.name}</span><i class="alt" style="--bar:${rightPct}%"><em>${format(rightValue)}</em></i></div>
     </div>`;
   };
   return `<div class="comparison-board">
@@ -1046,7 +1052,7 @@ function investorReviewBoxView(title = "검토함") {
         </article>`).join("")}</div>
       </section>
       <section class="app-panel">
-        <div class="panel-title-row"><h3>2개 채널 비교</h3><span>CIV · 팬덤 · 구독자</span></div>
+        <div class="panel-title-row compact-title"><h3>채널 비교</h3><span>hover 시 항목별 바 차트</span></div>
         ${compareBlock}
       </section>
     </div>
