@@ -2730,7 +2730,8 @@ input[type="range"] {
 }
 
 .creator-search-modal,
-.video-detail-modal {
+.video-detail-modal,
+.offer-detail-modal {
   position: fixed;
   inset: 0;
   z-index: 82;
@@ -3023,6 +3024,25 @@ input[type="range"] {
 .offer-detail-grid strong {
   color: var(--text);
   font-size: 13px;
+}
+
+.offer-modal-summary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 14px 0;
+}
+
+.offer-modal-brief {
+  box-shadow: none;
+}
+
+.offer-modal-brief p {
+  margin: 8px 0 0;
+  color: var(--secondary);
+  line-height: 1.7;
+}
+
+.modal-actions {
+  justify-content: end;
 }
 
 .app-hero-card > .market-strip {
@@ -3661,7 +3681,8 @@ input[type="range"] {
   }
 
   .creator-search-modal,
-  .video-detail-modal {
+  .video-detail-modal,
+  .offer-detail-modal {
     padding: 10px;
   }
 

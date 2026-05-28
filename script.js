@@ -25,7 +25,7 @@ const appTabs = {
   creator: [
     ["홈", "home"],
     ["CIV진단", "analysis"],
-    ["협업·제안", "campaign"],
+    ["협업 제안", "campaign"],
     ["수익 정산", "trade"],
     ["채널 운영", "invest"],
   ],
@@ -63,13 +63,11 @@ const submenuGroups = {
     ],
     analysis: [],
     campaign: [
-      ["협업", ["협업·제안", "제안 리스트", "확정 제안"]],
-      ["관리", ["촬영 조건", "제품 수령"]],
+      ["협업 제안", ["협업 제안"]],
     ],
     trade: [],
     invest: [
-      ["운영 목표", ["CIV 목표"]],
-      ["일정 관리", ["협업 일정", "제작 타임라인", "업로드 준비"]],
+      ["채널 운영", ["CIV 목표", "협업 일정"]],
     ],
   },
   investor: {
@@ -125,18 +123,10 @@ const subpageRoutes = {
     "CIV 요약": "creator-civ-summary.html",
     "팬덤 상태": "creator-fandom-status.html",
     "CIV진단": "creator-civ-diagnosis.html",
-    "카테고리 비교": "creator-category-compare.html",
-    "브랜드 안전성": "creator-brand-safety.html",
-    "협업·제안": "creator-offers.html",
-    "제안 리스트": "creator-offer-list.html",
-    "확정 제안": "creator-confirmed-offers.html",
-    "촬영 조건": "creator-shooting-conditions.html",
-    "제품 수령": "creator-products.html",
+    "협업 제안": "creator-offers.html",
     "수익 정산": "creator-settlement.html",
     "협업 일정": "creator-schedule.html",
     "CIV 목표": "creator-civ-goal.html",
-    "제작 타임라인": "creator-production-timeline.html",
-    "업로드 준비": "creator-upload-ready.html",
   },
   investor: {
     "투자 자산 현황": "investor-assets.html",
@@ -166,6 +156,8 @@ const subpageRoutes = {
 const fileRouteMeta = Object.entries(subpageRoutes).reduce((acc, [role, routeMap]) => {
   Object.entries(routeMap).forEach(([title, file]) => {
     let tabIndex = appTabs[role].findIndex(([, key]) => submenuGroups[role]?.[key]?.some(([, items]) => items.includes(title)));
+    if (role === "creator" && title === "CIV진단") tabIndex = 1;
+    if (role === "creator" && title === "협업 제안") tabIndex = 2;
     if (role === "creator" && title === "수익 정산") tabIndex = 3;
     acc[file] = { role, title, tabIndex: Math.max(0, tabIndex) };
   });
@@ -870,8 +862,8 @@ function creatorCivDiagnosisView(title = "CIV진단") {
   return pageShell(`${subpageHead(roles.creator.label, "CIV진단", "정밀 점수판, 롤모델 비교, 점수 추세를 한 화면에서 확인합니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div><section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다. 다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고, 롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>${creatorCivTrendPanel()}`);
 }
 
-function creatorOfferBoard() {
-  const rows = creatorOffers.map(([title, company, price, product, status], index) => ({
+function creatorOfferRows() {
+  return creatorOffers.map(([title, company, price, product, status], index) => ({
     title,
     company,
     price,
@@ -880,8 +872,15 @@ function creatorOfferBoard() {
     deadline: ["2026.06.03", "2026.06.08", "2026.06.12", "2026.06.16", "2026.06.22"][index],
     format: ["롱폼 1편 + 숏폼 2편", "릴스 3편", "롱폼 리뷰 1편", "사용기 2편", "시리즈 8편"][index],
     requirement: ["제품 사용 전후 비교", "민감성 피부 테스트", "브랜드 가이드 준수", "헤어 스타일링 장면 포함", "출근 루틴 자연 노출"][index],
+    deliverable: ["초안 1회 검수 · 제품 링크 고정 댓글", "피부 타입별 전후컷 포함 · 릴스 썸네일 제공", "브랜드 키 메시지 3개 포함 · 노출 시간 60초 이상", "사용법 데모 · 헤어 전후 비교컷", "출근 루틴 시리즈 내 자연 삽입 · 주 2회 업로드"][index],
+    contact: ["김서연 BM", "박민지 AE", "최유라 브랜드 매니저", "정도윤 캠페인 리드", "오하린 파트너 매니저"][index],
+    received: ["2026.05.28 10:20", "2026.05.27 16:45", "2026.05.26 09:10", "2026.05.24 14:30", "2026.05.22 11:05"][index],
   }));
-  return pageShell(`${subpageHead(roles.creator.label, "협업·제안", "광고주가 보낸 제안을 확인하고, 상세 조건을 보고 수락하거나 거절하는 화면입니다.")}
+}
+
+function creatorOfferBoard() {
+  const rows = creatorOfferRows();
+  return pageShell(`${subpageHead(roles.creator.label, "협업 제안", "광고주가 보낸 제안을 확인하고, 상세 조건을 보고 수락하거나 거절하는 화면입니다.")}
     <section class="offer-workbench">
       <div class="offer-list-panel">
         <div class="panel-title-row"><h3>받은 제안</h3><span>${rows.length}건</span></div>
@@ -891,7 +890,7 @@ function creatorOfferBoard() {
         </article>`).join("")}
       </div>
       <div class="offer-detail-panel">
-        <div class="panel-title-row"><h3>제안 상세보기</h3><span>광고 제안 검토</span></div>
+        <div class="panel-title-row"><h3>협업 제안</h3><span>상세보기로 조건 확인</span></div>
         ${rows.map((offer, index) => `<article class="offer-detail-card">
           <div class="offer-detail-head"><div><strong>${offer.title}</strong><p>${offer.company}</p></div><b>${offer.status}</b></div>
           <div class="offer-detail-grid">
@@ -901,10 +900,36 @@ function creatorOfferBoard() {
             <div><span>업로드 마감</span><strong>${offer.deadline}</strong></div>
           </div>
           <p>${offer.requirement}</p>
-          <div class="button-row"><button class="secondary-button" type="button">상세보기</button><button class="danger-button" type="button">제안 거절</button><button class="primary-button" type="button">제안 받기</button></div>
+          <div class="button-row"><button class="secondary-button" type="button" data-offer-detail="${index}">상세보기</button><button class="danger-button" type="button">제안 거절</button><button class="primary-button" type="button">제안 받기</button></div>
         </article>`).join("")}
       </div>
     </section>`);
+}
+
+function showOfferDetailModal(index = 0) {
+  const offer = creatorOfferRows()[Number(index)] || creatorOfferRows()[0];
+  document.querySelector(".offer-detail-modal")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `<div class="offer-detail-modal open" role="dialog" aria-modal="true">
+    <div class="recommend-modal__backdrop" data-work-action="close-offer-detail"></div>
+    <div class="channel-detail-modal__panel">
+      <div class="panel-title-row">
+        <div><p class="eyebrow">Collaboration Offer</p><h2>${offer.title}</h2><p class="modal-lead">${offer.company}에서 보낸 협업 제안 상세 조건입니다.</p></div>
+        <button class="icon-button" data-work-action="close-offer-detail" aria-label="닫기">×</button>
+      </div>
+      <div class="offer-detail-grid offer-modal-summary">
+        <div><span>제안 회사</span><strong>${offer.company}</strong></div>
+        <div><span>담당자</span><strong>${offer.contact}</strong></div>
+        <div><span>제품</span><strong>${offer.product}</strong></div>
+        <div><span>제안 금액</span><strong>${offer.price}</strong></div>
+        <div><span>받은 시간</span><strong>${offer.received}</strong></div>
+        <div><span>마감일</span><strong>${offer.deadline}</strong></div>
+        <div><span>콘텐츠 형식</span><strong>${offer.format}</strong></div>
+        <div><span>현재 상태</span><strong>${offer.status}</strong></div>
+      </div>
+      <section class="app-panel offer-modal-brief"><h3>요청 내용</h3><p>${offer.requirement}</p><p>${offer.deliverable}</p></section>
+      <div class="button-row modal-actions"><button class="danger-button" type="button">제안 거절</button><button class="secondary-button" type="button">조건 협의</button><button class="primary-button" type="button">제안 받기</button></div>
+    </div>
+  </div>`);
 }
 
 function creatorCivGoalView() {
@@ -990,7 +1015,7 @@ function renderFocusedSubpage(title) {
   if (currentRole === "creator") {
     if (normalized === "채널 홈") return pageShell(`${subpageHead(roleName, normalized, "채널 프로필, 최근 영상, 댓글 반응, CIV 변화를 Playboard식 분석 보드로 봅니다.")}${creatorChannelAnalytics()}${recentVideoPanel()}<div class="pc-analysis-grid">${signalBoard(channels[1])}<section class="app-panel"><h3>채널 운영 메모</h3><div class="app-row"><span>다음 업로드 권장 시간</span><strong>금요일 18:00</strong></div><div class="app-row"><span>강한 콘텐츠 포맷</span><strong>비교 리뷰</strong></div><div class="app-row"><span>협찬 적합도</span><strong>뷰티·커머스 높음</strong></div></section></div>`);
     if (normalized === "CIV 목표") return creatorCivGoalView();
-    if (normalized === "협업 일정" || normalized === "제작 타임라인" || normalized === "업로드 준비") return creatorScheduleBoard(normalized);
+    if (normalized === "협업 일정") return creatorScheduleBoard(normalized);
     if (normalized.includes("CIV") || normalized.includes("점수") || normalized.includes("팬덤") || normalized.includes("카테고리") || normalized.includes("안전성") || normalized.includes("AI") || normalized.includes("핵심")) return creatorCivDiagnosisView();
     if (normalized.includes("협업") || normalized.includes("제안") || normalized.includes("제품") || normalized.includes("신규")) return creatorOfferBoard();
     if (normalized.includes("정산") || normalized.includes("입금") || normalized.includes("출금") || normalized.includes("계약") || normalized.includes("검수")) return pageShell(`${subpageHead(roleName, normalized, "계약, 검수, 입금 예정, 출금 신청을 분리해서 관리합니다.")}<div class="pc-work-grid"><section class="app-panel"><h3>정산 큐</h3><div class="app-row"><span><strong>스킨케어 협찬 6월</strong><br><em>검수 완료 · 2026.06.05 입금 예정</em></span><strong>₩18,000,000</strong></div><div class="app-row"><span><strong>헤어케어 스타일러</strong><br><em>촬영본 승인 · 2026.06.12 입금 예정</em></span><strong>₩4,800,000</strong></div><div class="app-row"><span><strong>출근 메이크업 시즌 3</strong><br><em>1차 콘텐츠 승인</em></span><strong>₩12,000,000</strong></div></section><section class="app-panel"><h3>계약 상태</h3><div class="result-grid"><div><span>스마트 계약</span><strong>4건</strong></div><div><span>검수 대기</span><strong>3건</strong></div><div><span>출금 가능</span><strong>₩4,850만</strong></div></div><button class="primary-button">출금 신청</button></section></div>`);
@@ -1034,7 +1059,7 @@ function renderAppHome() {
       <h3 class="app-section-title">핵심 상태</h3>
       ${metricTiles(roles.creator.kpis)}
       <div class="pc-work-grid">
-        <section class="app-panel"><h3>신규 협업·제안</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>
+        <section class="app-panel"><h3>신규 협업 제안</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>
         ${signalBoard(channels[1])}
       </div>
     `);
@@ -1236,6 +1261,10 @@ function bindWorkActions() {
         document.querySelector(".video-detail-modal")?.remove();
         return;
       }
+      if (action === "close-offer-detail") {
+        document.querySelector(".offer-detail-modal")?.remove();
+        return;
+      }
       if (action === "clear-basket") {
         const role = currentRole === "investor" ? "investor" : "advertiser";
         workBasket = workBasket.filter((item) => item.role !== role);
@@ -1264,6 +1293,12 @@ function bindWorkActions() {
   document.querySelectorAll("[data-video-detail]").forEach((button) => {
     button.addEventListener("click", () => {
       showVideoDetailModal(button.dataset.videoDetail);
+      bindWorkActions();
+    });
+  });
+  document.querySelectorAll("[data-offer-detail]").forEach((button) => {
+    button.addEventListener("click", () => {
+      showOfferDetailModal(button.dataset.offerDetail);
       bindWorkActions();
     });
   });
