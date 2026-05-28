@@ -36,6 +36,67 @@ const appTabs = {
   ],
 };
 
+const submenuGroups = {
+  advertiser: {
+    home: [
+      ["AI 검색", ["AI 유튜버 검색", "추천 프롬프트", "최근 검색 결과"]],
+      ["빠른 실행", ["후보 장바구니", "브랜드 핏 워치리스트"]],
+    ],
+    analysis: [
+      ["점수 분석", ["CIV·팬덤 비교", "브랜드 안전성", "광고핏 랭킹"]],
+      ["데이터", ["최근 점수표", "정밀 카드", "채널 상세 팝업"]],
+    ],
+    campaign: [
+      ["캠페인", ["성과 및 계약 관리", "예산 시뮬레이터", "완료 리포트"]],
+      ["제안", ["제안 후보함", "일괄 제안", "성과 KPI 설정"]],
+    ],
+    trade: [
+      ["매칭", ["AI 채널 매칭", "매칭 조건", "유사 채널 추천"]],
+      ["액션", ["후보 담기", "제안 보내기", "추천 팝업"]],
+    ],
+  },
+  creator: {
+    home: [
+      ["운영", ["채널 홈", "핵심 상태", "신규 협업"]],
+      ["지표", ["CIV 요약", "팬덤 상태"]],
+    ],
+    analysis: [
+      ["진단", ["CIV진단", "점수 추세", "개선 액션"]],
+      ["비교", ["카테고리 비교", "브랜드 안전성"]],
+    ],
+    campaign: [
+      ["협업", ["협업·제안", "제안 리스트", "확정 제안"]],
+      ["관리", ["촬영 조건", "제품 수령"]],
+    ],
+    trade: [
+      ["정산", ["수익 정산", "입금 예정", "출금 신청"]],
+      ["계약", ["스마트 계약", "검수 대기"]],
+    ],
+    invest: [
+      ["채널 운영", ["콘텐츠 로드맵", "협업 일정", "CIV 목표"]],
+      ["업로드", ["촬영 예정", "편집 상태"]],
+    ],
+  },
+  investor: {
+    home: [
+      ["자산", ["투자 자산 현황", "마켓 스코어", "오늘 확인할 내용"]],
+      ["업데이트", ["수익 배분", "권리 리스크"]],
+    ],
+    analysis: [
+      ["리포트", ["채널 리포트", "수익 배분", "위험 점수"]],
+      ["분석", ["시장 가격", "성장성 비교"]],
+    ],
+    campaign: [
+      ["마켓", ["채널 매매 및 인수", "마켓 필터", "인수 검토 카드"]],
+      ["검토", ["검토함", "리포트 생성", "권리 조건"]],
+    ],
+    trade: [
+      ["파트너십", ["파트너십 조건", "추천 파트너", "PPL 적합"]],
+      ["제안", ["파트너 제안", "유사 채널 추천"]],
+    ],
+  },
+};
+
 const roles = {
   advertiser: {
     label: "광고주",
@@ -178,14 +239,27 @@ function scorePill(label, value) {
 }
 
 function navFlyout(label, key) {
-  const menus = {
-    home: ["AI 유튜버 검색", "추천 검색어", "최근 검색 결과"],
-    analysis: ["채널 점수 비교", "CIV·팬덤 점수", "브랜드 안전성"],
-    campaign: ["캠페인 세팅", "제안 후보함", "성과 리포트"],
-    trade: ["AI 채널 매칭", "제안 발송", "유사 채널 추천"],
-    invest: ["채널 운영", "콘텐츠 로드맵", "협업 일정"],
-  };
-  return `<div class="nav-flyout"><strong>${label}</strong>${(menus[key] || []).map((item) => `<span>${item}</span>`).join("")}</div>`;
+  const groups = submenuGroups[currentRole]?.[key] || [];
+  const href = routeByKey[key] || "index.html";
+  return `<div class="nav-flyout"><strong>${label}</strong>${groups.map(([title, items]) => `<section><b>${title}</b>${items.map((item) => `<a href="./${href}#${encodeURIComponent(item)}">${item}</a>`).join("")}</section>`).join("")}</div>`;
+}
+
+function firstSubHref(key) {
+  const first = submenuGroups[currentRole]?.[key]?.[0]?.[1]?.[0];
+  const href = routeByKey[key] || "index.html";
+  return first ? `${href}#${encodeURIComponent(first)}` : href;
+}
+
+function renderTopMenu() {
+  const tabs = appTabs[currentRole];
+  return `<nav class="top-mega-menu" aria-label="상단 주요 메뉴">
+    <div class="top-role-tabs" aria-label="대분류">
+      ${Object.entries(roles).map(([key, role]) => `<button class="${key === currentRole ? "active" : ""}" type="button" data-top-role="${key}">${role.label}</button>`).join("")}
+    </div>
+    <div class="top-mid-tabs" aria-label="중분류">
+      ${tabs.map(([label, key], index) => `<div class="top-menu-item"><button class="${index === currentAppTab ? "active" : ""}" type="button" data-app-tab="${index}" data-page-url="${firstSubHref(key)}">${label}</button>${navFlyout(label, key)}</div>`).join("")}
+    </div>
+  </nav>`;
 }
 
 function ticker(channels = channelsTop(8)) {
@@ -463,6 +537,45 @@ function pageShell(content) {
   return `<div class="app-scroll">${content}</div>`;
 }
 
+function renderFocusedSubpage(title) {
+  const normalized = title || appTabs[currentRole]?.[currentAppTab]?.[0] || "홈";
+  const roleName = roles[currentRole].label;
+  const lower = normalized.toLowerCase();
+  const focusChannel = channelsTop(1, (a, b) => brandFit(b) - brandFit(a))[0];
+
+  if (currentRole === "advertiser") {
+    if (lower.includes("ai") || normalized.includes("검색") || normalized.includes("프롬프트")) {
+      return pageShell(`${subpageHead(roleName, normalized, "AI 검색 조건을 입력하고 최신 점수만 빠르게 확인하는 전용 페이지입니다.")}${aiSearchExperience(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)))}`);
+    }
+    if (normalized.includes("장바구니") || normalized.includes("후보") || normalized.includes("제안")) {
+      return pageShell(`${subpageHead(roleName, normalized, "선택한 크리에이터 후보와 제안 액션만 분리해서 관리합니다.")}${basketPanel("advertiser")}${denseScoreTable(channelsTop(8, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+    }
+    if (normalized.includes("캠페인") || normalized.includes("KPI") || normalized.includes("시뮬레이터") || normalized.includes("리포트")) {
+      return pageShell(`${subpageHead(roleName, normalized, "캠페인 조건, KPI, 성과 예측을 한 화면에서 설정합니다.")}${detailedSettings("advertiser")}<section class="app-panel"><h3>캠페인 현황</h3>${campaigns.map(([name, channel, status, budget, roi, reach]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${channel} · ${budget} · ${reach}</em></span><strong>${status}<br><em>${roi}</em></strong></div>`).join("")}</section>`);
+    }
+    if (normalized.includes("매칭") || normalized.includes("유사") || normalized.includes("담기")) {
+      const matches = channels.filter((channel) => channel.brandSafety >= 80).sort((a, b) => brandFit(b) - brandFit(a));
+      return pageShell(`${subpageHead(roleName, normalized, "브랜드 핏 기준으로 매칭 후보만 집중해서 보여줍니다.")}${detailedSettings("advertiser")}${denseScoreTable(matches, "advertiser")}<div class="channel-grid">${matches.slice(0, 6).map((channel) => channelCard(channel, "advertiser")).join("")}</div>`);
+    }
+    return pageShell(`${subpageHead(roleName, normalized, "선택한 소분류에 맞춘 채널 점수 전용 페이지입니다.")}${signalBoard(focusChannel)}${denseScoreTable(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+  }
+
+  if (currentRole === "creator") {
+    if (normalized.includes("정산") || normalized.includes("출금") || normalized.includes("계약")) return renderAppTrade();
+    if (normalized.includes("협업") || normalized.includes("제안") || normalized.includes("제품")) return renderAppCampaign();
+    if (normalized.includes("운영") || normalized.includes("로드맵") || normalized.includes("업로드")) return renderAppInvest();
+    return renderAppAnalysis();
+  }
+
+  if (normalized.includes("마켓") || normalized.includes("인수") || normalized.includes("검토") || normalized.includes("권리")) return renderAppCampaign();
+  if (normalized.includes("파트너") || normalized.includes("PPL") || normalized.includes("추천")) return renderAppTrade();
+  return renderAppAnalysis();
+}
+
+function subpageHead(roleName, title, description) {
+  return `<section class="page-head subpage-head"><div><p class="eyebrow">${roleName} / 소분류</p><h2>${title}</h2><p>${description}</p></div><div class="score-row">${scorePill("현재 역할", roleName)}${scorePill("페이지", "분리됨")}</div></section>`;
+}
+
 function renderAppHome() {
   if (currentRole === "advertiser") {
     const top = channelsTop(5, (a, b) => brandFit(b) - brandFit(a));
@@ -609,15 +722,30 @@ function renderAppPreview() {
   if (bottomNav) bottomNav.innerHTML = bottomMarkup;
   if (sideNav) sideNav.innerHTML = sideMarkup;
   if (drawerLinks) drawerLinks.innerHTML = tabs.map(([label, key], index) => `<button class="${index === currentAppTab ? "active" : ""}" data-app-tab="${index}" data-page-url="${routeByKey[key]}">${label} 이동</button>`).join("");
+  const topbar = document.querySelector(".pc-topbar");
+  if (topbar) {
+    let menu = topbar.querySelector("#topMegaMenuMount");
+    if (!menu) {
+      menu = document.createElement("div");
+      menu.id = "topMegaMenuMount";
+      topbar.insertBefore(menu, document.querySelector("#roleCycleButton"));
+    }
+    menu.innerHTML = renderTopMenu();
+  }
 
   const pageTitle = document.querySelector("#pcPageTitle");
   if (pageTitle) pageTitle.textContent = `${roles[currentRole].label} ${tabs[currentAppTab]?.[0] || "홈"}`;
 
-  if (currentTabKey === "home") content.innerHTML = renderAppHome();
-  if (currentTabKey === "analysis") content.innerHTML = renderAppAnalysis();
-  if (currentTabKey === "campaign") content.innerHTML = renderAppCampaign();
-  if (currentTabKey === "trade") content.innerHTML = renderAppTrade();
-  if (currentTabKey === "invest") content.innerHTML = renderAppInvest();
+  const hashTitle = decodeURIComponent(location.hash.replace(/^#/, "") || "");
+  if (hashTitle) {
+    content.innerHTML = renderFocusedSubpage(hashTitle);
+  } else {
+    if (currentTabKey === "home") content.innerHTML = renderAppHome();
+    if (currentTabKey === "analysis") content.innerHTML = renderAppAnalysis();
+    if (currentTabKey === "campaign") content.innerHTML = renderAppCampaign();
+    if (currentTabKey === "trade") content.innerHTML = renderAppTrade();
+    if (currentTabKey === "invest") content.innerHTML = renderAppInvest();
+  }
 
   document.querySelectorAll("[data-app-tab]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -631,6 +759,9 @@ function renderAppPreview() {
       document.querySelector("#drawer")?.classList.remove("open");
       renderAppPreview();
     });
+  });
+  document.querySelectorAll("[data-top-role]").forEach((button) => {
+    button.addEventListener("click", () => setRole(button.dataset.topRole, { goHome: true }));
   });
   bindSimulator();
   bindWorkActions();
@@ -726,9 +857,17 @@ function bindSimulator() {
   update();
 }
 
-function setRole(role) {
+function setRole(role, options = {}) {
+  const roleChanged = currentRole !== role;
   currentRole = role;
   localStorage.setItem("youchi-role", role);
+  if (options.goHome) {
+    currentAppTab = 0;
+    if (page !== "home" || roleChanged) {
+      location.href = "./index.html";
+      return;
+    }
+  }
   document.querySelector(".app-shell")?.setAttribute("data-role", role);
   if (currentAppTab >= appTabs[role]?.length) currentAppTab = 0;
   document.querySelectorAll("[data-role-button]").forEach((button) => {
@@ -746,7 +885,7 @@ function setRole(role) {
 }
 
 document.querySelectorAll("[data-role-button]").forEach((button) => {
-  button.addEventListener("click", () => setRole(button.dataset.roleButton));
+  button.addEventListener("click", () => setRole(button.dataset.roleButton, { goHome: true }));
 });
 
 document.querySelectorAll(".dropdown-toggle").forEach((button) => {
@@ -776,7 +915,11 @@ document.querySelector("#loginForm")?.addEventListener("submit", (event) => {
 
 document.querySelector("#roleCycleButton")?.addEventListener("click", () => {
   const keys = Object.keys(roles);
-  setRole(keys[(keys.indexOf(currentRole) + 1) % keys.length]);
+  setRole(keys[(keys.indexOf(currentRole) + 1) % keys.length], { goHome: true });
+});
+
+window.addEventListener("hashchange", () => {
+  renderAppPreview();
 });
 
 document.querySelector("#menuButton")?.addEventListener("click", () => document.querySelector("#drawer")?.classList.add("open"));
