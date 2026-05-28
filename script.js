@@ -1,9 +1,10 @@
 const page = document.body.dataset.page || "home";
 const pageDefaultRole = document.body.dataset.roleDefault || { creator: "creator", investment: "investor" }[page];
 const parsedDefaultTab = Number(document.body.dataset.tabDefault || 0);
-let currentRole = pageDefaultRole || localStorage.getItem("youchi-role") || "advertiser";
+let currentRole = localStorage.getItem("youchi-role") || pageDefaultRole || "advertiser";
 let loggedIn = localStorage.getItem("youchi-logged-in") === "true";
 let currentAppTab = Number.isFinite(parsedDefaultTab) ? parsedDefaultTab : 0;
+let workBasket = JSON.parse(localStorage.getItem("youchi-work-basket") || "[]");
 
 const routeByKey = {
   home: "index.html",
@@ -153,7 +154,7 @@ function channelsTop(limit = 6, sorter = (a, b) => marketScore(b) - marketScore(
 function denseScoreTable(rows, mode = "advertiser") {
   const label = mode === "investor" ? "마켓" : mode === "creator" ? "운영" : "매칭";
   return `<div class="dense-table-wrap"><table class="dense-table">
-    <thead><tr><th>#</th><th>채널</th><th>카테고리</th><th>CIV</th><th>성장</th><th>팬덤</th><th>광고핏</th><th>안전성</th><th>ROI</th><th>${label} 점수</th><th>월조회</th><th>가치</th></tr></thead>
+    <thead><tr><th>#</th><th>채널</th><th>카테고리</th><th>CIV</th><th>성장</th><th>팬덤</th><th>광고핏</th><th>안전성</th><th>ROI</th><th>${label} 점수</th><th>월조회</th><th>가치</th><th>액션</th></tr></thead>
     <tbody>${rows.map((channel, index) => `<tr>
       <td>${index + 1}</td>
       <td><strong>${channel.name}</strong><span>${compactCount(channel.subscribers)} · ${channel.format}</span></td>
@@ -167,12 +168,18 @@ function denseScoreTable(rows, mode = "advertiser") {
       <td><b>${mode === "advertiser" ? brandFit(channel) : marketScore(channel)}</b></td>
       <td>${compactCount(channel.monthlyViews)}</td>
       <td>${krw(channel.value)}</td>
+      <td><button class="table-action" data-work-action="${mode === "investor" ? "review" : "basket"}" data-channel="${channel.name}">${mode === "investor" ? "검토" : "담기"}</button></td>
     </tr>`).join("")}</tbody>
   </table></div>`;
 }
 
 function channelCard(channel, mode = "advertiser") {
   const primary = mode === "investor" ? marketScore(channel) : brandFit(channel);
+  const actions = mode === "creator"
+    ? ""
+    : mode === "investor"
+      ? `<div class="channel-actions"><button class="secondary-button" data-work-action="review" data-channel="${channel.name}">검토함 담기</button><button class="primary-button" data-work-action="partner" data-channel="${channel.name}">파트너 제안</button></div>`
+      : `<div class="channel-actions"><button class="secondary-button" data-work-action="basket" data-channel="${channel.name}">후보 담기</button><button class="primary-button" data-work-action="proposal" data-channel="${channel.name}">제안 보내기</button></div>`;
   return `<article class="channel-card">
     <div class="channel-card__visual"><div class="avatar">${channel.category.slice(0, 1)}</div><b>${mode === "investor" ? "마켓" : "핏"} ${primary}</b></div>
     <div class="channel-card__body">
@@ -186,7 +193,115 @@ function channelCard(channel, mode = "advertiser") {
       <span>월 조회 <strong>${compactCount(channel.monthlyViews)}</strong></span>
       <span>추정 가치 <strong>${krw(channel.value)}</strong></span>
     </div>
+    ${actions}
   </article>`;
+}
+
+function detailedSettings(type) {
+  if (type === "advertiser") {
+    return `<section class="app-panel settings-panel">
+      <div class="panel-title-row"><h3>캠페인 세팅값</h3><span>제안 발송 전 검토</span></div>
+      <div class="settings-grid">
+        <label>브랜드 카테고리<select><option>뷰티 / 스킨케어</option><option>IT / SaaS</option><option>게이밍 기어</option><option>푸드 / 커머스</option><option>금융 앱</option></select></label>
+        <label>목표 KPI<select><option>전환 매출 우선</option><option>도달 극대화</option><option>브랜드 안전성 우선</option><option>신규 고객 획득</option></select></label>
+        <label>제안 예산<input type="number" value="42000000" min="1000000" step="1000000" /></label>
+        <label>제안 마감일<input type="date" value="2026-06-18" /></label>
+        <label>최소 브랜드 핏<input type="range" min="60" max="100" value="88" /></label>
+        <label>최소 안전성<input type="range" min="60" max="100" value="82" /></label>
+        <label>예상 ROI 하한<input type="range" min="80" max="220" value="145" /></label>
+        <label>월 조회수 하한<input type="number" value="300000" step="50000" /></label>
+      </div>
+      <div class="settings-flags">
+        <label><input type="checkbox" checked /> 숏폼 포함</label>
+        <label><input type="checkbox" checked /> 독점 노출 협의</label>
+        <label><input type="checkbox" /> 오프라인 행사 연계</label>
+        <label><input type="checkbox" checked /> 댓글 리스크 자동 검수</label>
+      </div>
+    </section>`;
+  }
+  return `<section class="app-panel settings-panel">
+    <div class="panel-title-row"><h3>투자 검토 세팅값</h3><span>마켓·파트너십 공통</span></div>
+    <div class="settings-grid">
+      <label>투자 목적<select><option>성장 채널 인수</option><option>장기 파트너십</option><option>PPL 수익형 협업</option><option>권리 리스크 낮은 포트폴리오</option></select></label>
+      <label>검토 예산<input type="number" value="800000000" min="10000000" step="10000000" /></label>
+      <label>최소 마켓 점수<input type="range" min="60" max="130" value="100" /></label>
+      <label>권리 리스크<select><option>낮음만</option><option>중간 이하</option><option>전체 확인</option></select></label>
+      <label>회수 기간<select><option>12개월 이하</option><option>18개월 이하</option><option>24개월 이하</option></select></label>
+      <label>최소 월 조회<input type="number" value="500000" step="50000" /></label>
+      <label>성장률 하한<input type="range" min="0" max="40" value="15" /></label>
+      <label>브랜드 안전성<input type="range" min="50" max="100" value="78" /></label>
+    </div>
+    <div class="settings-flags">
+      <label><input type="checkbox" checked /> 수익 배분 검토</label>
+      <label><input type="checkbox" checked /> 권리 이전 가능성 확인</label>
+      <label><input type="checkbox" checked /> 장기 PPL 적합도 포함</label>
+      <label><input type="checkbox" /> 대형 채널만 보기</label>
+    </div>
+  </section>`;
+}
+
+function basketPanel(type) {
+  const items = workBasket.filter((item) => item.role === type).slice(-4);
+  const title = type === "investor" ? "검토함" : "제안 후보 장바구니";
+  return `<section class="app-panel basket-panel">
+    <div class="panel-title-row"><h3>${title}</h3><span>${items.length}개 선택</span></div>
+    ${items.length ? items.map((item) => `<div class="app-row"><span><strong>${item.name}</strong><br><em>${item.actionLabel} · ${item.time}</em></span><strong>${item.score}</strong></div>`).join("") : `<p>아직 담긴 채널이 없습니다. 카드나 표에서 후보를 담아보세요.</p>`}
+    <div class="button-row"><button class="secondary-button" data-work-action="clear-basket">비우기</button><button class="primary-button" data-work-action="${type === "investor" ? "bulk-review" : "bulk-proposal"}">${type === "investor" ? "검토 리포트 생성" : "일괄 제안"}</button></div>
+  </section>`;
+}
+
+function showRecommendationModal(channelName, action) {
+  const base = channels.find((channel) => channel.name === channelName) || channels[0];
+  const role = currentRole === "investor" ? "investor" : "advertiser";
+  const actionLabel = {
+    basket: "후보 담기",
+    proposal: "제안 발송",
+    review: "검토함 담기",
+    partner: "파트너 제안",
+    "bulk-review": "검토 리포트",
+    "bulk-proposal": "일괄 제안",
+  }[action] || "선택";
+  if (!["bulk-review", "bulk-proposal", "clear-basket"].includes(action)) {
+    workBasket.push({
+      role,
+      name: base.name,
+      actionLabel,
+      score: role === "investor" ? marketScore(base) : brandFit(base),
+      time: "방금",
+    });
+    localStorage.setItem("youchi-work-basket", JSON.stringify(workBasket.slice(-20)));
+  }
+  const similar = channels
+    .filter((channel) => channel.name !== base.name)
+    .sort((a, b) => {
+      const aCategory = a.category === base.category ? 20 : 0;
+      const bCategory = b.category === base.category ? 20 : 0;
+      const aScore = role === "investor" ? marketScore(a) : brandFit(a);
+      const bScore = role === "investor" ? marketScore(b) : brandFit(b);
+      return (bCategory + bScore) - (aCategory + aScore);
+    })
+    .slice(0, 4);
+  document.querySelector(".recommend-modal")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `<div class="recommend-modal open" role="dialog" aria-modal="true">
+    <div class="recommend-modal__backdrop" data-work-action="close-modal"></div>
+    <div class="recommend-modal__panel">
+      <div class="panel-title-row"><div><p class="eyebrow">${role === "investor" ? "Related Channels" : "Creator Cart"}</p><h2>${base.name} ${actionLabel} 완료</h2></div><button class="icon-button" data-work-action="close-modal" aria-label="닫기">×</button></div>
+      <p class="modal-lead">이 채널과 조건이 비슷하거나 함께 제안하면 좋은 유튜버입니다. 쿠팡 장바구니 추천처럼 바로 추가 검토할 수 있게 구성했습니다.</p>
+      <div class="recommend-summary">
+        ${scorePill(role === "investor" ? "마켓 점수" : "브랜드 핏", role === "investor" ? marketScore(base) : brandFit(base))}
+        ${scorePill("카테고리", base.category)}
+        ${scorePill("예상 ROI", pct(base.roi))}
+        ${scorePill("가치", krw(base.value))}
+      </div>
+      <div class="recommend-grid">${similar.map((channel) => `<article class="recommend-card">
+        <strong>${channel.name}</strong>
+        <p>${channel.category} · ${compactCount(channel.subscribers)} · ${channel.desc}</p>
+        <div class="score-row">${scorePill(role === "investor" ? "마켓" : "핏", role === "investor" ? marketScore(channel) : brandFit(channel))}${scorePill("ROI", pct(channel.roi))}</div>
+        <button class="secondary-button" data-work-action="${role === "investor" ? "review" : "basket"}" data-channel="${channel.name}">${role === "investor" ? "검토함 추가" : "후보 추가"}</button>
+      </article>`).join("")}</div>
+      <div class="button-row modal-actions"><button class="secondary-button" data-work-action="close-modal">닫기</button><button class="primary-button" data-work-action="${role === "investor" ? "bulk-review" : "bulk-proposal"}">${role === "investor" ? "묶어서 리포트 생성" : "묶어서 제안 보내기"}</button></div>
+    </div>
+  </div>`);
 }
 
 function signalBoard(channel) {
@@ -257,6 +372,8 @@ function renderAppAnalysis() {
     const top = channelsTop(15, (a, b) => brandFit(b) - brandFit(a));
     return pageShell(`
       <section class="page-head"><div><p class="eyebrow">Insight</p><h2>채널 인사이트</h2><p>앱보다 더 많은 비교 지표를 PC에서 한 번에 보도록 구성했습니다.</p></div><div class="score-row">${scorePill("검색 결과", "15건")}${scorePill("안전성 80+", `${channels.filter((c) => c.brandSafety >= 80).length}건`)}${scorePill("ROI 150%+", `${channels.filter((c) => c.roi >= 150).length}건`)}</div></section>
+      ${detailedSettings("advertiser")}
+      ${basketPanel("advertiser")}
       <section class="app-panel"><h3>필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>게임</option><option>IT</option><option>먹방</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>브랜드 안전성순</option><option>CIV순</option><option>성장성순</option><option>ROI순</option></select><input placeholder="채널명, 키워드 검색" /></div></section>
       ${denseScoreTable(top, "advertiser")}
       <h3 class="app-section-title">정밀 카드</h3><div class="channel-grid">${top.slice(0, 9).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
@@ -286,6 +403,8 @@ function renderAppCampaign() {
         <section class="app-panel"><h3>캠페인 현황</h3>${campaigns.map(([name, channel, status, budget, roi, reach]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${channel} · ${budget} · ${reach}</em></span><strong>${status}<br><em>${roi}</em></strong></div>`).join("")}</section>
         <section class="app-panel"><h3>예산·성과 시뮬레이터</h3><label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label><input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" /><label>캠페인 기간 <output id="durationOutput">4주</output></label><input id="durationRange" type="range" min="1" max="12" value="4" /><div class="result-grid" id="simResults"></div></section>
       </div>
+      ${detailedSettings("advertiser")}
+      ${basketPanel("advertiser")}
       ${denseScoreTable(channelsTop(8, (a, b) => b.roi - a.roi), "advertiser")}
     `);
   }
@@ -300,6 +419,8 @@ function renderAppCampaign() {
   return pageShell(`
     <section class="page-head"><div><p class="eyebrow">Market</p><h2>채널 매매 및 인수 마켓</h2><p>잠재력이 검증된 크리에이터 채널의 전체 권리를 가격, 성장성, 위험 점수로 비교합니다.</p></div><div class="score-row">${scorePill("마켓", "15건")}${scorePill("평균 가치", "₩ 9.8억")}${scorePill("상승 후보", "6건")}</div></section>
     ${ticker(market.slice(0, 8))}
+    ${detailedSettings("investor")}
+    ${basketPanel("investor")}
     <section class="app-panel"><h3>마켓 필터</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>IT</option><option>게임</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>대형</option></select><select><option>전체 가격대</option><option>3억 이하</option><option>3억~10억</option><option>10억 이상</option></select><input placeholder="채널명 검색" /></div></section>
     ${denseScoreTable(market, "investor")}
     <h3 class="app-section-title">인수 검토 카드</h3><div class="channel-grid">${market.slice(0, 9).map((channel) => channelCard(channel, "investor")).join("")}</div>
@@ -311,6 +432,8 @@ function renderAppTrade() {
     const matches = channels.filter((channel) => channel.brandSafety >= 80).sort((a, b) => brandFit(b) - brandFit(a));
     return pageShell(`
       <section class="page-head"><div><p class="eyebrow">Channel Matching</p><h2>채널 매칭</h2><p>AI가 우리 브랜드와 핏이 맞는 유망 채널을 추천하고 카테고리, 성장성, 안전성을 함께 비교합니다.</p></div><div class="score-row">${scorePill("추천", `${matches.length}건`)}${scorePill("평균 핏", "88")}${scorePill("안전성 90+", `${matches.filter((c) => c.brandSafety >= 90).length}건`)}</div></section>
+      ${detailedSettings("advertiser")}
+      ${basketPanel("advertiser")}
       <section class="app-panel"><h3>매칭 조건</h3><div class="filter-grid"><select><option>뷰티 브랜드</option><option>IT/SaaS</option><option>게이밍</option><option>푸드</option><option>금융</option></select><select><option>브랜드 안전성 80+</option><option>성장성 90+</option><option>ROI 150%+</option></select><select><option>예산 전체</option><option>500만 이하</option><option>500만~2,000만</option><option>2,000만 이상</option></select><input placeholder="캠페인 키워드" /></div></section>
       ${denseScoreTable(matches, "advertiser")}
       <div class="channel-grid">${matches.slice(0, 9).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
@@ -325,6 +448,8 @@ function renderAppTrade() {
   const partners = channelsTop(12, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
   return pageShell(`
     <section class="page-head"><div><p class="eyebrow">Partnership</p><h2>파트너십</h2><p>협력 채널과의 동반 성장 로드맵을 확인하고 장기 파트너십 후보를 선별합니다.</p></div><div class="score-row">${scorePill("추천", "12건")}${scorePill("PPL 적합", "8건")}${scorePill("빠른 성장", "6건")}</div></section>
+    ${detailedSettings("investor")}
+    ${basketPanel("investor")}
     <section class="app-panel"><h3>파트너십 조건</h3><div class="filter-grid"><select><option>전체 카테고리</option><option>뷰티</option><option>먹방</option><option>IT</option><option>경제</option></select><select><option>전체 규모</option><option>소형</option><option>중형</option><option>빠른 성장</option></select><select><option>PPL 적합 우선</option><option>성장성 우선</option><option>위험 낮음 우선</option></select><input placeholder="제안 키워드" /></div></section>
     ${denseScoreTable(partners, "investor")}
     <div class="channel-grid">${partners.slice(0, 9).map((channel) => channelCard(channel, "investor")).join("")}</div>
@@ -375,6 +500,37 @@ function renderAppPreview() {
     });
   });
   bindSimulator();
+  bindWorkActions();
+}
+
+function bindWorkActions() {
+  document.querySelectorAll("[data-work-action]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const action = event.currentTarget.dataset.workAction;
+      const channel = event.currentTarget.dataset.channel || channels[0].name;
+      if (action === "close-modal") {
+        document.querySelector(".recommend-modal")?.remove();
+        return;
+      }
+      if (action === "clear-basket") {
+        const role = currentRole === "investor" ? "investor" : "advertiser";
+        workBasket = workBasket.filter((item) => item.role !== role);
+        localStorage.setItem("youchi-work-basket", JSON.stringify(workBasket));
+        renderAppPreview();
+        return;
+      }
+      showRecommendationModal(channel, action);
+      bindWorkActions();
+      if (["basket", "proposal", "review", "partner"].includes(action)) {
+        renderAppPreview();
+        requestAnimationFrame(() => {
+          const modal = document.querySelector(".recommend-modal");
+          if (modal) document.body.appendChild(modal);
+          bindWorkActions();
+        });
+      }
+    });
+  });
 }
 
 function bindSimulator() {
