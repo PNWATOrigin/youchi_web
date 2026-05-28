@@ -6,6 +6,7 @@ let currentRole = pageDefaultRole || localStorage.getItem("youchi-role") || "adv
 let loggedIn = localStorage.getItem("youchi-logged-in") === "true";
 let currentAppTab = Number.isFinite(parsedDefaultTab) ? parsedDefaultTab : 0;
 let workBasket = JSON.parse(localStorage.getItem("youchi-work-basket") || "[]");
+let dismissedReviewNames = JSON.parse(localStorage.getItem("youchi-review-dismissed") || "[]");
 
 const routeByKey = {
   home: "index.html",
@@ -73,7 +74,9 @@ const submenuGroups = {
   investor: {
     home: [],
     analysis: [],
-    campaign: [],
+    campaign: [
+      ["마켓", ["마켓", "검토함"]],
+    ],
     trade: [],
   },
 };
@@ -119,6 +122,7 @@ const subpageRoutes = {
   investor: {
     "리포트": "investor-report.html",
     "마켓": "investor-market.html",
+    "검토함": "investor-review-box.html",
     "파트너십": "investor-partnership.html",
   },
 };
@@ -131,6 +135,7 @@ const fileRouteMeta = Object.entries(subpageRoutes).reduce((acc, [role, routeMap
     if (role === "creator" && title === "수익 정산") tabIndex = 3;
     if (role === "investor" && title === "리포트") tabIndex = 1;
     if (role === "investor" && title === "마켓") tabIndex = 2;
+    if (role === "investor" && title === "검토함") tabIndex = 2;
     if (role === "investor" && title === "파트너십") tabIndex = 3;
     acc[file] = { role, title, tabIndex: Math.max(0, tabIndex) };
   });
@@ -644,6 +649,10 @@ function showRecommendationModal(channelName, action) {
     "bulk-proposal": "일괄 제안",
   }[action] || "선택";
   if (!["bulk-review", "bulk-proposal", "clear-basket"].includes(action)) {
+    if (role === "investor") {
+      dismissedReviewNames = dismissedReviewNames.filter((name) => name !== base.name);
+      localStorage.setItem("youchi-review-dismissed", JSON.stringify(dismissedReviewNames));
+    }
     workBasket.push({
       role,
       name: base.name,
@@ -969,6 +978,81 @@ function investorMarketView(title = "마켓") {
   `);
 }
 
+function investorReviewChannels() {
+  const names = workBasket
+    .filter((item) => item.role === "investor")
+    .map((item) => item.name);
+  const fallback = ["온유메이크업", "개발자준", "FPS훈이", "혼밥대장"];
+  return [...new Set([...names, ...fallback])]
+    .filter((name) => !dismissedReviewNames.includes(name))
+    .map((name) => channels.find((channel) => channel.name === name))
+    .filter(Boolean)
+    .slice(0, 8);
+}
+
+function investorComparisonMarkup(leftName, rightName) {
+  const left = channels.find((channel) => channel.name === leftName) || investorReviewChannels()[0] || channels[0];
+  const right = channels.find((channel) => channel.name === rightName) || investorReviewChannels()[1] || channels[1];
+  const rows = [
+    ["CIV 점수", left.civ, right.civ],
+    ["팬덤 점수", left.fandom, right.fandom],
+    ["구독자 수", compactCount(left.subscribers), compactCount(right.subscribers)],
+    ["월 조회수", compactCount(left.monthlyViews), compactCount(right.monthlyViews)],
+    ["마켓 점수", marketScore(left), marketScore(right)],
+    ["추정 가치", krw(left.value), krw(right.value)],
+    ["예상 ROI", pct(left.roi), pct(right.roi)],
+  ];
+  return `<div class="comparison-board">
+    <div class="comparison-head"><div><strong>${left.name}</strong><span>${left.category} · ${left.scale}</span></div><b>VS</b><div><strong>${right.name}</strong><span>${right.category} · ${right.scale}</span></div></div>
+    ${rows.map(([label, a, b]) => `<div class="comparison-row"><span>${label}</span><strong>${a}</strong><strong>${b}</strong></div>`).join("")}
+  </div>`;
+}
+
+function investorReviewBoxView(title = "검토함") {
+  const reviewed = investorReviewChannels();
+  const first = reviewed[0] || channels[0];
+  const second = reviewed[1] || channels[1];
+  const compareBlock = reviewed.length >= 2
+    ? `<div class="compare-selectors">
+          <label>채널 A<select id="compareChannelA">${reviewed.map((channel) => `<option ${channel.name === first.name ? "selected" : ""}>${channel.name}</option>`).join("")}</select></label>
+          <label>채널 B<select id="compareChannelB">${reviewed.map((channel) => `<option ${channel.name === second.name ? "selected" : ""}>${channel.name}</option>`).join("")}</select></label>
+        </div>
+        <div id="investorComparisonPanel">${investorComparisonMarkup(first.name, second.name)}</div>`
+    : `<p>비교하려면 검토함에 채널을 2개 이상 담아야 합니다.</p>`;
+  return pageShell(`
+    ${subpageHead(roles.investor.label, title, "검토함에 담은 크리에이터 채널을 매매 후보로 관리하고, 2개 채널을 직접 비교합니다.")}
+    <section class="app-hero-card"><div><span>Review Box</span><h2>채널 매매 검토함</h2><p>마켓에서 담은 후보를 보고 매매 검토를 진행하거나 목록에서 제거합니다. 선택한 2개 채널은 CIV, 팬덤, 구독자 수 기준으로 나란히 비교합니다.</p></div><div class="score-row">${scorePill("검토 후보", `${reviewed.length}개`)}${scorePill("비교 기준", "7개")}${scorePill("추천 액션", "매매 검토")}</div></section>
+    <div class="pc-work-grid review-workspace">
+      <section class="app-panel">
+        <div class="panel-title-row"><h3>검토함 목록</h3><span>${reviewed.length}개 채널</span></div>
+        <div class="review-list">${reviewed.map((channel) => `<article class="review-channel-card">
+          <div><strong>${channel.name}</strong><p>${channel.category} · ${compactCount(channel.subscribers)} · CIV ${channel.civ} · 팬덤 ${channel.fandom} · 가치 ${krw(channel.value)}</p></div>
+          <div class="button-row"><button class="secondary-button" type="button" data-work-action="remove-review" data-channel="${channel.name}">목록에서 지우기</button><button class="primary-button" type="button" data-work-action="trade-review" data-channel="${channel.name}">매매 검토</button></div>
+        </article>`).join("")}</div>
+      </section>
+      <section class="app-panel">
+        <div class="panel-title-row"><h3>2개 채널 비교</h3><span>CIV · 팬덤 · 구독자</span></div>
+        ${compareBlock}
+      </section>
+    </div>
+  `);
+}
+
+function showTradeReviewModal(channelName) {
+  const channel = channels.find((item) => item.name === channelName) || channels[0];
+  document.querySelector(".recommend-modal")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `<div class="recommend-modal open" role="dialog" aria-modal="true">
+    <div class="recommend-modal__backdrop" data-work-action="close-modal"></div>
+    <div class="recommend-modal__panel">
+      <div class="panel-title-row"><div><p class="eyebrow">Trade Review</p><h2>${channel.name} 매매 검토</h2></div><button class="icon-button" data-work-action="close-modal" aria-label="닫기">×</button></div>
+      <p class="modal-lead">CIV, 팬덤, 구독자 성장, 광고 수익 추정치 기준으로 채널 IP 매매를 검토합니다.</p>
+      <div class="recommend-summary">${scorePill("CIV", channel.civ)}${scorePill("팬덤", channel.fandom)}${scorePill("구독자", compactCount(channel.subscribers))}${scorePill("공정가", krw(channel.value))}</div>
+      <section class="app-panel"><h3>검토 결론</h3><p>성장성과 팬덤 점수가 안정적이어서 부분 권리 인수 또는 장기 수익 배분 계약 검토에 적합합니다. 최종 매매 전 최근 90일 광고 수익 증빙과 저작권 권리 범위를 확인해야 합니다.</p></section>
+      <div class="button-row modal-actions"><button class="secondary-button" data-work-action="close-modal">보류</button><button class="danger-button" type="button">매매 제외</button><button class="primary-button" type="button">매매 검토 진행</button></div>
+    </div>
+  </div>`);
+}
+
 function investorPartnershipView(title = "파트너십") {
   const partners = channelsTop(8, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
   const steps = ["공동 PPL 패키지 설계", "분기별 콘텐츠 로드맵 협의", "수익 배분 조건 갱신", "브랜드 공동 제안서 발송"];
@@ -1048,6 +1132,7 @@ function renderFocusedSubpage(title) {
     return creatorScheduleBoard(normalized);
   }
 
+  if (normalized.includes("검토함")) return investorReviewBoxView("검토함");
   if (normalized.includes("마켓") || normalized.includes("인수") || normalized.includes("검토") || normalized.includes("권리") || normalized.includes("가격")) return investorMarketView("마켓");
   if (normalized.includes("파트너") || normalized.includes("PPL") || normalized.includes("추천") || normalized.includes("유사")) return investorPartnershipView("파트너십");
   return investorReportView("리포트");
@@ -1196,10 +1281,9 @@ function renderAppPreview() {
     menu.innerHTML = renderTopMenu();
   }
 
-  const pageTitle = document.querySelector("#pcPageTitle");
-  if (pageTitle) pageTitle.textContent = `${roles[currentRole].label} ${tabs[currentAppTab]?.[0] || "홈"}`;
-
   const hashTitle = routedSubpageTitle || decodeURIComponent(location.hash.replace(/^#/, "") || "");
+  const pageTitle = document.querySelector("#pcPageTitle");
+  if (pageTitle) pageTitle.textContent = `${roles[currentRole].label} ${hashTitle || tabs[currentAppTab]?.[0] || "홈"}`;
   if (hashTitle) {
     content.innerHTML = renderFocusedSubpage(hashTitle);
   } else {
@@ -1269,6 +1353,19 @@ function bindWorkActions() {
         renderAppPreview();
         return;
       }
+      if (action === "remove-review") {
+        workBasket = workBasket.filter((item) => !(item.role === "investor" && item.name === channel));
+        dismissedReviewNames = [...new Set([...dismissedReviewNames, channel])];
+        localStorage.setItem("youchi-work-basket", JSON.stringify(workBasket));
+        localStorage.setItem("youchi-review-dismissed", JSON.stringify(dismissedReviewNames));
+        renderAppPreview();
+        return;
+      }
+      if (action === "trade-review") {
+        showTradeReviewModal(channel);
+        bindWorkActions();
+        return;
+      }
       showRecommendationModal(channel, action);
       bindWorkActions();
       if (["basket", "proposal", "review", "partner"].includes(action)) {
@@ -1299,6 +1396,19 @@ function bindWorkActions() {
       bindWorkActions();
     });
   });
+  bindInvestorReviewBox();
+}
+
+function bindInvestorReviewBox() {
+  const left = document.querySelector("#compareChannelA");
+  const right = document.querySelector("#compareChannelB");
+  const panel = document.querySelector("#investorComparisonPanel");
+  if (!left || !right || !panel) return;
+  const update = () => {
+    panel.innerHTML = investorComparisonMarkup(left.value, right.value);
+  };
+  left.addEventListener("change", update);
+  right.addEventListener("change", update);
 }
 
 function bindAiSearch() {
