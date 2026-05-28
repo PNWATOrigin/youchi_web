@@ -2914,6 +2914,117 @@ input[type="range"] {
   font-style: normal;
 }
 
+.civ-reason-panel p {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.offer-workbench {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.offer-list-panel,
+.offer-detail-panel {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.offer-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.offer-card.active {
+  border-color: color-mix(in srgb, var(--role), white 55%);
+  background: color-mix(in srgb, var(--role), white 92%);
+}
+
+.offer-card strong,
+.offer-detail-head strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.offer-card p,
+.offer-detail-head p,
+.offer-detail-card > p {
+  margin: 4px 0 0;
+  color: var(--secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.offer-card > span {
+  color: var(--secondary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.offer-detail-card {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.offer-detail-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+}
+
+.offer-detail-head b {
+  padding: 6px 9px;
+  border-radius: 999px;
+  background: white;
+  color: var(--role);
+  font-size: 11px;
+}
+
+.offer-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.offer-detail-grid div {
+  display: grid;
+  gap: 5px;
+  padding: 10px;
+  border-radius: 7px;
+  background: white;
+}
+
+.offer-detail-grid span {
+  color: var(--secondary);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.offer-detail-grid strong {
+  color: var(--text);
+  font-size: 13px;
+}
+
 .app-hero-card > .market-strip {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -3562,7 +3673,9 @@ input[type="range"] {
   .creator-model-panel .settings-grid,
   .ai-action-grid,
   .schedule-board,
-  .timeline-row {
+  .timeline-row,
+  .offer-workbench,
+  .offer-detail-grid {
     grid-template-columns: 1fr;
   }
 

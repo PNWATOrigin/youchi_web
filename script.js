@@ -61,10 +61,7 @@ const submenuGroups = {
       ["운영", ["채널 홈", "핵심 상태", "신규 협업"]],
       ["지표", ["CIV 요약", "팬덤 상태"]],
     ],
-    analysis: [
-      ["진단", ["CIV진단", "점수 추세", "AI 분석"]],
-      ["비교", ["카테고리 비교", "브랜드 안전성"]],
-    ],
+    analysis: [],
     campaign: [
       ["협업", ["협업·제안", "제안 리스트", "확정 제안"]],
       ["관리", ["촬영 조건", "제품 수령"]],
@@ -128,8 +125,6 @@ const subpageRoutes = {
     "CIV 요약": "creator-civ-summary.html",
     "팬덤 상태": "creator-fandom-status.html",
     "CIV진단": "creator-civ-diagnosis.html",
-    "점수 추세": "creator-score-trend.html",
-    "AI 분석": "creator-ai-analysis.html",
     "카테고리 비교": "creator-category-compare.html",
     "브랜드 안전성": "creator-brand-safety.html",
     "협업·제안": "creator-offers.html",
@@ -346,6 +341,7 @@ function navFlyout(label, key) {
 
 function firstSubHref(key) {
   if (currentRole === "creator" && key === "trade") return "creator-settlement.html";
+  if (currentRole === "creator" && key === "analysis") return "creator-civ-diagnosis.html";
   const first = submenuGroups[currentRole]?.[key]?.[0]?.[1]?.[0];
   return first ? subpageHref(currentRole, key, first) : routeByKey[key] || "index.html";
 }
@@ -828,8 +824,8 @@ function creatorRoleModelPanel() {
     <div class="settings-grid">
       <label>롤모델 유튜버<input value="회사원A" /></label>
       <label>비교 방식<select><option>뷰티 리뷰형</option><option>숏폼 성장형</option><option>커머스 전환형</option><option>팬덤 커뮤니티형</option></select></label>
-      <label>목표 CIV<input type="number" value="95" min="70" max="100" /></label>
       <label>비교 가중치<select><option>CIV 40 / 팬덤 30 / 조회 30</option><option>팬덤 우선</option><option>광고 안정성 우선</option></select></label>
+      <label>비교 기간<select><option>최근 6개월</option><option>최근 3개월</option><option>최근 12개월</option></select></label>
     </div>
     <div class="button-row"><button class="secondary-button" type="button">롤모델 추가</button><button class="primary-button" type="button">롤모델과 비교</button></div>
   </section>`;
@@ -871,7 +867,44 @@ function creatorAiAnalysisPanel(mode = "diagnosis") {
 }
 
 function creatorCivDiagnosisView(title = "CIV진단") {
-  return pageShell(`${subpageHead(roles.creator.label, title, "CIV가 왜 이렇게 나왔는지 설명하고, 롤모델 유튜버와 비교할 수 있게 구성했습니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div>${creatorAiAnalysisPanel(title === "AI 분석" ? "action" : "diagnosis")}${creatorCivTrendPanel()}${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}`);
+  return pageShell(`${subpageHead(roles.creator.label, "CIV진단", "정밀 점수판, 롤모델 비교, 점수 추세를 한 화면에서 확인합니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div><section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다. 다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고, 롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>${creatorCivTrendPanel()}`);
+}
+
+function creatorOfferBoard() {
+  const rows = creatorOffers.map(([title, company, price, product, status], index) => ({
+    title,
+    company,
+    price,
+    product,
+    status,
+    deadline: ["2026.06.03", "2026.06.08", "2026.06.12", "2026.06.16", "2026.06.22"][index],
+    format: ["롱폼 1편 + 숏폼 2편", "릴스 3편", "롱폼 리뷰 1편", "사용기 2편", "시리즈 8편"][index],
+    requirement: ["제품 사용 전후 비교", "민감성 피부 테스트", "브랜드 가이드 준수", "헤어 스타일링 장면 포함", "출근 루틴 자연 노출"][index],
+  }));
+  return pageShell(`${subpageHead(roles.creator.label, "협업·제안", "광고주가 보낸 제안을 확인하고, 상세 조건을 보고 수락하거나 거절하는 화면입니다.")}
+    <section class="offer-workbench">
+      <div class="offer-list-panel">
+        <div class="panel-title-row"><h3>받은 제안</h3><span>${rows.length}건</span></div>
+        ${rows.map((offer, index) => `<article class="offer-card ${index === 0 ? "active" : ""}">
+          <div><strong>${offer.title}</strong><p>${offer.company} · ${offer.price} · ${offer.status}</p></div>
+          <span>${offer.deadline}</span>
+        </article>`).join("")}
+      </div>
+      <div class="offer-detail-panel">
+        <div class="panel-title-row"><h3>제안 상세보기</h3><span>광고 제안 검토</span></div>
+        ${rows.map((offer, index) => `<article class="offer-detail-card">
+          <div class="offer-detail-head"><div><strong>${offer.title}</strong><p>${offer.company}</p></div><b>${offer.status}</b></div>
+          <div class="offer-detail-grid">
+            <div><span>제안 금액</span><strong>${offer.price}</strong></div>
+            <div><span>제품</span><strong>${offer.product}</strong></div>
+            <div><span>콘텐츠 형식</span><strong>${offer.format}</strong></div>
+            <div><span>업로드 마감</span><strong>${offer.deadline}</strong></div>
+          </div>
+          <p>${offer.requirement}</p>
+          <div class="button-row"><button class="secondary-button" type="button">상세보기</button><button class="danger-button" type="button">제안 거절</button><button class="primary-button" type="button">제안 받기</button></div>
+        </article>`).join("")}
+      </div>
+    </section>`);
 }
 
 function creatorCivGoalView() {
@@ -958,8 +991,8 @@ function renderFocusedSubpage(title) {
     if (normalized === "채널 홈") return pageShell(`${subpageHead(roleName, normalized, "채널 프로필, 최근 영상, 댓글 반응, CIV 변화를 Playboard식 분석 보드로 봅니다.")}${creatorChannelAnalytics()}${recentVideoPanel()}<div class="pc-analysis-grid">${signalBoard(channels[1])}<section class="app-panel"><h3>채널 운영 메모</h3><div class="app-row"><span>다음 업로드 권장 시간</span><strong>금요일 18:00</strong></div><div class="app-row"><span>강한 콘텐츠 포맷</span><strong>비교 리뷰</strong></div><div class="app-row"><span>협찬 적합도</span><strong>뷰티·커머스 높음</strong></div></section></div>`);
     if (normalized === "CIV 목표") return creatorCivGoalView();
     if (normalized === "협업 일정" || normalized === "제작 타임라인" || normalized === "업로드 준비") return creatorScheduleBoard(normalized);
-    if (normalized.includes("CIV") || normalized.includes("점수") || normalized.includes("팬덤") || normalized.includes("카테고리") || normalized.includes("안전성") || normalized.includes("AI") || normalized.includes("핵심")) return creatorCivDiagnosisView(normalized);
-    if (normalized.includes("협업") || normalized.includes("제안") || normalized.includes("제품") || normalized.includes("신규")) return pageShell(`${subpageHead(roleName, normalized, "받은 협업, 기업 조건, 제품 수령 상태를 검토합니다. 검색은 오른쪽 하단 도구에서 따로 엽니다.")}<section class="app-panel"><h3>협업 리스트</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>${recentVideoPanel()}`);
+    if (normalized.includes("CIV") || normalized.includes("점수") || normalized.includes("팬덤") || normalized.includes("카테고리") || normalized.includes("안전성") || normalized.includes("AI") || normalized.includes("핵심")) return creatorCivDiagnosisView();
+    if (normalized.includes("협업") || normalized.includes("제안") || normalized.includes("제품") || normalized.includes("신규")) return creatorOfferBoard();
     if (normalized.includes("정산") || normalized.includes("입금") || normalized.includes("출금") || normalized.includes("계약") || normalized.includes("검수")) return pageShell(`${subpageHead(roleName, normalized, "계약, 검수, 입금 예정, 출금 신청을 분리해서 관리합니다.")}<div class="pc-work-grid"><section class="app-panel"><h3>정산 큐</h3><div class="app-row"><span><strong>스킨케어 협찬 6월</strong><br><em>검수 완료 · 2026.06.05 입금 예정</em></span><strong>₩18,000,000</strong></div><div class="app-row"><span><strong>헤어케어 스타일러</strong><br><em>촬영본 승인 · 2026.06.12 입금 예정</em></span><strong>₩4,800,000</strong></div><div class="app-row"><span><strong>출근 메이크업 시즌 3</strong><br><em>1차 콘텐츠 승인</em></span><strong>₩12,000,000</strong></div></section><section class="app-panel"><h3>계약 상태</h3><div class="result-grid"><div><span>스마트 계약</span><strong>4건</strong></div><div><span>검수 대기</span><strong>3건</strong></div><div><span>출금 가능</span><strong>₩4,850만</strong></div></div><button class="primary-button">출금 신청</button></section></div>`);
     return creatorScheduleBoard(normalized);
   }
@@ -976,7 +1009,8 @@ function renderFocusedSubpage(title) {
 }
 
 function subpageHead(roleName, title, description) {
-  return `<section class="page-head subpage-head"><div><p class="eyebrow">${roleName} / 소분류</p><h2>${title}</h2><p>${description}</p></div><div class="score-row">${scorePill("현재 역할", roleName)}${scorePill("페이지", "분리됨")}</div></section>`;
+  const eyebrow = roleName === roles.creator.label ? roleName : `${roleName} / 소분류`;
+  return `<section class="page-head subpage-head"><div><p class="eyebrow">${eyebrow}</p><h2>${title}</h2><p>${description}</p></div></section>`;
 }
 
 function renderAppHome() {
@@ -1035,9 +1069,8 @@ function renderAppAnalysis() {
     return pageShell(`
       <section class="page-head"><div><p class="eyebrow">CIV Diagnosis</p><h2>CIV진단</h2><p>왜 이 점수가 나왔는지 보고, 롤모델 유튜버와 비교해 다음 액션을 정합니다.</p></div><div class="score-row">${scorePill("현재 CIV", "87.0")}${scorePill("목표", "95")}${scorePill("롤모델", "회사원A")}</div></section>
       <div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div>
-      ${creatorAiAnalysisPanel("diagnosis")}
+      <section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다. 다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고, 롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>
       ${creatorCivTrendPanel()}
-      ${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}
     `);
   }
   return pageShell(`
@@ -1062,11 +1095,7 @@ function renderAppCampaign() {
     `);
   }
   if (currentRole === "creator") {
-    return pageShell(`
-      <section class="page-head"><div><p class="eyebrow">Offers</p><h2>협업·제안</h2><p>받은 협찬, 광고 제안, 제작 조건을 한 화면에서 검토합니다.</p></div><div class="score-row">${scorePill("신규", "5건")}${scorePill("확정", "2건")}${scorePill("예상 매출", "₩ 2,150만")}</div></section>
-      <section class="app-panel"><h3>제안 리스트</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>
-      <div class="channel-grid">${[channels[1], channels[0], channels[2]].map((channel) => channelCard(channel, "creator")).join("")}</div>
-    `);
+    return creatorOfferBoard();
   }
   const market = channelsTop(15, (a, b) => marketScore(b) - marketScore(a));
   return pageShell(`
