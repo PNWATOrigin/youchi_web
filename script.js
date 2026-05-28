@@ -41,18 +41,11 @@ const appTabs = {
 const submenuGroups = {
   advertiser: {
     home: [],
-    analysis: [
-      ["점수 분석", ["CIV·팬덤 비교", "브랜드 안전성", "광고핏 랭킹"]],
-      ["데이터", ["최근 점수표", "정밀 카드", "채널 상세 팝업"]],
-    ],
+    analysis: [],
     campaign: [
-      ["캠페인", ["성과 및 계약 관리", "예산 시뮬레이터", "완료 리포트"]],
-      ["제안", ["제안 후보함", "일괄 제안", "성과 KPI 설정"]],
+      ["캠페인", ["진행중인 광고 리스트", "광고 일정"]],
     ],
-    trade: [
-      ["매칭", ["AI 채널 매칭", "매칭 조건", "유사 채널 추천"]],
-      ["액션", ["후보 담기", "제안 보내기", "추천 팝업"]],
-    ],
+    trade: [],
   },
   creator: {
     home: [],
@@ -89,6 +82,8 @@ const subpageRoutes = {
     "성과 및 계약 관리": "advertiser-campaign-status.html",
     "예산 시뮬레이터": "advertiser-budget-simulator.html",
     "완료 리포트": "advertiser-completed-reports.html",
+    "진행중인 광고 리스트": "campaign.html",
+    "광고 일정": "advertiser-ad-schedule.html",
     "제안 후보함": "advertiser-proposal-cart.html",
     "일괄 제안": "advertiser-bulk-proposal.html",
     "성과 KPI 설정": "advertiser-kpi-settings.html",
@@ -213,6 +208,14 @@ const campaigns = [
   ["금융 앱 캠페인", "재테크백서", "완료", "₩ 52,400,000", "ROI 144%", "도달 58.0만"],
 ];
 
+const adVideoInsights = [
+  { campaign: "스킨케어 런칭 6월", channel: "온유메이크업", video: "여름 쿠션 5종 지속력 비교", previous: "올리브영 세일 장바구니 공개", views: 612000, prevViews: 497000, likes: 29100, prevLikes: 24400, comments: 2130, prevComments: 1790, positive: 88, prevPositive: 82, status: "집행중" },
+  { campaign: "AI 노트앱 생산성", channel: "개발자준", video: "AI 노트앱으로 회의록 자동화", previous: "생산성 앱 TOP5 비교", views: 194000, prevViews: 151000, likes: 8700, prevLikes: 6300, comments: 640, prevComments: 470, positive: 81, prevPositive: 74, status: "대기" },
+  { campaign: "게이밍 기어 교체", channel: "FPS훈이", video: "신형 마우스 7일 랭크 테스트", previous: "게이밍 키보드 반응속도 비교", views: 361000, prevViews: 318000, likes: 16400, prevLikes: 13900, comments: 1290, prevComments: 1180, positive: 77, prevPositive: 73, status: "검수중" },
+  { campaign: "편의점 신상 푸드", channel: "혼밥대장", video: "편의점 신상 도시락 6종 먹방", previous: "프랜차이즈 신메뉴 솔직 리뷰", views: 212000, prevViews: 188000, likes: 11200, prevLikes: 9400, comments: 920, prevComments: 760, positive: 85, prevPositive: 79, status: "집행중" },
+  { campaign: "금융 앱 캠페인", channel: "재테크백서", video: "월급 관리 앱 한 달 사용기", previous: "가계부 앱 3종 비교", views: 580000, prevViews: 486000, likes: 20100, prevLikes: 17200, comments: 1540, prevComments: 1210, positive: 80, prevPositive: 76, status: "완료" },
+];
+
 const recentVideos = [
   { title: "출근 전 10분 메이크업 루틴", date: "2026.05.22", views: 384000, likes: 18600, comments: 1240, retention: 68, positive: 84, civLift: 4.8, topic: "루틴·제품 노출", summary: "광고 구간 이탈이 낮고 제품 언급 이후 저장 반응이 높습니다.", reactions: ["발색이 자연스럽다", "제품명 다시 알려달라", "출근 전 루틴으로 따라하기 좋다"] },
   { title: "여름 쿠션 5종 지속력 비교", date: "2026.05.18", views: 612000, likes: 29100, comments: 2130, retention: 74, positive: 88, civLift: 6.2, topic: "비교 리뷰", summary: "비교형 콘텐츠라 구매 의도 댓글이 많고 브랜드 안전성이 높습니다.", reactions: ["비교표가 좋다", "2번 제품 궁금하다", "광고여도 정보가 많다"] },
@@ -266,8 +269,9 @@ function sparkline(points, key, color = "var(--role)") {
   const min = Math.min(...values);
   const max = Math.max(...values);
   const range = Math.max(1, max - min);
+  const step = values.length > 1 ? 290 / (values.length - 1) : 0;
   const coords = values.map((value, index) => {
-    const x = 14 + index * 58;
+    const x = 14 + index * step;
     const y = 106 - ((value - min) / range) * 78;
     return `${x},${y}`;
   }).join(" ");
@@ -1057,6 +1061,69 @@ function showToast(message) {
   window.setTimeout(() => document.querySelector(".work-toast")?.remove(), 2600);
 }
 
+function metricCompareBars(current, previous, label, format = (value) => number(value)) {
+  const max = Math.max(current, previous, 1);
+  const delta = ((current - previous) / Math.max(previous, 1)) * 100;
+  return `<div class="metric-compare-row"><div><strong>${label}</strong><span>${delta >= 0 ? "+" : ""}${delta.toFixed(1)}%</span></div><div class="compare-bars"><i style="--bar:${(current / max) * 100}%"><em>이번 ${format(current)}</em></i><i class="prev" style="--bar:${(previous / max) * 100}%"><em>전 광고 ${format(previous)}</em></i></div></div>`;
+}
+
+function extendedChannelHistory(channel, count = 10) {
+  const seed = channel.name.split("").reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return Array.from({ length: count }, (_, index) => {
+    const reverse = count - index - 1;
+    const wave = ((seed + index * 11) % 10) - 4;
+    return {
+      month: `${index + 1}`,
+      civ: Math.max(40, Math.min(98, Math.round(channel.civ - reverse * 1.1 + wave * 0.7))),
+      fandom: Math.max(35, Math.min(98, Math.round(channel.fandom - reverse * 0.9 + wave * 0.5))),
+    };
+  });
+}
+
+function advertiserInsightView() {
+  return pageShell(`
+    <section class="page-head"><div><p class="eyebrow">Insight</p><h2>광고 영상 성과 비교</h2><p>광고를 집행한 여러 유튜버의 해당 영상 데이터를 전 광고 영상과 비교해 조회수, 좋아요, 댓글 반응을 확인합니다.</p></div><div class="score-row">${scorePill("광고 영상", `${adVideoInsights.length}개`)}${scorePill("평균 조회 상승", "+18.6%")}${scorePill("댓글 긍정", "82%")}</div></section>
+    <section class="app-panel"><div class="panel-title-row"><h3>유튜버별 광고 영상 리스트</h3><span>간단 요약 + 상세 보기</span></div><div class="ad-insight-list">${adVideoInsights.map((item, index) => `<article class="ad-insight-row"><div><strong>${item.channel}</strong><p>${item.campaign} · ${item.video}<br>전 광고: ${item.previous}</p></div><div class="ad-insight-summary">${scorePill("조회", compactCount(item.views))}${scorePill("좋아요", compactCount(item.likes))}${scorePill("댓글", number(item.comments))}${scorePill("긍정", `${item.positive}%`)}</div><button class="secondary-button" type="button" data-ad-insight-detail="${index}">상세 보기</button></article>`).join("")}</div></section>
+    <div class="pc-work-grid"><section class="app-panel"><h3>텍스트 요약</h3>${adVideoInsights.slice(0, 4).map((item) => `<div class="app-row"><span><strong>${item.channel}</strong><br><em>전 광고 대비 조회 ${(((item.views - item.prevViews) / item.prevViews) * 100).toFixed(1)}%, 댓글 ${(((item.comments - item.prevComments) / item.prevComments) * 100).toFixed(1)}% 변화</em></span><strong>${item.status}</strong></div>`).join("")}</section><section class="app-panel"><h3>상세 분석 항목</h3><div class="result-grid"><div><span>무료 요약</span><strong>조회·좋아요·댓글</strong></div><div><span>상세 보기</span><strong>막대 비교 그래프</strong></div><div><span>유료 상세</span><strong>댓글 감성·전환 추정</strong></div></div></section></div>
+  `);
+}
+
+function showAdInsightModal(index) {
+  const item = adVideoInsights[Number(index)] || adVideoInsights[0];
+  document.querySelector(".channel-detail-modal")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `<div class="channel-detail-modal open" role="dialog" aria-modal="true">
+    <div class="recommend-modal__backdrop" data-work-action="close-detail"></div>
+    <div class="channel-detail-modal__panel">
+      <div class="panel-title-row"><div><p class="eyebrow">Ad Video Insight</p><h2>${item.channel} 광고 영상 상세</h2><p class="modal-lead">${item.video} · 전 광고 영상 ${item.previous} 비교</p></div><button class="icon-button" data-work-action="close-detail" aria-label="닫기">×</button></div>
+      <div class="detail-summary-grid">${scorePill("조회", compactCount(item.views))}${scorePill("좋아요", compactCount(item.likes))}${scorePill("댓글", number(item.comments))}${scorePill("긍정", `${item.positive}%`)}${scorePill("상태", item.status)}${scorePill("캠페인", item.campaign)}</div>
+      <div class="detail-layout"><section class="chart-card"><div class="panel-title-row"><h3>이번 광고 vs 전 광고</h3><span>막대 비교</span></div>${metricCompareBars(item.views, item.prevViews, "조회수", compactCount)}${metricCompareBars(item.likes, item.prevLikes, "좋아요", compactCount)}${metricCompareBars(item.comments, item.prevComments, "댓글", number)}${metricCompareBars(item.positive, item.prevPositive, "긍정 반응", (value) => `${value}%`)}</section><section class="app-panel"><h3>AI 해석</h3><p>이번 광고 영상은 전 광고 대비 댓글 밀도와 긍정 반응이 상승했습니다. 구매 의도 댓글과 제품명 재질문이 늘어 다음 캠페인에서도 재집행 후보로 둘 수 있습니다.</p><div class="button-row"><button class="secondary-button" data-work-action="close-detail">닫기</button><button class="primary-button" type="button">유료 상세 리포트 보기</button></div></section></div>
+    </div>
+  </div>`);
+}
+
+function advertiserCampaignListView() {
+  const campaignStatusType = (status) => status.includes("완료") ? "done" : status.includes("제안") || status.includes("대기") ? "waiting" : "running";
+  const campaignRows = campaigns.map(([name, channel, status, budget, roi, reach]) => ({ name, channel, status, budget, roi, reach, type: campaignStatusType(status) }));
+  return pageShell(`<section class="page-head"><div><p class="eyebrow">Campaign</p><h2>진행중인 광고 리스트</h2><p>완료, 집행중, 대기 중 상태를 필터로 나눠 광고 집행 현황을 리스트로 관리합니다.</p></div><div class="score-row">${scorePill("집행중", `${campaignRows.filter((item) => item.type === "running").length}건`)}${scorePill("대기", `${campaignRows.filter((item) => item.type === "waiting").length}건`)}${scorePill("완료", `${campaignRows.filter((item) => item.type === "done").length}건`)}</div></section><section class="app-panel"><div class="panel-title-row"><h3>광고 리스트</h3><span id="campaignFilterCount">${campaignRows.length}건</span></div><div class="segmented-filter"><button class="active" type="button" data-campaign-filter="all">전체</button><button type="button" data-campaign-filter="running">집행중</button><button type="button" data-campaign-filter="waiting">대기</button><button type="button" data-campaign-filter="done">완료</button></div><div class="campaign-list">${campaignRows.map((item) => `<div class="app-row" data-campaign-status="${item.type}"><span><strong>${item.name}</strong><br><em>${item.channel} · ${item.budget} · ${item.reach}</em></span><strong>${item.status}<br><em>${item.roi}</em></strong></div>`).join("")}</div></section>`);
+}
+
+function advertiserCampaignScheduleView() {
+  const items = [["계약", "온유메이크업 · 스킨케어 런칭", "05.28", "06.14", "#727bee"], ["대기", "개발자준 · AI 노트앱", "06.01", "06.18", "#f59e0b"], ["검수", "FPS훈이 · 게이밍 기어", "06.04", "06.21", "#06b6d4"], ["집행", "혼밥대장 · 편의점 신상", "06.06", "06.24", "#16a34a"], ["완료", "재테크백서 · 금융 앱", "05.18", "06.02", "#94a3b8"]];
+  return pageShell(`${subpageHead(roles.advertiser.label, "광고 일정", "유튜버별 계약일과 영상 업로드 마감일을 일정 막대로 확인합니다.")}<section class="schedule-board"><div class="schedule-side"><div class="schedule-status-card active"><span>진행 일정</span><strong>4건</strong><em>계약~업로드 관리</em></div><div class="schedule-status-card"><span>마감 임박</span><strong>2건</strong><em>이번 주 검수 필요</em></div><div class="schedule-status-card"><span>완료 광고</span><strong>1건</strong><em>리포트 확인 가능</em></div></div><div class="schedule-timeline"><div class="timeline-head">${["05.18", "05.28", "06.01", "06.06", "06.14", "06.21", "06.24"].map((day) => `<span>${day}</span>`).join("")}</div>${items.map(([status, name, start, end, color], index) => `<div class="timeline-row"><span><b>${status}</b>${name}</span><div class="timeline-track"><i style="--start:${index * 8 + 3}%;--width:${38 + index * 4}%;--bar:${color}"><em>${start} → ${end}</em></i></div></div>`).join("")}</div></section>`);
+}
+
+function advertiserMatchingView() {
+  const matches = channels.filter((channel) => channel.brandSafety >= 80).sort((a, b) => brandFit(b) - brandFit(a));
+  return pageShell(`<section class="page-head"><div><p class="eyebrow">Channel Matching</p><h2>AI 채널 매칭</h2><p>회사 제품 정보를 입력하면 AI가 브랜드 핏이 높은 유망 유튜버를 추천하고, 저장 후 조회할 수 있습니다.</p></div><div class="score-row">${scorePill("추천", `${matches.length}건`)}${scorePill("평균 핏", "88")}${scorePill("안전성 90+", `${matches.filter((c) => c.brandSafety >= 90).length}건`)}</div></section><section class="app-panel"><div class="panel-title-row"><h3>제품 정보 입력</h3><span>AI 자동 매칭 조건</span></div><div class="settings-grid"><label>제품명<input value="수분 진정 세럼" /></label><label>브랜드 카테고리<select><option>뷰티 / 스킨케어</option><option>IT / SaaS</option><option>푸드 / 커머스</option></select></label><label>핵심 타깃<input value="20~34세 여성, 민감성 피부" /></label><label>캠페인 목표<select><option>구매 전환</option><option>인지도 확장</option><option>리뷰 콘텐츠 확보</option></select></label></div><div class="button-row"><button class="secondary-button" type="button" data-work-action="save-product-profile">저장</button><button class="primary-button" type="button" data-work-action="show-matching-results">조회</button></div></section><section class="app-panel" id="matchingResults"><div class="panel-title-row"><h3>AI 추천 유튜버 TOP 리스트</h3><span>브랜드 핏 높은 순</span></div><div class="channel-grid">${matches.slice(0, 10).map((channel, index) => `<article class="channel-card"><div class="channel-card__visual"><div class="avatar">${index + 1}</div><b>핏 ${brandFit(channel)}</b></div><div class="channel-card__body"><strong>${channel.name}</strong><p>${channel.category} · ${channel.scale} · ${channel.desc}</p><div class="channel-card__stats">${scorePill("CIV", channel.civ)}${scorePill("팬덤", channel.fandom)}${scorePill("ROI", pct(channel.roi))}</div><div class="channel-actions"><button class="secondary-button" type="button" data-match-detail="${channel.name}">상세 보기</button><button class="primary-button" data-work-action="proposal" data-channel="${channel.name}">제안 보내기</button></div></div></article>`).join("")}</div></section>`);
+}
+
+function showMatchDetailModal(channelName) {
+  const channel = channels.find((item) => item.name === channelName) || channels[0];
+  const history = extendedChannelHistory(channel, 10);
+  document.querySelector(".channel-detail-modal")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `<div class="channel-detail-modal open" role="dialog" aria-modal="true"><div class="recommend-modal__backdrop" data-work-action="close-detail"></div><div class="channel-detail-modal__panel"><div class="panel-title-row"><div><p class="eyebrow">Creator Match Detail</p><h2>${channel.name}</h2><p class="modal-lead">${channel.category} · 최근 10개 콘텐츠 기준 CIV / 팬덤 점수</p></div><button class="icon-button" data-work-action="close-detail" aria-label="닫기">×</button></div><div class="detail-summary-grid">${scorePill("브랜드 핏", brandFit(channel))}${scorePill("CIV", channel.civ)}${scorePill("팬덤", channel.fandom)}${scorePill("구독자", compactCount(channel.subscribers))}${scorePill("월 조회", compactCount(channel.monthlyViews))}${scorePill("ROI", pct(channel.roi))}</div><div class="detail-layout"><section class="chart-card"><div class="panel-title-row"><h3>최근 10개 CIV 점수</h3><span>콘텐츠 순서</span></div>${sparkline(history, "civ", "#727bee")}</section><section class="chart-card"><div class="panel-title-row"><h3>최근 10개 팬덤 점수</h3><span>댓글·반복 시청</span></div>${sparkline(history, "fandom", "#16a34a")}</section></div><section class="app-panel"><h3>AI 추천 사유</h3><p>${channel.desc} 제품 타깃과 시청자 반응이 겹치며, 최근 콘텐츠에서 CIV와 팬덤 점수가 안정적입니다. 첫 제안은 롱폼 리뷰 1편과 숏폼 리마인드 3편 묶음이 적합합니다.</p></section></div></div>`);
+}
+
 function investorPartnershipView(title = "파트너십") {
   const partners = channelsTop(8, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
   const steps = ["공동 PPL 패키지 설계", "분기별 콘텐츠 로드맵 협의", "수익 배분 조건 갱신", "브랜드 공동 제안서 발송"];
@@ -1098,6 +1165,9 @@ function renderFocusedSubpage(title) {
   const focusChannel = channelsTop(1, (a, b) => brandFit(b) - brandFit(a))[0];
 
   if (currentRole === "advertiser") {
+    if (normalized === "진행중인 광고 리스트") return advertiserCampaignListView();
+    if (normalized === "광고 일정") return advertiserCampaignScheduleView();
+    if (normalized === "AI 채널 매칭" || normalized === "유사 채널 추천") return advertiserMatchingView();
     if (normalized === "AI 유튜버 검색") return pageShell(`${subpageHead(roleName, normalized, "광고주 홈의 핵심 검색 화면입니다. 최근 점수만 먼저 보고 상세 팝업에서 과거 추세를 확인합니다.")}${aiSearchExperience(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)))}`);
     if (normalized === "추천 프롬프트") return pageShell(`${subpageHead(roleName, normalized, "자주 쓰는 AI 검색식을 저장해 광고주 팀 단위로 반복 검색합니다.")}${aiSearchExperience(channelsTop(6, (a, b) => b.growth - a.growth))}<section class="app-panel"><h3>저장 프롬프트</h3>${["20대 여성 뷰티, 숏폼 중심, 브랜드 안전성 85 이상", "B2B SaaS 리뷰 가능, IT 카테고리, 평균 조회 10만 이상", "저예산 테스트용 소형 채널, 성장률 20% 이상", "먹방 프랜차이즈 PPL, ROI 150% 이상"].map((text) => `<div class="app-row"><span>${text}</span><strong>실행</strong></div>`).join("")}</section>`);
     if (normalized === "최근 검색 결과") return pageShell(`${subpageHead(roleName, normalized, "최근 AI 검색에서 나온 후보를 다시 열어 제안과 후보 담기를 이어갑니다.")}<section class="app-panel"><h3>최근 검색 세션</h3>${["뷰티 성장형 소형 채널", "브랜드 안전성 높은 IT 리뷰어", "ROI 높은 먹방 채널", "금융 앱 캠페인 후보"].map((item, index) => `<div class="app-row"><span><strong>${item}</strong><br><em>${index + 2}시간 전 · 후보 ${6 + index}건</em></span><strong>다시 열기</strong></div>`).join("")}</section>${denseScoreTable(channelsTop(8, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
@@ -1187,23 +1257,7 @@ function renderAppHome() {
 
 function renderAppAnalysis() {
   if (currentRole === "advertiser") {
-    const matched = channelsTop(8, (a, b) => brandFit(b) - brandFit(a));
-    const insightRows = [
-      [matched[0], "댓글 구매 의도", "저장/장바구니 언급이 많고 광고 고지 이후 이탈이 낮습니다.", "유료"],
-      [matched[1], "브랜드 신뢰", "제품 비교 질문이 많아 상세 랜딩과 FAQ 연결 효율이 높습니다.", "무료"],
-      [matched[2], "전환 반응", "리뷰형 콘텐츠에서 링크 클릭 가능성이 높고 재검색 댓글이 반복됩니다.", "유료"],
-      [matched[3], "도달 확장", "숏폼 재가공 시 신규 유입은 높지만 브랜드 안전성 검수가 필요합니다.", "무료"],
-    ];
-    return pageShell(`
-      <section class="page-head"><div><p class="eyebrow">Insight</p><h2>브랜드 매칭 채널 반응 분석</h2><p>우리 브랜드와 매칭된 채널들이 어떤 반응을 얻고 있는지 무료 요약과 유료 상세 분석으로 나눠 확인합니다.</p></div><div class="score-row">${scorePill("매칭 채널", `${matched.length}건`)}${scorePill("유료 상세", "3건")}${scorePill("긍정 반응", "84%")}</div></section>
-      <div class="pc-work-grid">
-        <section class="app-panel"><h3>반응 요약</h3>${insightRows.map(([channel, label, summary, tier]) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>${label} · ${summary}</em></span><strong>${tier}</strong></div>`).join("")}</section>
-        <section class="app-panel"><h3>상세 분석 잠금</h3><div class="result-grid"><div><span>무료 제공</span><strong>최근 점수·요약</strong></div><div><span>유료 제공</span><strong>댓글 감성·전환 추정</strong></div><div><span>고급 리포트</span><strong>과거 추세·경쟁사 비교</strong></div></div></section>
-      </div>
-      ${denseScoreTable(matched, "advertiser")}
-      <h3 class="app-section-title">매칭 채널 상세 카드</h3><div class="channel-grid">${matched.slice(0, 8).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
-      ${signalBoard(matched[0])}
-    `);
+    return advertiserInsightView();
   }
   if (currentRole === "creator") {
     return pageShell(`
@@ -1218,18 +1272,7 @@ function renderAppAnalysis() {
 
 function renderAppCampaign() {
   if (currentRole === "advertiser") {
-    const campaignStatusType = (status) => status.includes("완료") ? "done" : status.includes("제안") || status.includes("대기") ? "waiting" : "running";
-    const campaignRows = campaigns.map(([name, channel, status, budget, roi, reach]) => ({ name, channel, status, budget, roi, reach, type: campaignStatusType(status) }));
-    return pageShell(`
-      <section class="page-head"><div><p class="eyebrow">Campaign</p><h2>진행중인 광고 리스트</h2><p>완료, 집행중, 대기 중 상태를 필터로 나눠 캠페인 진행 상황을 관리합니다.</p></div><div class="score-row">${scorePill("집행중", `${campaignRows.filter((item) => item.type === "running").length}건`)}${scorePill("대기", `${campaignRows.filter((item) => item.type === "waiting").length}건`)}${scorePill("완료", `${campaignRows.filter((item) => item.type === "done").length}건`)}</div></section>
-      <div class="pc-work-grid">
-        <section class="app-panel"><div class="panel-title-row"><h3>캠페인 현황</h3><span id="campaignFilterCount">${campaignRows.length}건</span></div><div class="segmented-filter"><button class="active" type="button" data-campaign-filter="all">전체</button><button type="button" data-campaign-filter="running">집행중</button><button type="button" data-campaign-filter="waiting">대기</button><button type="button" data-campaign-filter="done">완료</button></div><div class="campaign-list">${campaignRows.map((item) => `<div class="app-row" data-campaign-status="${item.type}"><span><strong>${item.name}</strong><br><em>${item.channel} · ${item.budget} · ${item.reach}</em></span><strong>${item.status}<br><em>${item.roi}</em></strong></div>`).join("")}</div></section>
-        <section class="app-panel"><h3>예산·성과 시뮬레이터</h3><label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label><input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" /><label>캠페인 기간 <output id="durationOutput">4주</output></label><input id="durationRange" type="range" min="1" max="12" value="4" /><div class="result-grid" id="simResults"></div></section>
-      </div>
-      ${detailedSettings("advertiser")}
-      ${basketPanel("advertiser")}
-      ${denseScoreTable(channelsTop(8, (a, b) => b.roi - a.roi), "advertiser")}
-    `);
+    return advertiserCampaignListView();
   }
   if (currentRole === "creator") {
     return creatorOfferBoard();
@@ -1239,15 +1282,7 @@ function renderAppCampaign() {
 
 function renderAppTrade() {
   if (currentRole === "advertiser") {
-    const matches = channels.filter((channel) => channel.brandSafety >= 80).sort((a, b) => brandFit(b) - brandFit(a));
-    return pageShell(`
-      <section class="page-head"><div><p class="eyebrow">Channel Matching</p><h2>채널 매칭</h2><p>AI가 우리 브랜드와 핏이 맞는 유망 채널을 추천하고 카테고리, 성장성, 안전성을 함께 비교합니다.</p></div><div class="score-row">${scorePill("추천", `${matches.length}건`)}${scorePill("평균 핏", "88")}${scorePill("안전성 90+", `${matches.filter((c) => c.brandSafety >= 90).length}건`)}</div></section>
-      ${detailedSettings("advertiser")}
-      ${basketPanel("advertiser")}
-      <section class="app-panel"><h3>매칭 조건</h3><div class="filter-grid"><select><option>뷰티 브랜드</option><option>IT/SaaS</option><option>게이밍</option><option>푸드</option><option>금융</option></select><select><option>브랜드 안전성 80+</option><option>성장성 90+</option><option>ROI 150%+</option></select><select><option>예산 전체</option><option>500만 이하</option><option>500만~2,000만</option><option>2,000만 이상</option></select><input placeholder="캠페인 키워드" /></div></section>
-      ${denseScoreTable(matches, "advertiser")}
-      <div class="channel-grid">${matches.slice(0, 9).map((channel) => channelCard(channel, "advertiser")).join("")}</div>
-    `);
+    return advertiserMatchingView();
   }
   if (currentRole === "creator") {
     return pageShell(`
@@ -1384,6 +1419,15 @@ function bindWorkActions() {
         showToast(`${channel} 매매 검토가 시작됐습니다. 담당자 검토 알림을 보냈습니다.`);
         return;
       }
+      if (action === "save-product-profile") {
+        showToast("제품 정보가 저장됐습니다. AI 매칭 조건에 반영했습니다.");
+        return;
+      }
+      if (action === "show-matching-results") {
+        document.querySelector("#matchingResults")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        showToast("AI 추천 유튜버를 브랜드 핏 순으로 조회했습니다.");
+        return;
+      }
       showRecommendationModal(channel, action);
       bindWorkActions();
       if (["basket", "proposal", "review", "partner"].includes(action)) {
@@ -1411,6 +1455,18 @@ function bindWorkActions() {
   document.querySelectorAll("[data-offer-detail]").forEach((button) => {
     button.addEventListener("click", () => {
       showOfferDetailModal(button.dataset.offerDetail);
+      bindWorkActions();
+    });
+  });
+  document.querySelectorAll("[data-ad-insight-detail]").forEach((button) => {
+    button.addEventListener("click", () => {
+      showAdInsightModal(button.dataset.adInsightDetail);
+      bindWorkActions();
+    });
+  });
+  document.querySelectorAll("[data-match-detail]").forEach((button) => {
+    button.addEventListener("click", () => {
+      showMatchDetailModal(button.dataset.matchDetail);
       bindWorkActions();
     });
   });
