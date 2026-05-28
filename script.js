@@ -306,7 +306,7 @@ function scorePill(label, value) {
 function navFlyout(label, key) {
   const groups = submenuGroups[currentRole]?.[key] || [];
   if (!groups.length) return "";
-  return `<div class="nav-flyout"><strong>${label}</strong>${groups.map(([title, items]) => `<section><b>${title}</b>${items.map((item) => `<a href="./${subpageHref(currentRole, key, item)}">${item}</a>`).join("")}</section>`).join("")}</div>`;
+  return `<div class="nav-flyout">${groups.map(([, items]) => `<section>${items.map((item) => `<a href="./${subpageHref(currentRole, key, item)}">${item}</a>`).join("")}</section>`).join("")}</div>`;
 }
 
 function firstSubHref(key) {

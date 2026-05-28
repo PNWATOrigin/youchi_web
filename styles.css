@@ -3667,12 +3667,6 @@ input[type="range"] {
   transition-delay: 0s;
 }
 
-.top-menu-item .nav-flyout > strong {
-  grid-column: 1 / -1;
-  color: var(--role);
-  font-size: 13px;
-}
-
 .nav-flyout section {
   display: grid;
   gap: 7px;
@@ -3680,11 +3674,6 @@ input[type="range"] {
   border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 8px;
   background: rgba(248, 250, 252, 0.72);
-}
-
-.nav-flyout section b {
-  color: var(--text);
-  font-size: 12px;
 }
 
 .nav-flyout a {
