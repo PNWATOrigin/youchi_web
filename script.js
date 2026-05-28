@@ -419,7 +419,7 @@ function aiSearchExperience(rows = channelsTop(10, (a, b) => brandFit(b) - brand
     <div class="ai-search-copy">
       <p class="eyebrow">YOUCHI AI Search</p>
       <h2>AI로 캠페인에 맞는 유튜버를 찾기</h2>
-      <p>검색창에는 자연어로 조건을 입력합니다. 결과에서는 최신 CIV, 팬덤, 광고핏만 빠르게 보고 자세히 보기에서 과거 추세를 확인합니다.</p>
+      <p>검색창에는 자연어로 조건을 입력합니다.<br>결과에서는 최신 CIV, 팬덤, 광고핏만 빠르게 보고<br>자세히 보기에서 과거 추세를 확인합니다.</p>
     </div>
     <div class="ai-search-box">
       <span>AI</span>
@@ -726,7 +726,7 @@ function creatorChannelAnalytics() {
       <div>
         <p class="eyebrow">Creator Channel Analytics</p>
         <h2>온유메이크업</h2>
-        <p>기초 메이크업, 비교 리뷰, 출근 루틴 중심의 뷰티 채널입니다. 협찬 검수 안정성이 높고 댓글 기반 구매 의도 신호가 꾸준합니다.</p>
+        <p>기초 메이크업, 비교 리뷰, 출근 루틴 중심의 뷰티 채널입니다.<br>협찬 검수 안정성이 높고 댓글 기반 구매 의도 신호가 꾸준합니다.</p>
         <div class="creator-profile-actions">
           <button class="secondary-button" data-work-action="open-creator-search" type="button">캠페인 검색</button>
           <button class="primary-button" data-app-tab="1" type="button">CIV 진단</button>
@@ -847,7 +847,7 @@ function creatorAiAnalysisPanel(mode = "diagnosis") {
 }
 
 function creatorCivDiagnosisView(title = "CIV진단") {
-  return pageShell(`${subpageHead(roles.creator.label, "CIV진단", "정밀 점수판, 롤모델 비교, 점수 추세를 한 화면에서 확인합니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div><section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다. 다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고, 롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>${creatorCivTrendPanel()}`);
+  return pageShell(`${subpageHead(roles.creator.label, "CIV진단", "정밀 점수판, 롤모델 비교, 점수 추세를 한 화면에서 확인합니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div><section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다.<br>다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고,<br>롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>${creatorCivTrendPanel()}`);
 }
 
 function creatorOfferRows() {
@@ -1046,7 +1046,7 @@ function investorReviewBoxView(title = "검토함") {
     : `<p>비교하려면 검토함에 채널을 2개 이상 담아야 합니다.</p>`;
   return pageShell(`
     ${subpageHead(roles.investor.label, title, "검토함에 담은 크리에이터 채널을 매매 후보로 관리하고, 2개 채널을 직접 비교합니다.")}
-    <section class="app-hero-card"><div><span>Review Box</span><h2>채널 매매 검토함</h2><p>마켓에서 담은 후보를 보고 매매 검토를 진행하거나 목록에서 제거합니다. 선택한 2개 채널은 CIV, 팬덤, 구독자 수 기준으로 나란히 비교합니다.</p></div><div class="score-row">${scorePill("검토 후보", `${reviewed.length}개`)}${scorePill("비교 기준", "7개")}${scorePill("추천 액션", "매매 검토")}</div></section>
+    <section class="app-hero-card"><div><span>Review Box</span><h2>채널 매매 검토함</h2><p>마켓에서 담은 후보를 보고 매매 검토를 진행하거나 목록에서 제거합니다.<br>선택한 2개 채널은 CIV, 팬덤, 구독자 수 기준으로 나란히 비교합니다.</p></div><div class="score-row">${scorePill("검토 후보", `${reviewed.length}개`)}${scorePill("비교 기준", "7개")}${scorePill("추천 액션", "매매 검토")}</div></section>
     <div class="pc-work-grid review-workspace">
       <section class="app-panel">
         <div class="panel-title-row"><h3>검토함 목록</h3><span>${reviewed.length}개 채널</span></div>
@@ -1286,7 +1286,7 @@ function renderAppAnalysis() {
     return pageShell(`
       <section class="page-head"><div><p class="eyebrow">CIV Diagnosis</p><h2>CIV진단</h2><p>왜 이 점수가 나왔는지 보고, 롤모델 유튜버와 비교해 다음 액션을 정합니다.</p></div><div class="score-row">${scorePill("현재 CIV", "87.0")}${scorePill("목표", "95")}${scorePill("롤모델", "회사원A")}</div></section>
       <div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div>
-      <section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다. 다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고, 롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>
+      <section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다.<br>다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고,<br>롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>
       ${creatorCivTrendPanel()}
     `);
   }
