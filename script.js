@@ -60,9 +60,7 @@ const submenuGroups = {
   creator: {
     home: [],
     analysis: [],
-    campaign: [
-      ["협업 제안", ["협업 제안"]],
-    ],
+    campaign: [],
     trade: [],
     invest: [
       ["채널 운영", ["CIV 목표", "협업 일정"]],
@@ -310,6 +308,7 @@ function firstSubHref(key) {
   if (currentRole === "creator" && key === "home") return "creator.html";
   if (currentRole === "creator" && key === "trade") return "creator-settlement.html";
   if (currentRole === "creator" && key === "analysis") return "creator-civ-diagnosis.html";
+  if (currentRole === "creator" && key === "campaign") return "creator-offers.html";
   if (currentRole === "investor" && key === "home") return "investment.html";
   if (currentRole === "investor" && key === "analysis") return "investor-report.html";
   if (currentRole === "investor" && key === "campaign") return "investor-market.html";
