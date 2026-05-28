@@ -1,7 +1,8 @@
 const page = document.body.dataset.page || "home";
 const pageDefaultRole = document.body.dataset.roleDefault || { creator: "creator", investment: "investor" }[page];
+const pageSubpageTitle = document.body.dataset.subpageTitle || "";
 const parsedDefaultTab = Number(document.body.dataset.tabDefault || 0);
-let currentRole = localStorage.getItem("youchi-role") || pageDefaultRole || "advertiser";
+let currentRole = pageDefaultRole || localStorage.getItem("youchi-role") || "advertiser";
 let loggedIn = localStorage.getItem("youchi-logged-in") === "true";
 let currentAppTab = Number.isFinite(parsedDefaultTab) ? parsedDefaultTab : 0;
 let workBasket = JSON.parse(localStorage.getItem("youchi-work-basket") || "[]");
@@ -83,7 +84,7 @@ const submenuGroups = {
       ["업데이트", ["수익 배분", "권리 리스크"]],
     ],
     analysis: [
-      ["리포트", ["채널 리포트", "수익 배분", "위험 점수"]],
+      ["리포트", ["채널 리포트", "수익 배분 리포트", "위험 점수"]],
       ["분석", ["시장 가격", "성장성 비교"]],
     ],
     campaign: [
@@ -96,6 +97,104 @@ const submenuGroups = {
     ],
   },
 };
+
+const subpageRoutes = {
+  advertiser: {
+    "AI 유튜버 검색": "advertiser-ai-search.html",
+    "추천 프롬프트": "advertiser-ai-prompts.html",
+    "최근 검색 결과": "advertiser-recent-results.html",
+    "후보 장바구니": "advertiser-cart.html",
+    "브랜드 핏 워치리스트": "advertiser-brand-watchlist.html",
+    "CIV·팬덤 비교": "advertiser-civ-fandom.html",
+    "브랜드 안전성": "advertiser-brand-safety.html",
+    "광고핏 랭킹": "advertiser-ad-fit.html",
+    "최근 점수표": "advertiser-score-table.html",
+    "정밀 카드": "advertiser-channel-cards.html",
+    "채널 상세 팝업": "advertiser-channel-detail.html",
+    "성과 및 계약 관리": "advertiser-campaign-status.html",
+    "예산 시뮬레이터": "advertiser-budget-simulator.html",
+    "완료 리포트": "advertiser-completed-reports.html",
+    "제안 후보함": "advertiser-proposal-cart.html",
+    "일괄 제안": "advertiser-bulk-proposal.html",
+    "성과 KPI 설정": "advertiser-kpi-settings.html",
+    "AI 채널 매칭": "advertiser-ai-matching.html",
+    "매칭 조건": "advertiser-matching-conditions.html",
+    "유사 채널 추천": "advertiser-similar-recommend.html",
+    "후보 담기": "advertiser-add-candidate.html",
+    "제안 보내기": "advertiser-send-proposal.html",
+    "추천 팝업": "advertiser-recommend-popup.html",
+  },
+  creator: {
+    "채널 홈": "creator-home.html",
+    "핵심 상태": "creator-core-status.html",
+    "신규 협업": "creator-new-collabs.html",
+    "CIV 요약": "creator-civ-summary.html",
+    "팬덤 상태": "creator-fandom-status.html",
+    "CIV진단": "creator-civ-diagnosis.html",
+    "점수 추세": "creator-score-trend.html",
+    "개선 액션": "creator-actions.html",
+    "카테고리 비교": "creator-category-compare.html",
+    "브랜드 안전성": "creator-brand-safety.html",
+    "협업·제안": "creator-offers.html",
+    "제안 리스트": "creator-offer-list.html",
+    "확정 제안": "creator-confirmed-offers.html",
+    "촬영 조건": "creator-shooting-conditions.html",
+    "제품 수령": "creator-products.html",
+    "수익 정산": "creator-settlement.html",
+    "입금 예정": "creator-payment-schedule.html",
+    "출금 신청": "creator-withdrawal.html",
+    "스마트 계약": "creator-smart-contract.html",
+    "검수 대기": "creator-review-queue.html",
+    "콘텐츠 로드맵": "creator-roadmap.html",
+    "협업 일정": "creator-schedule.html",
+    "CIV 목표": "creator-civ-goal.html",
+    "촬영 예정": "creator-shooting-plan.html",
+    "편집 상태": "creator-editing-status.html",
+  },
+  investor: {
+    "투자 자산 현황": "investor-assets.html",
+    "마켓 스코어": "investor-market-score.html",
+    "오늘 확인할 내용": "investor-today.html",
+    "수익 배분": "investor-revenue-share.html",
+    "권리 리스크": "investor-risk.html",
+    "채널 리포트": "investor-report.html",
+    "수익 배분 리포트": "investor-revenue-report.html",
+    "위험 점수": "investor-risk-score.html",
+    "시장 가격": "investor-price.html",
+    "성장성 비교": "investor-growth-compare.html",
+    "채널 매매 및 인수": "investor-market.html",
+    "마켓 필터": "investor-market-filter.html",
+    "인수 검토 카드": "investor-acquisition-cards.html",
+    "검토함": "investor-review-box.html",
+    "리포트 생성": "investor-report-create.html",
+    "권리 조건": "investor-rights.html",
+    "파트너십 조건": "investor-partnership.html",
+    "추천 파트너": "investor-partner-recommend.html",
+    "PPL 적합": "investor-ppl-fit.html",
+    "파트너 제안": "investor-partner-proposal.html",
+    "유사 채널 추천": "investor-similar-channel.html",
+  },
+};
+
+const fileRouteMeta = Object.entries(subpageRoutes).reduce((acc, [role, routeMap]) => {
+  Object.entries(routeMap).forEach(([title, file]) => {
+    const tabIndex = appTabs[role].findIndex(([, key]) => submenuGroups[role]?.[key]?.some(([, items]) => items.includes(title)));
+    acc[file] = { role, title, tabIndex: Math.max(0, tabIndex) };
+  });
+  return acc;
+}, {});
+
+const currentFileName = decodeURIComponent(location.pathname.split("/").pop() || "index.html");
+const currentFileMeta = fileRouteMeta[currentFileName];
+const routedSubpageTitle = pageSubpageTitle || currentFileMeta?.title || "";
+if (currentFileMeta) {
+  currentRole = currentFileMeta.role;
+  currentAppTab = currentFileMeta.tabIndex;
+}
+
+function subpageHref(role, key, item) {
+  return subpageRoutes[role]?.[item] || `${routeByKey[key] || "index.html"}#${encodeURIComponent(item)}`;
+}
 
 const roles = {
   advertiser: {
@@ -240,14 +339,12 @@ function scorePill(label, value) {
 
 function navFlyout(label, key) {
   const groups = submenuGroups[currentRole]?.[key] || [];
-  const href = routeByKey[key] || "index.html";
-  return `<div class="nav-flyout"><strong>${label}</strong>${groups.map(([title, items]) => `<section><b>${title}</b>${items.map((item) => `<a href="./${href}#${encodeURIComponent(item)}">${item}</a>`).join("")}</section>`).join("")}</div>`;
+  return `<div class="nav-flyout"><strong>${label}</strong>${groups.map(([title, items]) => `<section><b>${title}</b>${items.map((item) => `<a href="./${subpageHref(currentRole, key, item)}">${item}</a>`).join("")}</section>`).join("")}</div>`;
 }
 
 function firstSubHref(key) {
   const first = submenuGroups[currentRole]?.[key]?.[0]?.[1]?.[0];
-  const href = routeByKey[key] || "index.html";
-  return first ? `${href}#${encodeURIComponent(first)}` : href;
+  return first ? subpageHref(currentRole, key, first) : routeByKey[key] || "index.html";
 }
 
 function renderTopMenu() {
@@ -369,6 +466,104 @@ function aiSearchExperience(rows = channelsTop(10, (a, b) => brandFit(b) - brand
   <section class="app-panel search-results-panel">
     <div class="panel-title-row"><h3>AI 검색 결과</h3><span id="aiResultCount">${rows.length}개</span></div>
     <div class="creator-search-list" id="creatorSearchList">${rows.map(searchResultRow).join("")}</div>
+  </section>`;
+}
+
+function campaignSearchRow(offer, index) {
+  const [title, company, price, product, status] = offer;
+  const fit = 91 - index * 3;
+  const deadline = ["D-5", "D-9", "D-12", "D-18", "D-24"][index % 5];
+  return `<article class="creator-search-row" data-search-name="${title}" data-search-category="${company}">
+    <div class="creator-search-row__main">
+      <div class="avatar">${company.slice(0, 1)}</div>
+      <div>
+        <strong>${title}</strong>
+        <p>${company} · ${price} · ${product} · ${status}</p>
+      </div>
+    </div>
+    <div class="latest-score-board">
+      ${scorePill("적합", `${fit}%`)}
+      ${scorePill("마감", deadline)}
+      ${scorePill("검수", index % 2 ? "보통" : "빠름")}
+      ${scorePill("브랜드", index % 2 ? "중견" : "대기업")}
+    </div>
+    <div class="creator-search-row__actions">
+      <button class="secondary-button" type="button">조건 보기</button>
+      <button class="primary-button" type="button">협업 검토</button>
+    </div>
+  </article>`;
+}
+
+function campaignSearchExperience(rows = creatorOffers) {
+  return `<section class="ai-search-panel role-search-panel">
+    <div class="ai-search-copy">
+      <p class="eyebrow">YOUCHI AI Search</p>
+      <h2>크리에이터용 캠페인·기업 검색</h2>
+      <p>브랜드명, 제품군, 보상 조건, 촬영 가능 일정으로 협업 후보를 찾습니다. 모바일 앱보다 더 많은 계약 조건과 검수 상태를 한 번에 비교하는 PC용 검색입니다.</p>
+    </div>
+    <div class="ai-search-box">
+      <span>AI</span>
+      <input id="campaignSearchInput" placeholder="예: 뷰티 브랜드, 2주 안 촬영 가능, 현금 보상 캠페인" />
+      <button id="campaignSearchButton" type="button">검색</button>
+    </div>
+    <div class="prompt-chip-row">
+      <button data-campaign-prompt="현금 보상 확정 캠페인">현금 보상 확정</button>
+      <button data-campaign-prompt="뷰티 브랜드 촬영 조건">뷰티 브랜드</button>
+      <button data-campaign-prompt="검수 빠른 기업">검수 빠른 기업</button>
+      <button data-campaign-prompt="제품 수령 필요 없는 협업">제품 수령 없음</button>
+    </div>
+  </section>
+  <section class="app-panel search-results-panel">
+    <div class="panel-title-row"><h3>캠페인·기업 검색 결과</h3><span id="campaignResultCount">${rows.length}건</span></div>
+    <div class="creator-search-list" id="campaignSearchList">${rows.map(campaignSearchRow).join("")}</div>
+  </section>`;
+}
+
+function investorSearchRow(channel) {
+  return `<article class="creator-search-row" data-search-name="${channel.name}" data-search-category="${channel.category}">
+    <div class="creator-search-row__main">
+      <div class="avatar">${channel.category.slice(0, 1)}</div>
+      <div>
+        <strong>${channel.name}</strong>
+        <p>${channel.category} · 구독자 ${compactCount(channel.subscribers)} · 월조회 ${compactCount(channel.monthlyViews)} · ${channel.desc}</p>
+      </div>
+    </div>
+    <div class="latest-score-board">
+      ${scorePill("마켓", marketScore(channel))}
+      ${scorePill("CIV", channel.civ)}
+      ${scorePill("팬덤", channel.fandom)}
+      ${scorePill("위험", channel.brandSafety >= 85 ? "낮음" : "검토")}
+      ${scorePill("가치", krw(channel.value))}
+    </div>
+    <div class="creator-search-row__actions">
+      <button class="secondary-button" data-detail-channel="${channel.name}">상세 보기</button>
+      <button class="primary-button" data-work-action="review" data-channel="${channel.name}">검토함 담기</button>
+    </div>
+  </article>`;
+}
+
+function investorSearchExperience(rows = channelsTop(10, (a, b) => marketScore(b) - marketScore(a))) {
+  return `<section class="ai-search-panel role-search-panel">
+    <div class="ai-search-copy">
+      <p class="eyebrow">YOUCHI AI Search</p>
+      <h2>투자자용 채널 검색</h2>
+      <p>채널 매매, 인수, 파트너십 검토에 필요한 마켓 점수, CIV, 팬덤, 수익 추정, 권리 위험을 함께 봅니다.</p>
+    </div>
+    <div class="ai-search-box">
+      <span>AI</span>
+      <input id="investorChannelSearch" placeholder="예: 성장률 높은 IT 채널, 권리 리스크 낮음, 마켓 점수 100 이상" />
+      <button id="investorSearchButton" type="button">검색</button>
+    </div>
+    <div class="prompt-chip-row">
+      <button data-investor-prompt="마켓 점수 100 이상 채널">마켓 100+</button>
+      <button data-investor-prompt="권리 리스크 낮은 채널">리스크 낮음</button>
+      <button data-investor-prompt="성장률 높은 소형 채널">성장형 소형</button>
+      <button data-investor-prompt="PPL 적합 채널">PPL 적합</button>
+    </div>
+  </section>
+  <section class="app-panel search-results-panel">
+    <div class="panel-title-row"><h3>채널 검색 결과</h3><span id="investorResultCount">${rows.length}건</span></div>
+    <div class="creator-search-list" id="investorSearchList">${rows.map(investorSearchRow).join("")}</div>
   </section>`;
 }
 
@@ -540,36 +735,54 @@ function pageShell(content) {
 function renderFocusedSubpage(title) {
   const normalized = title || appTabs[currentRole]?.[currentAppTab]?.[0] || "홈";
   const roleName = roles[currentRole].label;
-  const lower = normalized.toLowerCase();
   const focusChannel = channelsTop(1, (a, b) => brandFit(b) - brandFit(a))[0];
 
   if (currentRole === "advertiser") {
-    if (lower.includes("ai") || normalized.includes("검색") || normalized.includes("프롬프트")) {
-      return pageShell(`${subpageHead(roleName, normalized, "AI 검색 조건을 입력하고 최신 점수만 빠르게 확인하는 전용 페이지입니다.")}${aiSearchExperience(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)))}`);
+    if (normalized === "AI 유튜버 검색") return pageShell(`${subpageHead(roleName, normalized, "광고주 홈의 핵심 검색 화면입니다. 최근 점수만 먼저 보고 상세 팝업에서 과거 추세를 확인합니다.")}${aiSearchExperience(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)))}`);
+    if (normalized === "추천 프롬프트") return pageShell(`${subpageHead(roleName, normalized, "자주 쓰는 AI 검색식을 저장해 광고주 팀 단위로 반복 검색합니다.")}${aiSearchExperience(channelsTop(6, (a, b) => b.growth - a.growth))}<section class="app-panel"><h3>저장 프롬프트</h3>${["20대 여성 뷰티, 숏폼 중심, 브랜드 안전성 85 이상", "B2B SaaS 리뷰 가능, IT 카테고리, 평균 조회 10만 이상", "저예산 테스트용 소형 채널, 성장률 20% 이상", "먹방 프랜차이즈 PPL, ROI 150% 이상"].map((text) => `<div class="app-row"><span>${text}</span><strong>실행</strong></div>`).join("")}</section>`);
+    if (normalized === "최근 검색 결과") return pageShell(`${subpageHead(roleName, normalized, "최근 AI 검색에서 나온 후보를 다시 열어 제안과 후보 담기를 이어갑니다.")}<section class="app-panel"><h3>최근 검색 세션</h3>${["뷰티 성장형 소형 채널", "브랜드 안전성 높은 IT 리뷰어", "ROI 높은 먹방 채널", "금융 앱 캠페인 후보"].map((item, index) => `<div class="app-row"><span><strong>${item}</strong><br><em>${index + 2}시간 전 · 후보 ${6 + index}건</em></span><strong>다시 열기</strong></div>`).join("")}</section>${denseScoreTable(channelsTop(8, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+    if (["후보 장바구니", "제안 후보함", "후보 담기"].includes(normalized)) return pageShell(`${subpageHead(roleName, normalized, "후보를 담으면 비슷한 유튜버가 팝업으로 추천되고, 여기에서 일괄 제안으로 이어집니다.")}${basketPanel("advertiser")}<div class="channel-grid">${channelsTop(6, (a, b) => brandFit(b) - brandFit(a)).map((channel) => channelCard(channel, "advertiser")).join("")}</div>`);
+    if (["브랜드 핏 워치리스트", "광고핏 랭킹"].includes(normalized)) return pageShell(`${subpageHead(roleName, normalized, "브랜드 핏, 광고 적합, 안전성, ROI를 정렬해서 후보를 좁힙니다.")}${denseScoreTable(channelsTop(12, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+    if (normalized === "CIV·팬덤 비교") {
+      const rows = channelsTop(8, (a, b) => (b.civ + b.fandom) - (a.civ + a.fandom));
+      return pageShell(`${subpageHead(roleName, normalized, "CIV와 팬덤 강도를 같이 보면서 광고 후 반응이 유지될 채널을 비교합니다.")}${ticker(rows)}${denseScoreTable(rows, "advertiser")}<div class="pc-analysis-grid">${signalBoard(rows[0])}${signalBoard(rows[1])}</div>`);
     }
-    if (normalized.includes("장바구니") || normalized.includes("후보") || normalized.includes("제안")) {
-      return pageShell(`${subpageHead(roleName, normalized, "선택한 크리에이터 후보와 제안 액션만 분리해서 관리합니다.")}${basketPanel("advertiser")}${denseScoreTable(channelsTop(8, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+    if (normalized === "브랜드 안전성") {
+      const safe = channels.filter((channel) => channel.brandSafety >= 84).sort((a, b) => b.brandSafety - a.brandSafety);
+      return pageShell(`${subpageHead(roleName, normalized, "협업 전 논란 위험, 카테고리 적합성, 검수 필요도를 따로 보는 화면입니다.")}<section class="app-panel"><h3>안전성 기준</h3><div class="result-grid"><div><span>안전성 90+</span><strong>${safe.filter((c) => c.brandSafety >= 90).length}건</strong></div><div><span>검수 필요</span><strong>${channels.filter((c) => c.brandSafety < 80).length}건</strong></div><div><span>즉시 제안</span><strong>${safe.length}건</strong></div></div></section>${denseScoreTable(safe, "advertiser")}`);
     }
-    if (normalized.includes("캠페인") || normalized.includes("KPI") || normalized.includes("시뮬레이터") || normalized.includes("리포트")) {
-      return pageShell(`${subpageHead(roleName, normalized, "캠페인 조건, KPI, 성과 예측을 한 화면에서 설정합니다.")}${detailedSettings("advertiser")}<section class="app-panel"><h3>캠페인 현황</h3>${campaigns.map(([name, channel, status, budget, roi, reach]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${channel} · ${budget} · ${reach}</em></span><strong>${status}<br><em>${roi}</em></strong></div>`).join("")}</section>`);
-    }
-    if (normalized.includes("매칭") || normalized.includes("유사") || normalized.includes("담기")) {
+    if (normalized === "최근 점수표") return pageShell(`${subpageHead(roleName, normalized, "CIV, 팬덤, 성장, 안전성, ROI를 주식 호가창처럼 촘촘하게 봅니다.")}${denseScoreTable(channelsTop(15, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+    if (normalized === "정밀 카드") return pageShell(`${subpageHead(roleName, normalized, "테이블보다 설명과 액션이 많은 카드형 후보 검토 화면입니다.")}<div class="channel-grid">${channelsTop(12, (a, b) => brandFit(b) - brandFit(a)).map((channel) => channelCard(channel, "advertiser")).join("")}</div>`);
+    if (["채널 상세 팝업", "추천 팝업"].includes(normalized)) return pageShell(`${subpageHead(roleName, normalized, "상세 보기와 후보 담기 후 뜨는 추천 팝업을 바로 테스트합니다.")}<section class="app-panel"><h3>팝업 테스트 후보</h3>${channelsTop(6, (a, b) => brandFit(b) - brandFit(a)).map((channel) => `<div class="app-row"><span><strong>${channel.name}</strong><br><em>CIV ${channel.civ} · 팬덤 ${channel.fandom} · ROI ${pct(channel.roi)}</em></span><span class="button-row"><button class="secondary-button" data-detail-channel="${channel.name}">상세 보기</button><button class="primary-button" data-work-action="basket" data-channel="${channel.name}">후보 담기</button></span></div>`).join("")}</section>`);
+    if (normalized === "성과 및 계약 관리") return pageShell(`${subpageHead(roleName, normalized, "진행, 검수, 계약, 성과 리포트를 광고주 업무 화면처럼 관리합니다.")}<section class="app-panel"><h3>캠페인 현황</h3>${campaigns.map(([name, channel, status, budget, roi, reach]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${channel} · ${budget} · ${reach}</em></span><strong>${status}<br><em>${roi}</em></strong></div>`).join("")}</section>${denseScoreTable(channelsTop(6, (a, b) => b.roi - a.roi), "advertiser")}`);
+    if (normalized === "예산 시뮬레이터") return pageShell(`${subpageHead(roleName, normalized, "예산과 기간을 조절해 예상 노출, 클릭, ROI, 매출을 계산합니다.")}<div class="pc-work-grid"><section class="app-panel"><h3>예산·성과 시뮬레이터</h3><label>캠페인 예산 <output id="budgetOutput">₩ 5,000,000</output></label><input id="budgetRange" type="range" min="1000000" max="50000000" value="5000000" step="1000000" /><label>캠페인 기간 <output id="durationOutput">4주</output></label><input id="durationRange" type="range" min="1" max="12" value="4" /><div class="result-grid" id="simResults"></div></section>${detailedSettings("advertiser")}</div>`);
+    if (normalized === "완료 리포트") return pageShell(`${subpageHead(roleName, normalized, "완료 캠페인의 도달, ROI, 다음 추천 채널을 리포트로 정리합니다.")}<section class="app-panel"><h3>완료 리포트</h3>${campaigns.map(([name, channel, status, budget, roi, reach]) => `<div class="app-row"><span><strong>${name}</strong><br><em>${channel} · ${budget} · ${reach}</em></span><strong>${status}<br><em>${roi}</em></strong></div>`).join("")}</section>${ticker(channelsTop(6, (a, b) => b.roi - a.roi))}`);
+    if (["일괄 제안", "제안 보내기"].includes(normalized)) return pageShell(`${subpageHead(roleName, normalized, "선택한 후보에게 한 번에 PPL 제안 조건을 발송합니다.")}${basketPanel("advertiser")}${detailedSettings("advertiser")}<section class="app-panel"><h3>발송 전 체크</h3><div class="result-grid"><div><span>선택 후보</span><strong>${Math.max(3, workBasket.length)}건</strong></div><div><span>예상 예산</span><strong>₩4,200만</strong></div><div><span>평균 핏</span><strong>89</strong></div></div></section>`);
+    if (["성과 KPI 설정", "매칭 조건"].includes(normalized)) return pageShell(`${subpageHead(roleName, normalized, "광고주가 원하는 가중치와 제외 조건을 세밀하게 설정합니다.")}${detailedSettings("advertiser")}${denseScoreTable(channelsTop(8, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+    if (["AI 채널 매칭", "유사 채널 추천"].includes(normalized)) {
       const matches = channels.filter((channel) => channel.brandSafety >= 80).sort((a, b) => brandFit(b) - brandFit(a));
-      return pageShell(`${subpageHead(roleName, normalized, "브랜드 핏 기준으로 매칭 후보만 집중해서 보여줍니다.")}${detailedSettings("advertiser")}${denseScoreTable(matches, "advertiser")}<div class="channel-grid">${matches.slice(0, 6).map((channel) => channelCard(channel, "advertiser")).join("")}</div>`);
+      return pageShell(`${subpageHead(roleName, normalized, "AI가 브랜드 조건에 맞는 채널과 비슷한 대체 후보를 같이 추천합니다.")}${aiSearchExperience(matches.slice(0, 8))}<div class="channel-grid">${matches.slice(0, 6).map((channel) => channelCard(channel, "advertiser")).join("")}</div>`);
     }
-    return pageShell(`${subpageHead(roleName, normalized, "선택한 소분류에 맞춘 채널 점수 전용 페이지입니다.")}${signalBoard(focusChannel)}${denseScoreTable(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
+    return pageShell(`${subpageHead(roleName, normalized, "광고주 전용 세부 업무 화면입니다.")}${signalBoard(focusChannel)}${denseScoreTable(channelsTop(10, (a, b) => brandFit(b) - brandFit(a)), "advertiser")}`);
   }
 
   if (currentRole === "creator") {
-    if (normalized.includes("정산") || normalized.includes("출금") || normalized.includes("계약")) return renderAppTrade();
-    if (normalized.includes("협업") || normalized.includes("제안") || normalized.includes("제품")) return renderAppCampaign();
-    if (normalized.includes("운영") || normalized.includes("로드맵") || normalized.includes("업로드")) return renderAppInvest();
-    return renderAppAnalysis();
+    if (normalized === "채널 홈") return pageShell(`${subpageHead(roleName, normalized, "크리에이터가 캠페인과 기업을 검색하면서 채널 상태를 같이 보는 홈입니다.")}${campaignSearchExperience()}${metricTiles(roles.creator.kpis)}${signalBoard(channels[1])}`);
+    if (normalized.includes("협업") || normalized.includes("제안") || normalized.includes("제품") || normalized.includes("신규")) return pageShell(`${subpageHead(roleName, normalized, "받은 협업, 기업 조건, 제품 수령 상태를 검토합니다.")}${campaignSearchExperience()}<section class="app-panel"><h3>협업 리스트</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>`);
+    if (normalized.includes("정산") || normalized.includes("입금") || normalized.includes("출금") || normalized.includes("계약") || normalized.includes("검수")) return pageShell(`${subpageHead(roleName, normalized, "계약, 검수, 입금 예정, 출금 신청을 분리해서 관리합니다.")}<div class="pc-work-grid"><section class="app-panel"><h3>정산 큐</h3><div class="app-row"><span><strong>스킨케어 협찬 6월</strong><br><em>검수 완료 · 2026.06.05 입금 예정</em></span><strong>₩18,000,000</strong></div><div class="app-row"><span><strong>헤어케어 스타일러</strong><br><em>촬영본 승인 · 2026.06.12 입금 예정</em></span><strong>₩4,800,000</strong></div><div class="app-row"><span><strong>출근 메이크업 시즌 3</strong><br><em>1차 콘텐츠 승인</em></span><strong>₩12,000,000</strong></div></section><section class="app-panel"><h3>계약 상태</h3><div class="result-grid"><div><span>스마트 계약</span><strong>4건</strong></div><div><span>검수 대기</span><strong>3건</strong></div><div><span>출금 가능</span><strong>₩4,850만</strong></div></div><button class="primary-button">출금 신청</button></section></div>`);
+    if (normalized.includes("CIV") || normalized.includes("점수") || normalized.includes("팬덤") || normalized.includes("카테고리") || normalized.includes("안전성") || normalized.includes("개선") || normalized.includes("핵심")) return pageShell(`${subpageHead(roleName, normalized, "채널의 CIV, 팬덤, 안전성, 카테고리 경쟁력을 진단합니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}<section class="app-panel"><h3>개선 액션</h3><div class="app-insight"><strong>업로드 주기 고정</strong><p>금요일 오후 업로드 패턴에서 팬덤 반응이 가장 안정적입니다.</p></div><div class="app-insight"><strong>브랜드 안전성 유지</strong><p>협찬 표기와 댓글 검수 기준을 유지하면 광고주 제안 전환이 높습니다.</p></div></section></div>${denseScoreTable([channels[1], channels[0], channels[2], channels[7]], "creator")}`);
+    return pageShell(`${subpageHead(roleName, normalized, "콘텐츠 로드맵과 촬영, 편집, 협업 일정을 운영합니다.")}${campaignSearchExperience()}<div class="pc-work-grid"><section class="app-panel"><h3>콘텐츠 운영 로드맵</h3><div class="app-row"><span><strong>출근 전 10분 메이크업</strong><br><em>촬영 2일 · 편집 1일 · 업로드 금요일</em></span><strong>진행</strong></div><div class="app-row"><span><strong>기초 라인 비교 리뷰</strong><br><em>제품 수령 완료 · 가이드 검토</em></span><strong>준비</strong></div><div class="app-row"><span><strong>라이브 Q&A</strong><br><em>팬덤 반응 테스트</em></span><strong>예약</strong></div></section>${signalBoard(channels[1])}</div>`);
   }
 
-  if (normalized.includes("마켓") || normalized.includes("인수") || normalized.includes("검토") || normalized.includes("권리")) return renderAppCampaign();
-  if (normalized.includes("파트너") || normalized.includes("PPL") || normalized.includes("추천")) return renderAppTrade();
-  return renderAppAnalysis();
+  if (normalized.includes("마켓") || normalized.includes("인수") || normalized.includes("검토") || normalized.includes("권리") || normalized.includes("가격")) {
+    const market = channelsTop(12, (a, b) => marketScore(b) - marketScore(a));
+    return pageShell(`${subpageHead(roleName, normalized, "투자자는 채널을 검색하고, 마켓 점수와 권리 리스크를 같이 검토합니다.")}${investorSearchExperience(market.slice(0, 10))}${detailedSettings("investor")}${basketPanel("investor")}${denseScoreTable(market, "investor")}`);
+  }
+  if (normalized.includes("파트너") || normalized.includes("PPL") || normalized.includes("추천") || normalized.includes("유사")) {
+    const partners = channelsTop(10, (a, b) => ((b.growth + b.adFit + b.brandSafety) - (a.growth + a.adFit + a.brandSafety)));
+    return pageShell(`${subpageHead(roleName, normalized, "파트너십과 PPL 적합 채널을 검색하고 제안 후보로 담습니다.")}${investorSearchExperience(partners)}${detailedSettings("investor")}<div class="channel-grid">${partners.slice(0, 8).map((channel) => channelCard(channel, "investor")).join("")}</div>`);
+  }
+  return pageShell(`${subpageHead(roleName, normalized, "투자 리포트와 자산 현황을 채널 검색과 함께 확인합니다.")}${investorSearchExperience()}${denseScoreTable(channelsTop(12), "investor")}${signalBoard(channelsTop(1)[0])}`);
 }
 
 function subpageHead(roleName, title, description) {
@@ -592,6 +805,7 @@ function renderAppHome() {
   if (currentRole === "creator") {
     return pageShell(`
       <section class="app-hero-card"><div><span>크리에이터 홈</span><h2>온유메이크업 채널 운영 보드</h2><p>CIV 변화, 협업 제안, 수익 정산, 콘텐츠 운영 지표를 업무용 화면으로 펼쳐 봅니다.</p></div>${ticker([channels[1], channels[0], channels[2], channels[10]])}</section>
+      ${campaignSearchExperience()}
       <h3 class="app-section-title">핵심 상태</h3>
       ${metricTiles(roles.creator.kpis)}
       <div class="pc-work-grid">
@@ -602,6 +816,7 @@ function renderAppHome() {
   }
   return pageShell(`
     <section class="app-hero-card"><div><span>투자자 홈</span><h2>내 투자 자산 현황</h2><p>채널별 리포트, 마켓 가격, 파트너십 조건, 위험 점수를 촘촘하게 확인합니다.</p></div>${ticker(channelsTop(6))}</section>
+    ${investorSearchExperience()}
     <h3 class="app-section-title">핵심 지표</h3>
     ${metricTiles(roles.investor.kpis)}
     <div class="pc-work-grid">
@@ -656,6 +871,7 @@ function renderAppCampaign() {
   if (currentRole === "creator") {
     return pageShell(`
       <section class="page-head"><div><p class="eyebrow">Offers</p><h2>협업·제안</h2><p>받은 협찬, 광고 제안, 제작 조건을 한 화면에서 검토합니다.</p></div><div class="score-row">${scorePill("신규", "5건")}${scorePill("확정", "2건")}${scorePill("예상 매출", "₩ 2,150만")}</div></section>
+      ${campaignSearchExperience()}
       <section class="app-panel"><h3>제안 리스트</h3>${creatorOffers.map(([title, company, price, product, status]) => `<div class="app-row"><span><strong>${title}</strong><br><em>${company} · ${price} · ${product}</em></span><strong>${status}</strong></div>`).join("")}</section>
       <div class="channel-grid">${[channels[1], channels[0], channels[2]].map((channel) => channelCard(channel, "creator")).join("")}</div>
     `);
@@ -663,6 +879,7 @@ function renderAppCampaign() {
   const market = channelsTop(15, (a, b) => marketScore(b) - marketScore(a));
   return pageShell(`
     <section class="page-head"><div><p class="eyebrow">Market</p><h2>채널 매매 및 인수 마켓</h2><p>잠재력이 검증된 크리에이터 채널의 전체 권리를 가격, 성장성, 위험 점수로 비교합니다.</p></div><div class="score-row">${scorePill("마켓", "15건")}${scorePill("평균 가치", "₩ 9.8억")}${scorePill("상승 후보", "6건")}</div></section>
+    ${investorSearchExperience(market.slice(0, 10))}
     ${ticker(market.slice(0, 8))}
     ${detailedSettings("investor")}
     ${basketPanel("investor")}
@@ -736,7 +953,7 @@ function renderAppPreview() {
   const pageTitle = document.querySelector("#pcPageTitle");
   if (pageTitle) pageTitle.textContent = `${roles[currentRole].label} ${tabs[currentAppTab]?.[0] || "홈"}`;
 
-  const hashTitle = decodeURIComponent(location.hash.replace(/^#/, "") || "");
+  const hashTitle = routedSubpageTitle || decodeURIComponent(location.hash.replace(/^#/, "") || "");
   if (hashTitle) {
     content.innerHTML = renderFocusedSubpage(hashTitle);
   } else {
@@ -766,6 +983,8 @@ function renderAppPreview() {
   bindSimulator();
   bindWorkActions();
   bindAiSearch();
+  bindCampaignSearch();
+  bindInvestorSearch();
 }
 
 function bindWorkActions() {
@@ -832,6 +1051,62 @@ function bindAiSearch() {
   document.querySelectorAll("[data-ai-prompt]").forEach((prompt) => {
     prompt.addEventListener("click", () => {
       input.value = prompt.dataset.aiPrompt;
+      render();
+    });
+  });
+}
+
+function bindCampaignSearch() {
+  const input = document.querySelector("#campaignSearchInput");
+  const button = document.querySelector("#campaignSearchButton");
+  const list = document.querySelector("#campaignSearchList");
+  const count = document.querySelector("#campaignResultCount");
+  if (!input || !list) return;
+  const render = () => {
+    const query = input.value.trim().toLowerCase();
+    const filtered = creatorOffers
+      .filter((offer) => {
+        const text = offer.join(" ").toLowerCase();
+        return !query || query.split(/\s+/).some((token) => text.includes(token));
+      })
+      .slice(0, 10);
+    list.innerHTML = filtered.map(campaignSearchRow).join("");
+    if (count) count.textContent = `${filtered.length}건`;
+  };
+  input.addEventListener("input", render);
+  button?.addEventListener("click", render);
+  document.querySelectorAll("[data-campaign-prompt]").forEach((prompt) => {
+    prompt.addEventListener("click", () => {
+      input.value = prompt.dataset.campaignPrompt;
+      render();
+    });
+  });
+}
+
+function bindInvestorSearch() {
+  const input = document.querySelector("#investorChannelSearch");
+  const button = document.querySelector("#investorSearchButton");
+  const list = document.querySelector("#investorSearchList");
+  const count = document.querySelector("#investorResultCount");
+  if (!input || !list) return;
+  const render = () => {
+    const query = input.value.trim().toLowerCase();
+    const filtered = channels
+      .filter((channel) => {
+        const text = `${channel.name} ${channel.category} ${channel.scale} ${channel.format} ${channel.desc}`.toLowerCase();
+        return !query || query.split(/\s+/).some((token) => text.includes(token));
+      })
+      .sort((a, b) => marketScore(b) - marketScore(a))
+      .slice(0, 10);
+    list.innerHTML = filtered.map(investorSearchRow).join("");
+    if (count) count.textContent = `${filtered.length}건`;
+    bindWorkActions();
+  };
+  input.addEventListener("input", render);
+  button?.addEventListener("click", render);
+  document.querySelectorAll("[data-investor-prompt]").forEach((prompt) => {
+    prompt.addEventListener("click", () => {
+      input.value = prompt.dataset.investorPrompt;
       render();
     });
   });

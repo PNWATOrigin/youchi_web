@@ -2997,7 +2997,8 @@ input[type="range"] {
 
 .top-menu-item {
   position: relative;
-  padding: 6px 0;
+  padding: 10px 4px 14px;
+  margin: -4px -4px -10px;
 }
 
 .top-mid-tabs > .top-menu-item > button {
@@ -3014,7 +3015,7 @@ input[type="range"] {
 
 .top-menu-item .nav-flyout {
   left: 0;
-  top: 100%;
+  top: calc(100% - 2px);
   width: min(620px, calc(100vw - 48px));
   min-width: 420px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3025,14 +3026,20 @@ input[type="range"] {
   color: var(--text);
   box-shadow: 0 22px 60px rgba(15, 23, 42, 0.18);
   transform: translateY(-8px);
+  transition: opacity 0.16s ease 0.08s, transform 0.16s ease 0.08s;
+}
+
+.top-menu-item:nth-last-child(-n + 2) .nav-flyout {
+  right: 0;
+  left: auto;
 }
 
 .top-menu-item .nav-flyout::before {
   position: absolute;
   left: 0;
   right: 0;
-  top: -10px;
-  height: 10px;
+  top: -18px;
+  height: 18px;
   content: "";
 }
 
@@ -3041,6 +3048,7 @@ input[type="range"] {
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
+  transition-delay: 0s;
 }
 
 .top-menu-item .nav-flyout > strong {
@@ -3064,7 +3072,10 @@ input[type="range"] {
 }
 
 .nav-flyout a {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
   padding: 8px 9px;
   border-radius: 6px;
   color: var(--secondary);
@@ -3073,9 +3084,22 @@ input[type="range"] {
   font-weight: 800;
 }
 
+.nav-flyout a::after {
+  content: "›";
+  color: color-mix(in srgb, var(--role), transparent 20%);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+}
+
 .nav-flyout a:hover {
   background: white;
   color: var(--role);
+}
+
+.nav-flyout a:hover::after {
+  opacity: 1;
+  transform: translateX(0);
 }
 
 .top-menu-item .nav-flyout span {
