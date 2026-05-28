@@ -3140,6 +3140,22 @@ input[type="range"] {
   font-weight: 800;
 }
 
+.work-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 120;
+  max-width: min(420px, calc(100vw - 32px));
+  padding: 14px 16px;
+  border: 1px solid color-mix(in srgb, var(--role), white 54%);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.9);
+  color: white;
+  box-shadow: 0 18px 44px rgba(15, 23, 42, 0.24);
+  font-size: 13px;
+  font-weight: 900;
+}
+
 .app-hero-card > .market-strip {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -3611,24 +3627,27 @@ input[type="range"] {
 }
 
 .top-menu-item .nav-flyout {
-  left: 0;
-  top: calc(100% - 2px);
-  width: min(620px, calc(100vw - 48px));
-  min-width: 420px;
+  left: 50%;
+  right: auto;
+  top: calc(100% + 2px);
+  width: min(520px, calc(100vw - 48px));
+  min-width: 320px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   padding: 16px;
-  border: 1px solid var(--border);
-  background: white;
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  background: rgba(241, 245, 249, 0.84);
+  backdrop-filter: blur(18px);
   color: var(--text);
   box-shadow: 0 22px 60px rgba(15, 23, 42, 0.18);
-  transform: translateY(-8px);
+  transform: translate(-50%, -8px);
   transition: opacity 0.16s ease 0.08s, transform 0.16s ease 0.08s;
 }
 
-.top-menu-item:nth-last-child(-n + 2) .nav-flyout {
-  right: 0;
-  left: auto;
+.top-menu-item .nav-flyout:has(section:only-of-type) {
+  width: 280px;
+  min-width: 0;
+  grid-template-columns: 1fr;
 }
 
 .top-menu-item .nav-flyout::before {
@@ -3644,7 +3663,7 @@ input[type="range"] {
 .top-menu-item:focus-within .nav-flyout {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
   transition-delay: 0s;
 }
 
@@ -3658,9 +3677,9 @@ input[type="range"] {
   display: grid;
   gap: 7px;
   padding: 12px;
-  border: 1px solid var(--border);
+  border: 1px solid rgba(148, 163, 184, 0.28);
   border-radius: 8px;
-  background: var(--soft);
+  background: rgba(248, 250, 252, 0.72);
 }
 
 .nav-flyout section b {
@@ -3690,7 +3709,7 @@ input[type="range"] {
 }
 
 .nav-flyout a:hover {
-  background: white;
+  background: rgba(255, 255, 255, 0.78);
   color: var(--role);
 }
 

@@ -1048,9 +1048,15 @@ function showTradeReviewModal(channelName) {
       <p class="modal-lead">CIV, 팬덤, 구독자 성장, 광고 수익 추정치 기준으로 채널 IP 매매를 검토합니다.</p>
       <div class="recommend-summary">${scorePill("CIV", channel.civ)}${scorePill("팬덤", channel.fandom)}${scorePill("구독자", compactCount(channel.subscribers))}${scorePill("공정가", krw(channel.value))}</div>
       <section class="app-panel"><h3>검토 결론</h3><p>성장성과 팬덤 점수가 안정적이어서 부분 권리 인수 또는 장기 수익 배분 계약 검토에 적합합니다. 최종 매매 전 최근 90일 광고 수익 증빙과 저작권 권리 범위를 확인해야 합니다.</p></section>
-      <div class="button-row modal-actions"><button class="secondary-button" data-work-action="close-modal">보류</button><button class="danger-button" type="button">매매 제외</button><button class="primary-button" type="button">매매 검토 진행</button></div>
+      <div class="button-row modal-actions"><button class="secondary-button" data-work-action="close-modal">보류</button><button class="danger-button" type="button">매매 제외</button><button class="primary-button" type="button" data-work-action="confirm-trade-review" data-channel="${channel.name}">매매 검토 진행</button></div>
     </div>
   </div>`);
+}
+
+function showToast(message) {
+  document.querySelector(".work-toast")?.remove();
+  document.body.insertAdjacentHTML("beforeend", `<div class="work-toast" role="status">${message}</div>`);
+  window.setTimeout(() => document.querySelector(".work-toast")?.remove(), 2600);
 }
 
 function investorPartnershipView(title = "파트너십") {
@@ -1364,6 +1370,11 @@ function bindWorkActions() {
       if (action === "trade-review") {
         showTradeReviewModal(channel);
         bindWorkActions();
+        return;
+      }
+      if (action === "confirm-trade-review") {
+        document.querySelector(".recommend-modal")?.remove();
+        showToast(`${channel} 매매 검토가 시작됐습니다. 담당자 검토 알림을 보냈습니다.`);
         return;
       }
       showRecommendationModal(channel, action);
