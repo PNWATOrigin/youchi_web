@@ -58,10 +58,7 @@ const submenuGroups = {
     ],
   },
   creator: {
-    home: [
-      ["운영", ["채널 홈", "핵심 상태", "신규 협업"]],
-      ["지표", ["CIV 요약", "팬덤 상태"]],
-    ],
+    home: [],
     analysis: [],
     campaign: [
       ["협업 제안", ["협업 제안"]],
@@ -310,6 +307,7 @@ function navFlyout(label, key) {
 }
 
 function firstSubHref(key) {
+  if (currentRole === "creator" && key === "home") return "creator.html";
   if (currentRole === "creator" && key === "trade") return "creator-settlement.html";
   if (currentRole === "creator" && key === "analysis") return "creator-civ-diagnosis.html";
   if (currentRole === "investor" && key === "home") return "investment.html";
