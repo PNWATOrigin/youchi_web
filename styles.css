@@ -2208,6 +2208,15 @@ input[type="range"] {
   font-weight: 800;
 }
 
+.app-hero-card .score-pill {
+  display: inline-grid;
+  color: var(--text);
+}
+
+.app-hero-card .score-pill b {
+  color: var(--secondary);
+}
+
 .market-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2768,6 +2777,12 @@ input[type="range"] {
   display: grid;
   place-items: end;
   padding: 20px;
+}
+
+.offer-detail-modal {
+  align-items: center;
+  justify-items: center;
+  place-items: center;
 }
 
 .creator-search-modal__panel {
