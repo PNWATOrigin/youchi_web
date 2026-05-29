@@ -850,7 +850,7 @@ function creatorAiAnalysisPanel(mode = "diagnosis") {
 }
 
 function creatorCivDiagnosisView(title = "CIV진단") {
-  return pageShell(`${subpageHead(roles.creator.label, "CIV진단", "정밀 점수판, 롤모델 비교, 점수 추세를 한 화면에서 확인합니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div><section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다.<br>다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고,<br>롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>${creatorCivTrendPanel()}`);
+  return pageShell(`${subpageHead(roles.creator.label, "CIV진단", "성장 가능성, 수익 효율성, 브랜드 안정성, 콘텐츠 안정성, 참여도 및 충성도, 채널 규모 및 도달력 점수를 종합해 CIV가 산출됩니다.")}<div class="pc-analysis-grid">${signalBoard(channels[1])}${creatorRoleModelPanel()}</div><section class="app-panel civ-reason-panel"><h3>왜 이 점수가 나왔는지</h3><p>YOUCHI AI는 최근 비교 리뷰 영상의 댓글 긍정률과 저장 반응을 높게 평가했습니다.<br>다만 업로드 간격이 일정하지 않아 성장성 점수가 일부 낮아졌고,<br>롤모델 채널 대비 고정 코너 반복성이 부족하다고 판단했습니다.</p></section>${creatorCivTrendPanel()}`);
 }
 
 function creatorOfferRows() {
