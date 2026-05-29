@@ -567,7 +567,7 @@ function showChannelDetailModal(channelName) {
         ${scorePill("예상 ROAS", pct(channel.ROAS))}
       </div>
       <div class="detail-layout">
-        <section class="chart-card"><div class="panel-title-row"><h3>CIV / 팬덤 점수 추세</h3><span>최근 6개월</span></div>${sparkline(history, "civ", "#727bee")}${sparkline(history, "fandom", "#16a34a")}<div class="chart-legend"><span>CIV</span><span>팬덤</span></div></section>
+        <section class="chart-card"><div class="panel-title-row"><h3>CIV / 팬덤 점수 추세</h3><span>최근 6개월</span></div>${sparkline(history, "civ", "var(--role)")}${sparkline(history, "fandom", "#64748b")}<div class="chart-legend"><span>CIV</span><span>팬덤</span></div></section>
         <section class="chart-card"><div class="panel-title-row"><h3>구독자·월조회 추세</h3><span>성장 ${subscriberGrowth}%</span></div>${sparkline(history, "subscribers", "#2563eb")}${sparkline(history, "views", "#f59e0b")}<div class="chart-legend"><span>구독자 ${subscriberGrowth}%</span><span>월조회 ${viewGrowth}%</span></div></section>
       </div>
       <div class="detail-layout">
@@ -825,7 +825,7 @@ function creatorCivTrendPanel() {
   return `<section class="app-panel">
     <div class="panel-title-row"><h3>점수 추세</h3><span>최근 6개월 · 롤모델 비교</span></div>
     <div class="detail-layout">
-      <section class="chart-card"><div class="panel-title-row"><h3>내 채널 CIV</h3><span>현재 ${channel.civ}</span></div>${sparkline(history, "civ", "#727bee")}</section>
+      <section class="chart-card"><div class="panel-title-row"><h3>내 채널 CIV</h3><span>현재 ${channel.civ}</span></div>${sparkline(history, "civ", "var(--role)")}</section>
       <section class="chart-card"><div class="panel-title-row"><h3>롤모델 CIV</h3><span>목표 95</span></div>${sparkline(roleModel, "civ", "#16a34a")}</section>
     </div>
   </section>`;
@@ -929,7 +929,7 @@ function creatorCivGoalView() {
 
 function creatorScheduleBoard(title = "협업 일정") {
   const items = [
-    ["협의중", "올리브영 기초 라인", "05.28", "06.03", "#727bee"],
+    ["협의중", "올리브영 기초 라인", "05.28", "06.03", "var(--role)"],
     ["진행중", "여름 쿠션 비교 리뷰", "06.01", "06.14", "#16a34a"],
     ["촬영", "다이슨 스타일러", "06.05", "06.09", "#f59e0b"],
     ["편집", "출근 메이크업 시즌 3", "06.10", "06.18", "#ec4899"],
@@ -1134,7 +1134,7 @@ function advertiserCampaignListView() {
 }
 
 function advertiserCampaignScheduleView() {
-  const items = [["계약", "온유메이크업 · 스킨케어 런칭", "05.28", "06.14", "#727bee"], ["대기", "개발자준 · AI 노트앱", "06.01", "06.18", "#f59e0b"], ["검수", "FPS훈이 · 게이밍 기어", "06.04", "06.21", "#06b6d4"], ["집행", "혼밥대장 · 편의점 신상", "06.06", "06.24", "#16a34a"], ["완료", "재테크백서 · 금융 앱", "05.18", "06.02", "#94a3b8"]];
+  const items = [["계약", "온유메이크업 · 스킨케어 런칭", "05.28", "06.14", "var(--role)"], ["대기", "개발자준 · AI 노트앱", "06.01", "06.18", "var(--role)"], ["검수", "FPS훈이 · 게이밍 기어", "06.04", "06.21", "var(--role)"], ["집행", "혼밥대장 · 편의점 신상", "06.06", "06.24", "var(--role)"], ["완료", "재테크백서 · 금융 앱", "05.18", "06.02", "var(--role)"]];
   return pageShell(`${subpageHead(roles.advertiser.label, "광고 일정", "유튜버별 계약일과 영상 업로드 마감일을 일정 막대로 확인합니다.")}<section class="schedule-board"><div class="schedule-side"><div class="schedule-status-card active"><span>진행 일정</span><strong>4건</strong><em>계약~업로드 관리</em></div><div class="schedule-status-card"><span>마감 임박</span><strong>2건</strong><em>이번 주 검수 필요</em></div><div class="schedule-status-card"><span>완료 광고</span><strong>1건</strong><em>리포트 확인 가능</em></div></div><div class="schedule-timeline"><div class="timeline-head">${["05.18", "05.28", "06.01", "06.06", "06.14", "06.21", "06.24"].map((day) => `<span>${day}</span>`).join("")}</div>${items.map(([status, name, start, end, color], index) => `<div class="timeline-row"><span><b>${status}</b>${name}</span><div class="timeline-track"><i style="--start:${index * 8 + 3}%;--width:${38 + index * 4}%;--bar:${color}"><em>${start} → ${end}</em></i></div></div>`).join("")}</div></section>`);
 }
 
@@ -1147,7 +1147,7 @@ function showMatchDetailModal(channelName) {
   const channel = channels.find((item) => item.name === channelName) || channels[0];
   const history = extendedChannelHistory(channel, 10);
   document.querySelector(".channel-detail-modal")?.remove();
-  document.body.insertAdjacentHTML("beforeend", `<div class="channel-detail-modal open" role="dialog" aria-modal="true"><div class="recommend-modal__backdrop" data-work-action="close-detail"></div><div class="channel-detail-modal__panel"><div class="panel-title-row"><div><p class="eyebrow">Creator Match Detail</p><h2>${channel.name}</h2><p class="modal-lead">${channel.category} · 최근 10개 콘텐츠 기준 CIV / 팬덤 점수</p></div><button class="icon-button" data-work-action="close-detail" aria-label="닫기">×</button></div><div class="detail-summary-grid">${scorePill("브랜드 핏", brandFit(channel))}${scorePill("CIV", channel.civ)}${scorePill("팬덤", channel.fandom)}${scorePill("구독자", compactCount(channel.subscribers))}${scorePill("월 조회", compactCount(channel.monthlyViews))}${scorePill("ROAS", pct(channel.ROAS))}</div><div class="detail-layout"><section class="chart-card"><div class="panel-title-row"><h3>최근 10개 CIV 점수</h3><span>콘텐츠 순서</span></div>${sparkline(history, "civ", "#727bee")}</section><section class="chart-card"><div class="panel-title-row"><h3>최근 10개 팬덤 점수</h3><span>댓글·반복 시청</span></div>${sparkline(history, "fandom", "#16a34a")}</section></div><section class="app-panel"><h3>AI 추천 사유</h3><p>${channel.desc} 제품 타깃과 시청자 반응이 겹치며, 최근 콘텐츠에서 CIV와 팬덤 점수가 안정적입니다. 첫 제안은 롱폼 리뷰 1편과 숏폼 리마인드 3편 묶음이 적합합니다.</p></section></div></div>`);
+  document.body.insertAdjacentHTML("beforeend", `<div class="channel-detail-modal open" role="dialog" aria-modal="true"><div class="recommend-modal__backdrop" data-work-action="close-detail"></div><div class="channel-detail-modal__panel"><div class="panel-title-row"><div><p class="eyebrow">Creator Match Detail</p><h2>${channel.name}</h2><p class="modal-lead">${channel.category} · 최근 10개 콘텐츠 기준 CIV / 팬덤 점수</p></div><button class="icon-button" data-work-action="close-detail" aria-label="닫기">×</button></div><div class="detail-summary-grid">${scorePill("브랜드 핏", brandFit(channel))}${scorePill("CIV", channel.civ)}${scorePill("팬덤", channel.fandom)}${scorePill("구독자", compactCount(channel.subscribers))}${scorePill("월 조회", compactCount(channel.monthlyViews))}${scorePill("ROAS", pct(channel.ROAS))}</div><div class="detail-layout"><section class="chart-card"><div class="panel-title-row"><h3>최근 10개 CIV 점수</h3><span>콘텐츠 순서</span></div>${sparkline(history, "civ", "var(--role)")}</section><section class="chart-card"><div class="panel-title-row"><h3>최근 10개 팬덤 점수</h3><span>댓글·반복 시청</span></div>${sparkline(history, "fandom", "#64748b")}</section></div><section class="app-panel"><h3>AI 추천 사유</h3><p>${channel.desc} 제품 타깃과 시청자 반응이 겹치며, 최근 콘텐츠에서 CIV와 팬덤 점수가 안정적입니다. 첫 제안은 롱폼 리뷰 1편과 숏폼 리마인드 3편 묶음이 적합합니다.</p></section></div></div>`);
 }
 
 function investorPartnershipView(title = "파트너십") {
