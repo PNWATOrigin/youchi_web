@@ -732,7 +732,7 @@ function creatorChannelAnalytics() {
         <p>기초 메이크업, 비교 리뷰, 출근 루틴 중심의 뷰티 채널입니다.<br>협찬 검수 안정성이 높고 댓글 기반 구매 의도 신호가 꾸준합니다.</p>
         <div class="creator-profile-actions">
           <button class="secondary-button" data-work-action="open-creator-search" type="button">캠페인 검색</button>
-          <button class="primary-button" data-app-tab="1" type="button">CIV 진단</button>
+          <button class="primary-button" data-app-tab="1" data-page-url="creator-civ-diagnosis.html" type="button">CIV 진단</button>
         </div>
       </div>
     </div>
